@@ -127,18 +127,26 @@ The script will:
 .\Deploy-JWTly.ps1 -WhatIf
 ```
 
-### Step 3: Verify GitHub Secret
+### Step 3: GitHub Secret Configuration (Automated)
 
-When you create the SWA, Azure automatically adds the deployment token to GitHub Secrets:
+The deployment script can automatically configure GitHub:
 
+**When prompted:**
 ```
-Secret Name: AZURE_STATIC_WEB_APPS_API_TOKEN_GREEN_BUSH_0C5254603
+Automate GitHub secret and workflow update? (Y/N)
 ```
 
-Verify in GitHub:
-1. Go to repository Settings → Secrets and variables → Actions
-2. Check that the secret exists
-3. No manual creation needed!
+**If you choose Y:**
+- ✓ Updates/creates GitHub secret with deployment token
+- ✓ Updates workflow file with correct secret name
+- ✓ Commits and pushes workflow changes (optional)
+
+**If you choose N:**
+- You'll need to manually configure the GitHub secret
+
+**Prerequisites for automation:**
+- GitHub CLI installed: `gh --version`
+- Authenticated: `gh auth login`
 
 ---
 

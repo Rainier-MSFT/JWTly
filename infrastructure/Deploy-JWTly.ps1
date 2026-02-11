@@ -286,4 +286,114 @@ if ($saveToken -eq 'Y' -or $saveToken -eq 'y') {
     Write-Warning "Keep this file secure and do not commit it to source control!"
 }
 
+# Check if GitHub CLI automation should run
+Write-Host ""
+$automate = Read-Host "Automate GitHub secret and workflow update? (Y/N)"
+if ($automate -eq 'Y' -or $automate -eq 'y') {
+    Write-Step "Automating GitHub configuration"
+    
+    # Check GitHub CLI
+    try {
+        $ghVersion = gh --version 2>$null
+        if (-not $ghVersion) {
+            throw "GitHub CLI not found"
+        }
+        Write-Info "GitHub CLI detected"
+    }
+    catch {
+        Write-Warning "GitHub CLI not installed. Install from: https://cli.github.com/"
+        Write-Warning "Skipping GitHub automation"
+        Write-Host "`n✓ Infrastructure deployment complete!`n" -ForegroundColor Green
+        exit 0
+    }
+    
+    # Generate secret name from hostname
+    $hostnamePrefix = $currentSwa.defaultHostname.Split('.')[0].ToUpper().Replace('-','_')
+    $secretName = "AZURE_STATIC_WEB_APPS_API_TOKEN_$hostnamePrefix"
+    
+    Write-Info "Secret name: $secretName"
+    
+    # Check if secret already exists
+    $existingSecrets = gh secret list --json name 2>$null | ConvertFrom-Json
+    $secretExists = $existingSecrets | Where-Object { $_.name -eq $secretName }
+    
+    if ($secretExists) {
+        Write-Info "Secret '$secretName' already exists"
+        $updateSecret = Read-Host "Update existing secret? (Y/N)"
+        if ($updateSecret -ne 'Y' -and $updateSecret -ne 'y') {
+            Write-Info "Skipping secret update"
+            Write-Host "`n✓ Infrastructure deployment complete!`n" -ForegroundColor Green
+            exit 0
+        }
+    }
+    
+    # Set GitHub secret
+    Write-Info "Setting GitHub secret..."
+    $deploymentToken | gh secret set $secretName 2>&1 | Out-Null
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Success "GitHub secret '$secretName' configured"
+    }
+    else {
+        Write-Warning "Failed to set GitHub secret. You may need to authenticate: gh auth login"
+        Write-Host "`n✓ Infrastructure deployment complete!`n" -ForegroundColor Green
+        exit 0
+    }
+    
+    # Find and update workflow file
+    $repoRoot = Split-Path -Parent $PSScriptRoot
+    $workflowsPath = Join-Path $repoRoot ".github\workflows"
+    
+    if (Test-Path $workflowsPath) {
+        $workflowFiles = Get-ChildItem -Path $workflowsPath -Filter "azure-static-web-apps-*.yml"
+        
+        if ($workflowFiles.Count -gt 0) {
+            Write-Info "Found $($workflowFiles.Count) workflow file(s)"
+            
+            foreach ($workflowFile in $workflowFiles) {
+                Write-Info "Updating: $($workflowFile.Name)"
+                
+                # Read workflow content
+                $workflowContent = Get-Content -Path $workflowFile.FullName -Raw
+                
+                # Update secret reference
+                $updatedContent = $workflowContent -replace 'AZURE_STATIC_WEB_APPS_API_TOKEN_[A-Z0-9_]+', $secretName
+                
+                # Only update if changed
+                if ($updatedContent -ne $workflowContent) {
+                    Set-Content -Path $workflowFile.FullName -Value $updatedContent -NoNewline
+                    Write-Success "Updated workflow to use '$secretName'"
+                    
+                    # Commit changes
+                    $commitChanges = Read-Host "Commit and push workflow changes? (Y/N)"
+                    if ($commitChanges -eq 'Y' -or $commitChanges -eq 'y') {
+                        Push-Location $repoRoot
+                        try {
+                            git add $workflowFile.FullName
+                            git commit -m "Update workflow to use new deployment token secret name"
+                            git push origin master
+                            Write-Success "Workflow changes committed and pushed"
+                        }
+                        catch {
+                            Write-Warning "Failed to commit/push changes: $_"
+                        }
+                        finally {
+                            Pop-Location
+                        }
+                    }
+                }
+                else {
+                    Write-Info "Workflow already uses correct secret name"
+                }
+            }
+        }
+        else {
+            Write-Warning "No workflow files found in $workflowsPath"
+        }
+    }
+    else {
+        Write-Warning "Workflows directory not found: $workflowsPath"
+    }
+}
+
 Write-Host "`n✓ Infrastructure deployment complete!`n" -ForegroundColor Green
