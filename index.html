@@ -1,0 +1,4169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWTly</title>
+    
+    <style>
+        /* ============================================================================
+           THEME VARIABLES
+           ============================================================================ */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.05);
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #0ea5e9;
+            --header-color: #1e293b;
+            --code-bg: #f8fafc;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --textarea-bg: #f8fafc;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #e9ecef;
+            --text-secondary: #888;
+            --text-muted: #6c757d;
+            --border-color: #3d3d3d;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --header-color: #ffffffd4;
+            --code-bg: #0d0d0d;
+            --input-bg: #1a1a1a;
+            /*--input-border: #3d3d3d;*/
+            --textarea-bg: #1a1a1a;
+        }
+
+        /* ============================================================================
+           THEME OVERRIDES FOR STANDARD INPUTS
+           ============================================================================ */
+        /* Light theme: override tools.css dark defaults */
+        :root .standard-input,
+        :root .standard-select,
+        :root .standard-select-muted,
+        :root .standard-filter-input {
+            background-color: #ffffff;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+
+        /* Dark theme: use tools.css defaults */
+        [data-theme="dark"] .standard-input,
+        [data-theme="dark"] .standard-select,
+        [data-theme="dark"] .standard-select-muted,
+        [data-theme="dark"] .standard-filter-input {
+            background-color: color(srgb 0.09 0.12 0.1);
+            border-color: rgb(50 50 50);
+            color: #a0b0c099;
+        }
+
+        .standard-select,
+        .standard-select-muted {
+            height: 36px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            padding: 0.55rem 1.2rem;
+            padding-right: 3.25rem;
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 0.65rem;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        :root .standard-select,
+        :root .standard-select-muted {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+        }
+        
+        [data-theme="dark"] .standard-select,
+        [data-theme="dark"] .standard-select-muted {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23a0b0c099' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+        }
+        :root .standard-select:invalid,
+        :root .standard-select-muted:invalid {
+            color: #888;
+        }
+        :root .standard-select option[value=""],
+        :root .standard-select-muted option[value=""] {
+            color: #888;
+        }
+        
+        [data-theme="dark"] .standard-select:invalid,
+        [data-theme="dark"] .standard-select-muted:invalid {
+            color: #888;
+        }
+        [data-theme="dark"] .standard-select option[value=""],
+        [data-theme="dark"] .standard-select-muted option[value=""] {
+            color: #888;
+        }
+        :root .standard-select option,
+        :root .standard-select-muted option {
+            color: #1e293b;
+            background-color: #ffffff;
+        }
+        
+        [data-theme="dark"] .standard-select option,
+        [data-theme="dark"] .standard-select-muted option {
+            color: #888;
+            background-color: color(srgb 0.09 0.12 0.1);
+        }
+        :root .standard-select:focus,
+        :root .standard-select-muted:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: #94a3b8;
+        }
+        
+        [data-theme="dark"] .standard-select:focus,
+        [data-theme="dark"] .standard-select-muted:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: rgb(50 50 50);
+        }
+
+        /* ============================================================================
+           RESET & BASE STYLES
+           ============================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* ============================================================================
+           HEADER (matching ID360 Utilities)
+           ============================================================================ */
+        header {
+            margin-top: 9px;
+            padding: 30px 30px 30px 40px;
+            box-shadow: 0 4px 12px rgba(3, 4, 9, 0.32);
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+            background: rgba(14, 17, 30, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid #7882a040;
+            max-width: 1470px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        [data-theme="dark"] header {
+            background: rgba(14, 17, 30, 0.88);
+        }
+
+        :root header {
+            background: var(--bg-secondary);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .header-content {
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            color: var(--header-color);
+        }
+
+        [data-theme="dark"] h1 {
+            color: #ffffff;
+        }
+
+        .header-subtitle {
+            margin: 0.25rem 0 0;
+            color: #a7b3d1;
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        :root .header-subtitle {
+            color: #a6abb3;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #e9ecef;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            background: rgba(14, 17, 30, 0.88);
+            border: none;
+        }
+
+        :root .theme-toggle {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            opacity: 0.8;
+        }
+        
+        .theme-toggle #themeIcon {
+            filter: brightness(0.7) saturate(0.8);
+            font-size: 1.8rem;
+        }
+
+        /* ============================================================================
+           MAIN LAYOUT
+           ============================================================================ */
+        .container {
+            max-width: 1470px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0.5rem 0;
+            box-sizing: border-box;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .intro h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--header-color);
+        }
+
+        .intro p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+            grid-auto-rows: auto;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: stretch; /* Keep panels same height */
+        }
+
+        /* JWTly layout */
+        #decoder .main-content > .panel {
+            height: 100%;
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================================
+           PANELS & INPUT DYNAMICS (FIXED SECTION)
+           ============================================================================ */
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow-y: auto;
+        }
+        
+        :root .panel {
+            box-shadow: 0 2px 8px var(--shadow), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+        
+        [data-theme="dark"] .panel {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.98));
+            backdrop-filter: blur(10px);
+        }
+
+        .jwt-input-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Important to keep children inside */
+            height: 100%;
+        }
+
+        /* The container for the single input view */
+        #jwtSingleInput {
+            display: flex;
+            flex-direction: column;
+            flex: 1; 
+            min-height: 0; /* Allows children to shrink below content size */
+        }
+
+        /* The Textarea: THE CORE FIX */
+        .jwt-single-input {
+            width: 100%;
+            flex: 1;       /* Take all available vertical space */
+            min-height: 0; /* Allows it to shrink when the error div appears */
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 1rem;
+            background: var(--code-bg);
+            border: 1px solid #3d3d3da6;
+            border-radius: 6px;
+            color: var(--text-primary);
+            resize: none;
+            overflow-y: auto;
+            outline: none;
+        }
+        
+        [data-theme="dark"] .jwt-single-input {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+
+        /* The error box: only takes what it needs */
+        .jwt-input-error {
+            flex: 0 0 auto; 
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+            color: #ef4444;
+            font-size: 0.9rem;
+        }
+
+        /* Ensure segment view also behaves well */
+        #jwtStructure {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* ============================================================================
+           REMAINDER OF ORIGINAL STYLES
+           ============================================================================ */
+        .panel-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--header-color);
+            pointer-events: auto;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+        .panel > .mb-2:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .panel-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            padding: 0 0 0 0.1rem
+        }
+
+        /* Encoder tab styling - match generatedJwtOutput exactly */
+        #encodeHeaderInput,
+        #encodePayloadInput,
+        #encodeSecretInput {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: "Roboto Mono", monospace !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 1.4 !important;
+            background: var(--code-bg) !important;
+            border: 1px solid #3d3d3da6 !important;
+            border-radius: 4px !important;
+            color: #888 !important;
+            padding: 1rem !important;
+            resize: none !important;
+            overflow: hidden !important;
+        }
+
+        #encodeHeaderInput:focus,
+        #encodePayloadInput:focus,
+        #encodeSecretInput:focus {
+            outline: none !important;
+        }
+
+        #encodeSecretInput::placeholder {
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            font-weight: 400;
+            color: #888;
+        }
+
+        #encoder .standard-input:focus {
+            outline: none;
+            border-color: rgba(120, 130, 160, 0.4);
+        }
+
+        #encoder .standard-select {
+            width: 100%;
+            background-color: color(srgb 0.09 0.12 0.1);
+            border-color: rgb(50 50 50);
+        }
+
+        #generatedJwtWrapper {
+            background: var(--code-bg);
+            border: 1px solid #3d3d3da6;
+            border-radius: 4px;
+        }
+
+        #generatedJwtOutput {
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            background: var(--code-bg);
+            border: none;
+            color: var(--text-primary);
+            padding: 1rem;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        #generatedJwtOutput:focus {
+            outline: none;
+        }
+
+        #generatedPlaceholder {
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+        }
+
+        .primary-button {
+            background: var(--accent-blue);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        [data-theme="dark"] .primary-button {
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .primary-button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        
+        [data-theme="dark"] .primary-button:hover {
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .primary-button:active {
+            transform: scale(0.98) translateY(0);
+        }
+
+        #generateResult {
+            margin-top: 1rem;
+        }
+
+        /* Encoder layout utilities */
+        .encoder-control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .encoder-control-left {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .encoder-control-inner {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .encoder-control-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .encoder-button-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .encoder-panel-right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-group-no-margin {
+            margin-top: 0 !important;
+        }
+
+        .panel-label-no-margin {
+            margin-bottom: 0;
+        }
+
+        .panel-label-row-end {
+            align-items: flex-end;
+        }
+
+        .margin-left-auto {
+            margin-left: auto;
+        }
+
+        #algorithmSelectManual {
+            width: 260px;
+            height: auto;
+        }
+
+        #keyFormatSelect {
+            width: auto;
+        }
+
+        #encodeAlgorithmSelect {
+            width: 100%;
+        }
+
+        #encodeHeaderInput {
+            min-height: 80px;
+        }
+
+        #encodePayloadInput {
+            min-height: 150px;
+        }
+
+        #encodeSecretInput {
+            min-height: 80px;
+        }
+
+        #generatedJwtWrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #generatedPlaceholder {
+            position: absolute;
+            color: #888;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        #generatedJwtOutput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        #tokenStatusBanner {
+            padding: 0.75rem;
+            margin: 0.75rem 0 0 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            border-left: 4px solid;
+        }
+
+        #hashNonceGroup {
+            margin-top: 0;
+        }
+
+        .jwt-input-hint {
+            margin-top: 0.35rem;
+            font-size: 0.75rem;
+            color: #888;
+            opacity: 0.75;
+            text-align: center;
+            user-select: none;
+            cursor: default;
+        }
+
+        .jwt-input-hint strong {
+            font-weight: 600;
+        }
+
+        textarea {
+            resize: none;
+            overflow: hidden;
+        }
+        
+        .jwt-single-input::placeholder {
+            text-align: center;
+            font-style: normal;
+            color: #888;
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.6;
+        }
+
+        .jwt-structure {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .jwt-segment-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .jwt-segment {
+            border-radius: 4px;
+            min-height: 5rem;
+            outline: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .jwt-segment-content {
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+            outline: none;
+            flex: 1;
+        }
+
+        /* Light theme JWT segments */
+        :root .jwt-segment-header {
+            background: rgba(237, 233, 254, 0.9);
+            border: 1px solid rgba(167, 139, 250, 0.5);
+            border-radius: 4px;
+        }
+        
+        :root .jwt-segment-header .jwt-segment-content {
+            color: #6d28d9;
+        }
+
+        :root .jwt-segment-payload {
+            background: rgba(224, 242, 254, 0.9);
+            border: 1px solid rgba(96, 165, 250, 0.5);
+            border-radius: 4px;
+        }
+        
+        :root .jwt-segment-payload .jwt-segment-content {
+            color: #1e40af;
+        }
+
+        :root .jwt-segment-signature {
+            background: rgba(220, 252, 231, 0.9);
+            border: 1px solid rgba(52, 211, 153, 0.5);
+            border-radius: 4px;
+        }
+        
+        :root .jwt-segment-signature .jwt-segment-content {
+            color: #047857;
+        }
+
+        /* Dark theme JWT segments */
+        [data-theme="dark"] .jwt-segment-header {
+            background: rgba(59, 7, 100, .3);
+            border: 1px solid rgb(108 93 119 / 30%);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(192, 132, 252, 0.1);
+        }
+        
+        [data-theme="dark"] .jwt-segment-header .jwt-segment-content {
+            --tw-text-opacity: 1;
+            color: rgb(192 132 252 / var(--tw-text-opacity, 1));
+        }
+
+        [data-theme="dark"] .jwt-segment-payload {
+            background: rgba(23, 37, 84, .3);
+            border: 1px solid rgb(87 90 102 / 30%);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(96, 165, 250, 0.1);
+        }
+        
+        [data-theme="dark"] .jwt-segment-payload .jwt-segment-content {
+            --tw-text-opacity: 1;
+            color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+        }
+
+        [data-theme="dark"] .jwt-segment-signature {
+            background: rgba(5, 46, 22, .3);
+            border: 1px solid rgb(60 96 75 / 30%);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(52, 211, 153, 0.1);
+        }
+        
+        [data-theme="dark"] .jwt-segment-signature .jwt-segment-content {
+            --tw-text-opacity: 1;
+            color: rgb(52 211 153 / var(--tw-text-opacity, 1));
+        }
+
+        .jwt-segment-label {
+            padding-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #888;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .jwt-connector {
+            width: 1px;
+            height: 20px;
+            background: #555;
+            margin: 0.5rem auto;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            /*border: 1px solid var(--border-color);*/
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: "Roboto Mono", monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            overflow-x: auto;
+            min-height: 4rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        #decodedHeader:not(:empty) { background: rgba(59, 7, 100, .3); }
+        #decodedPayload:not(:empty) { background: rgba(23, 37, 84, .3); }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .status-badge.valid { background: rgba(40, 167, 69, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .status-badge.info, .status-badge.neutral { background: rgba(13, 110, 253, 0.1); color: #4dabf7; border: 1px solid rgba(13, 110, 253, 0.4); }
+        .status-badge.warning { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.5); }
+        .status-badge.critical, .status-badge.invalid, .status-badge.error { background: rgba(139, 0, 0, 0.25); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.5); }
+
+        #verificationResult, #verificationResultManual { display: none; justify-content: center; }
+
+        .tabs { display: none; gap: 0; margin-bottom: 0.6rem; }
+        .tabs-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 1rem; }
+        .tab { padding: 0.5rem 1rem; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid transparent; transition: all 0.2s; }
+        .tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+        .main-tabs { padding: 0.5rem 1rem; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid transparent; transition: all 0.2s; }
+        .main-tabs.active { color: var(--accent-blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .decoded-signature-content-area #manualVerification.active { display: block !important; }
+        .decoded-signature-content-area #discoveryVerification.active { display: block !important; }
+        
+        .claims-table-wrapper { border: 1px solid var(--border-color); border-radius: 4px; background: var(--code-bg); }
+        .claims-table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; table-layout: auto; }
+        .claims-table th { padding: 0.75rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border-color); color: var(--text-primary); }
+        .claims-table td { padding: 0.75rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary); word-break: break-word; }
+        .claims-table th:nth-child(1),
+        .claims-table td:nth-child(1) {
+            white-space: nowrap;
+            width: 1%;
+        }
+        .claims-table th:nth-child(2),
+        .claims-table td:nth-child(2),
+        .claims-table th:nth-child(3),
+        .claims-table td:nth-child(3) {
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        .claims-table th:nth-child(3),
+        .claims-table td:nth-child(3) {
+            width: auto;
+        }
+        
+        .description-toggle-btn { width: 24px; height: 24px; padding: 4px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; visibility: hidden; }
+        .description-toggle-btn:focus,
+        .description-toggle-btn:active {
+            background: transparent;
+            box-shadow: none;
+            outline: none;
+        }
+        .kv-tags-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: var(--accent-blue); font-size: 12px; font-weight: 600; font-style: italic; font-family: Georgia, serif; border-radius: 4px; }
+        /* Light theme info icons */
+        :root .decoded-header-row .kv-tags-info-icon { color: #6d28d9; background: transparent; }
+        :root .decoded-payload-row .kv-tags-info-icon { color: #1e40af; background: transparent; }
+        
+        /* Dark theme info icons */
+        [data-theme="dark"] .decoded-header-row .kv-tags-info-icon { color: rgb(192 132 252); background: transparent; }
+        [data-theme="dark"] .decoded-payload-row .kv-tags-info-icon { color: rgb(96 165 250); background: transparent; }
+        #base64Checkbox,
+        #base64CheckboxEncode {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            background-color: transparent;
+            border: 1px solid var(--text-secondary);
+            display: inline-grid;
+            place-content: center;
+        }
+        #base64Checkbox:checked::before,
+        #base64CheckboxEncode:checked::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-primary);
+            border-radius: 2px;
+        }
+        .checkbox-label {
+            color: var(--text-secondary);
+            opacity: 1;
+        }
+
+        .footer { text-align: center; padding: 2rem 2rem; color: #88888894; font-size: 0.85rem; margin-top: 1rem; max-width: 1470px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        .footer a { color: #88888859; text-decoration: none; }
+        .footer .text-muted { color: #88888859; }
+
+        .decoded-section-panel { background: var(--bg-secondary); border-radius: 8px; overflow: hidden; }
+        
+        :root .decoded-section-panel {
+            box-shadow: 0 2px 8px var(--shadow), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+        
+        [data-theme="dark"] .decoded-section-panel {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.98));
+            backdrop-filter: blur(8px);
+        }
+        
+        /* Light theme panel borders */
+        :root .decoded-section-panel.decoded-header-panel { border: 1px solid rgba(167, 139, 250, 0.4); }
+        :root .decoded-section-panel.decoded-payload-panel { border: 1px solid rgba(96, 165, 250, 0.4); }
+        :root .decoded-section-panel.decoded-signature-panel { border: 1px solid rgba(52, 211, 153, 0.4); }
+        
+        /* Dark theme panel borders */
+        [data-theme="dark"] .decoded-section-panel.decoded-header-panel { border: 1px solid rgb(108 93 119 / 30%); }
+        [data-theme="dark"] .decoded-section-panel.decoded-payload-panel { border: 1px solid rgb(87 90 102 / 30%); }
+        [data-theme="dark"] .decoded-section-panel.decoded-signature-panel { border: 1px solid rgb(60 96 75 / 30%); }
+        .decoded-tabs-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1rem 0rem 1.2rem; background: var(--bg-secondary); gap: 1rem; }
+        .decoded-tabs-row .panel-header { margin-bottom: 0; font-size: 0.95rem; font-size: 1.1rem; font-weight: 600; }
+        /* Light theme panel headers */
+        :root .panel-header-decoded { color: #6d28d9; }
+        :root .panel-header-payload { color: #1e40af; }
+        :root .panel-header-signature { color: #047857; }
+        
+        /* Dark theme panel headers */
+        [data-theme="dark"] .panel-header-decoded { color: rgb(192 132 252); }
+        [data-theme="dark"] .panel-header-payload { color: rgb(96 165 250); }
+        [data-theme="dark"] .panel-header-signature { color: rgb(52 211 153); }
+        .decoded-tabs { display: flex; gap: 0; justify-content: flex-start; border-radius: 6px; padding: 0.25rem; }
+        .decoded-tab { background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; padding: 0.2rem 1rem; cursor: pointer; border-radius: 2px; transition: all 0.2s; outline: none; }
+        .decoded-tab:hover:not(.active) { background: rgba(255, 255, 255, 0.05); }
+        :root .decoded-tab.active { color: var(--text-primary); background: rgba(0, 0, 0, 0.05); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        [data-theme="dark"] .decoded-tab.active { 
+            color: var(--text-primary); 
+            background: rgba(0, 0, 0, 0.4); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .decoded-tab[data-target="headerTable"],
+        .decoded-tab[data-target="payloadTable"],
+        .decoded-tab[data-target="manualVerification"] {
+            background: #00000024;
+        }
+        .decoded-tab:hover:not(.active) { color: var(--text-primary); }
+        #manualVerification.tab-content.active { display: block !important; }
+        #discoveryVerification.tab-content.active { display: block !important; }
+        /* CACHE BUST: 2026-02-03-v3-FINAL-OVERLAY-FIX */
+        /* CACHE BUST: 2026-02-03-v15-CLEAN-ALIGNMENT */
+        .decoded-content-area { position: relative; padding: 1rem; min-height: 64px; border-radius: 8px; }
+        :root .decoded-content-area .code-block { background: rgba(255, 255, 255, 0.95) !important; border-radius: 6px; padding: 1rem; word-break: break-all; min-height: 64px; }
+        [data-theme="dark"] .decoded-content-area .code-block { 
+            background: rgba(0, 0, 0, 0.4) !important; 
+            border-radius: 6px; 
+            padding: 1rem; 
+            word-break: break-all; 
+            min-height: 64px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        .decoded-content-area .code-block:empty { display: block !important; }
+        /* BYOK should be snug: no forced min-height */
+        .decoded-signature-content-area { min-height: 0; }
+        .decoded-signature-content-area.signature-manual-active #manualVerification { display: block !important; }
+        .decoded-signature-content-area.signature-manual-active #discoveryVerification { display: none !important; }
+        #algorithmSelectManual,
+        #keyFormatSelect {
+            border-radius: 6px;
+        }
+        :root #manualVerification #secretInput {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+            padding: 1rem;
+            min-height: 64px;
+            overflow: hidden;
+            border-radius: 4px;
+            font-family: "Roboto Mono", monospace;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+            outline: none;
+        }
+        [data-theme="dark"] #manualVerification #secretInput {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffffd4;
+            padding: 1rem;
+            min-height: 64px;
+            overflow: hidden;
+            border-radius: 6px;
+            font-family: "Roboto Mono", monospace;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+            outline: none;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        #manualVerification #secretInput:empty:before {
+            content: attr(data-placeholder);
+            color: #888;
+            opacity: 0.6;
+            font-size: 14px;
+            font-weight: 400;
+            font-family: "Roboto Mono", monospace;
+        }
+
+        /* Light theme JSON syntax - consistent color like dark theme */
+        .json-key { color: #1e293b; }
+        .json-string { color: #1e293b; }
+        .json-number { color: #1e293b; }
+        .json-boolean { color: #1e293b; }
+        .json-null { color: #1e293b; }
+        .json-key-highlight { color: #c2410c !important; font-weight: 700; }
+        
+        /* Dark theme JSON syntax */
+        [data-theme="dark"] .json-key { color: #ffffffd4; }
+        [data-theme="dark"] .json-string { color: #ffffffd4; font-style: italic;}
+        [data-theme="dark"] .json-number { color: #ffffffd4; }
+        [data-theme="dark"] .json-boolean { color: #ffffffd4; }
+        [data-theme="dark"] .json-null { color: #ffffffd4; }
+        [data-theme="dark"] .json-key-highlight { color: #f1b99b !important; }
+
+        .copy-btn { padding: 0.2rem 0.4rem; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; border-radius: 6px; transition: all 0.2s; outline: none; }
+        .copy-btn:hover { background: var(--bg-secondary); transform: translateY(-1px); }
+        [data-theme="dark"] .copy-btn { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+        [data-theme="dark"] .copy-btn:hover { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+        
+        .nuke-btn { padding: 0.2rem 0.4rem; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid #3d3d3da6; color: var(--text-secondary); cursor: pointer; border-radius: 6px; transition: all 0.2s; outline: none; }
+        .nuke-btn:hover { background: var(--bg-secondary); transform: translateY(-1px); }
+        [data-theme="dark"] .nuke-btn { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+        [data-theme="dark"] .nuke-btn:hover { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+        .copy-icon-btn { position: absolute; top: 1.6rem; right: 1.6rem; width: 24px; height: 24px; padding: 4px; background: #1a1a1a00; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: none; z-index: 10; outline: none; }
+        .copy-icon-btn svg { width: 16px; height: 16px; stroke: #8888887d; stroke-width: 2; fill: none; transition: stroke 0.2s; }
+        .panel-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* Decoded section background tints */
+        /* Light theme decoded content areas */
+        :root .decoded-header-content-area {
+            background: rgba(237, 233, 254, 0.8) !important;
+            border: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        :root .decoded-payload-content-area {
+            background: rgba(224, 242, 254, 0.8) !important;
+            border: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        :root .decoded-signature-content-area {
+            background: rgba(220, 252, 231, 0.8) !important;
+            border: none;
+        }
+
+        /* Dark theme decoded content areas */
+        [data-theme="dark"] .decoded-header-content-area {
+            background: rgba(59, 7, 100, 0.2) !important;
+            border: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        [data-theme="dark"] .decoded-payload-content-area {
+            background: rgba(23, 37, 84, 0.2) !important;
+            border: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        [data-theme="dark"] .decoded-signature-content-area {
+            background: rgba(5, 46, 22, 0.2) !important;
+            border: none;
+        }
+
+        /* Light theme tabs row backgrounds - match content areas */
+        :root .decoded-tabs-row.decoded-header-row {
+            background: rgba(237, 233, 254, 0.8);
+        }
+
+        :root .decoded-tabs-row.decoded-payload-row {
+            background: rgba(224, 242, 254, 0.8);
+        }
+
+        :root .decoded-tabs-row.decoded-signature-row {
+            background: rgba(220, 252, 231, 0.8);
+        }
+
+        /* Dark theme tabs row backgrounds */
+        [data-theme="dark"] .decoded-tabs-row.decoded-header-row {
+            background: rgba(59, 7, 100, 0.2);
+            /*border-bottom: 1px solid rgba(59, 7, 100, 0.3);*/
+        }
+
+        [data-theme="dark"] .decoded-tabs-row.decoded-payload-row {
+            background: rgba(23, 37, 84, 0.2);
+            /*border-bottom: 1px solid rgba(23, 37, 84, 0.3);*/
+        }
+
+        [data-theme="dark"] .decoded-tabs-row.decoded-signature-row {
+            background: rgba(5, 46, 22, 0.2);
+            /*border-bottom: 1px solid rgba(5, 46, 22, 0.3);*/
+        }
+
+        /* FIXED SECTION: Added min-height and flex layout to ensure consistency with panels above */
+        .signature-inner-panel {
+            background: transparent !important;
+            border-radius: 4px;
+            padding: 0;
+            position: relative;
+            min-height: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Help icon button */
+        .help-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            outline: none;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+            pointer-events: auto;
+        }
+        
+        .help-icon-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        
+        .help-icon-btn svg {
+            display: block; /* avoid baseline alignment fuzz */
+            width: 18px;
+            height: 18px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            shape-rendering: geometricPrecision;
+        }
+
+        /* Token type tabs (for multiple tokens) */
+        .token-type-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.25rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+        }
+        
+        .token-type-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            outline: none;
+        }
+        
+        .token-type-tab:hover {
+            color: var(--text-primary);
+        }
+        
+        .token-type-tab.active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] .token-type-tab.active {
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            max-width: 950px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(93, 139, 255, 0.5) rgba(20, 24, 44, 0.6);
+        }
+
+        [data-theme="dark"] .modal-content {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(20, 24, 44, 0.6);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(93, 139, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(93, 139, 255, 0.7);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 2rem;
+            line-height: 1;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        /* When modal header is hidden, keep close button */
+        .modal-close.modal-close-floating {
+            position: absolute;
+            top: 1.1rem;
+            right: 1.1rem;
+            z-index: 1002;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-body h4 {
+            margin: 1.5rem 0 0.75rem 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .modal-body h4:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* URL help modal: deterministic indentation + hierarchy */
+        #urlHelpModal .modal-body {
+            --help-step-indent: 1.05rem; /* width of bullet column */
+            --help-step-gap: 0.35rem; /* gap between number and title text */
+        }
+
+        #urlHelpModal .help-intro {
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+        }
+
+        #urlHelpModal .help-step-title {
+            display: flex;
+            align-items: baseline;
+            gap: var(--help-step-gap);
+            margin: 1.25rem 0 0.5rem 0;
+        }
+
+        #urlHelpModal .help-step-num {
+            flex: 0 0 var(--help-step-indent);
+            text-align: right;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        #urlHelpModal .help-step-text {
+            flex: 1;
+        }
+
+        /* Description aligns with the title text (not the "N -" label) */
+        #urlHelpModal .help-step-desc {
+            margin: 0 0 0.75rem calc(var(--help-step-indent) + var(--help-step-gap));
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Sub-items are indented slightly beyond the description */
+        #urlHelpModal .help-step-sub {
+            margin: 0 0 1rem calc(var(--help-step-indent) + var(--help-step-gap));
+            padding-left: 1.25rem;
+        }
+
+        #urlHelpModal .help-step-subtitle {
+            margin: 0.5rem 0 0.25rem 0;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        #urlHelpModal .help-step-sub .code-example {
+            margin: 0.25rem 0 0.75rem 0;
+        }
+
+        #urlHelpModal .help-step-list {
+            margin: 0.5rem 0 1rem calc(var(--help-step-indent) + var(--help-step-gap));
+            padding-left: 1.25rem;
+        }
+
+        #urlHelpModal .help-step-list ul {
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+        }
+
+        #urlHelpModal .help-step-inputs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        #urlHelpModal .help-step-input {
+            flex: 1;
+            min-width: 220px;
+            height: 32px;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--code-bg);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        #urlHelpModal .help-step-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.75;
+        }
+        
+        .modal-body ol {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .modal-body li {
+            /*margin: 0.5rem 0;*/
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .modal-body code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: "Roboto Mono", monospace;
+            font-size: 0.9em;
+            color: var(--accent-blue);
+        }
+        
+        .code-example {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-family: "Roboto Mono", monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            overflow-x: auto;
+            word-break: break-all;
+            margin: 0.5rem 0;
+        }
+
+        /* Long OAuth URL examples: slightly smaller */
+        .code-example-small {
+            font-size: 0.8rem;
+        }
+
+        /* Modal URL boxes: reserve space for copy icon */
+        .code-example-wrapper {
+            position: relative;
+        }
+
+        .code-example-wrapper .code-example {
+            padding-right: 2.25rem;
+        }
+
+        .modal-copy-icon-btn {
+            display: inline-flex; /* override default display:none */
+            align-items: center;
+            justify-content: center;
+            top: 0.35rem;
+            right: 0.35rem;
+        }
+
+        /* Modal uses the same copy icon tone as main page */
+        
+        .note {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--accent-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            margin: 1rem 0 0 0;
+        }
+
+        @media (max-width: 1550px) { header, .container, .footer { max-width: 1248px; } }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>JWTly</h1>
+                <p class="header-subtitle">Decode, verify, and generate JWT tokens</p>
+            </div>
+            <div class="header-meta">
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Panel -->
+        <div class="panel">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="main-tabs active" data-tab="decoder">Decoder</button>
+                <button class="main-tabs" data-tab="encoder">Encoder</button>
+            </div>
+
+            <!-- Decoder Tab -->
+        <div class="tab-content active" id="decoder">
+            <!-- Main Grid -->
+            <div class="main-content">
+                <!-- Left: Encoded JWT (THE ADJUSTED PANEL) -->
+                <div class="panel jwt-input-panel">
+                    <div class="panel-header" id="encodedPanelHeader" style="padding: 1rem 0 1rem 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span id="encodedPanelHeaderText">ENCODED JWT</span>
+                        <button class="help-icon-btn" id="urlHelpBtn" title="Token import options" type="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Token Type Tabs (shown when multiple tokens loaded) -->
+                    <div id="tokenTypeTabs" class="token-type-tabs" style="display: none;">
+                        <button class="token-type-tab active" data-token-type="id_token">ID Token</button>
+                        <button class="token-type-tab" data-token-type="access_token">Access Token</button>
+                    </div>
+
+                    <div id="structureLabelRow" class="panel-label-row panel-label-row-end" style="display: none;">
+                        <div class="panel-label panel-label-no-margin">Structure</div>
+                        <div>
+                            <button class="nuke-btn" id="clearEncodedBtn" title="Clear">Nuke</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Single Input View (initial state) -->
+                    <div id="jwtSingleInput">
+                        <textarea 
+                            class="jwt-single-input" 
+                            id="jwtInputField"
+                            placeholder="Paste JWT token here"
+                            spellcheck="false"></textarea>
+                        <div class="jwt-input-hint" id="jwtExampleHint">(Shift + click for example)</div>
+                        <div id="jwtInputError" class="jwt-input-error" style="display: none;"></div>
+                    </div>
+                    
+                    <!-- JWT Structure Display (after token loaded) -->
+                    <div id="jwtStructure" class="jwt-structure" style="display: none;">
+                        <!-- Header Section -->
+                        <div class="jwt-segment-container">
+                            <div class="jwt-segment jwt-segment-header">
+                                <div 
+                                    class="jwt-segment-content"
+                                    id="jwtHeaderSegment"
+                                    contenteditable="true"
+                                    data-placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                    spellcheck="false"></div>
+                                <div class="jwt-segment-label">Header: Algorithm & Token Type</div>
+                            </div>
+                            <div class="jwt-connector"></div>
+                        </div>
+                        
+                        <!-- Payload Section -->
+                        <div class="jwt-segment-container">
+                            <div class="jwt-segment jwt-segment-payload">
+                                <div 
+                                    class="jwt-segment-content"
+                                    id="jwtPayloadSegment"
+                                    contenteditable="true"
+                                    data-placeholder="eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+                                    spellcheck="false"></div>
+                                <div class="jwt-segment-label">Payload: Claims & Data</div>
+                            </div>
+                            <div class="jwt-connector"></div>
+                        </div>
+                        
+                        <!-- Signature Section -->
+                        <div class="jwt-segment-container">
+                            <div class="jwt-segment jwt-segment-signature">
+                                <div 
+                                    class="jwt-segment-content"
+                                    id="jwtSignatureSegment"
+                                    contenteditable="true"
+                                    data-placeholder="SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                    spellcheck="false"></div>
+                                <div class="jwt-segment-label">Signature: Token integrity</div>
+                            </div>
+                            <div id="tokenStatusBanner" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Decoded JWT -->
+                <div class="panel">
+                    <!-- Header -->
+                    <div class="mb-2">
+                        <div class="decoded-section-panel decoded-header-panel">
+                            <!-- Tabs with Copy Button -->
+                            <div class="decoded-tabs-row decoded-header-row">
+                                <div class="panel-header panel-header-decoded">
+                                    DECODED HEADER
+                                </div>
+                                <div class="decoded-tabs">
+                                    <button class="description-toggle-btn" id="headerDescToggle" title="Toggle Description Column"><span class="kv-tags-info-icon">i</span></button>
+                                    <button class="decoded-tab active" data-target="headerJson">JSON</button>
+                                    <button class="decoded-tab" data-target="headerTable">CLAIMS</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Area -->
+                            <div class="decoded-content-area decoded-header-content-area">
+                                <button class="copy-icon-btn" id="copyHeaderBtn" title="Copy Header" style="display: none;">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                                <!-- JSON View -->
+                                <div class="code-block tab-content active" id="decodedHeader" data-content="headerJson"></div>
+                                
+                                <!-- Table View -->
+                                <div class="claims-table-wrapper tab-content" id="headerClaimsTable" data-content="headerTable" style="display: none;">
+                                    <table class="claims-table">
+                                        <tbody id="headerClaimsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payload -->
+                    <div class="mb-2">
+                        <div class="decoded-section-panel decoded-payload-panel">
+                            <!-- Tabs with Copy Button -->
+                            <div class="decoded-tabs-row decoded-payload-row">
+                                <div class="panel-header panel-header-payload">DECODED PAYLOAD</div>
+                                <div class="decoded-tabs">
+                                    <button class="description-toggle-btn" id="payloadDescToggle" title="Toggle Description Column"><span class="kv-tags-info-icon">i</span></button>
+                                    <button class="decoded-tab active" data-target="payloadJson">JSON</button>
+                                    <button class="decoded-tab" data-target="payloadTable">CLAIMS</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Area -->
+                            <div class="decoded-content-area decoded-payload-content-area">
+                                <button class="copy-icon-btn" id="copyPayloadBtn" title="Copy Payload" style="display: none;">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                                <!-- JSON View -->
+                                <div class="code-block tab-content active" id="decodedPayload" data-content="payloadJson"></div>
+                                
+                                <!-- Table View -->
+                                <div class="claims-table-wrapper tab-content" id="payloadClaimsTable" data-content="payloadTable" style="display: none;">
+                                    <table class="claims-table">
+                                        <tbody id="payloadClaimsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signature Verification -->
+                    <div class="mb-2">
+                        <div class="decoded-section-panel decoded-signature-panel">
+                            <!-- Tabs Row -->
+                            <div class="decoded-tabs-row decoded-signature-row">
+                                <div class="panel-header panel-header-signature">
+                                    SIGNATURE VERIFICATION
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-left: auto;">
+                                    <div class="checkbox-group" id="hashNonceGroup" style="display: none; margin: 0;">
+                                        <input type="checkbox" id="hashNonceCheckbox" checked>
+                                        <label for="hashNonceCheckbox">Hash nonce (MSG AT)</label>
+                                    </div>
+                                    <div class="decoded-tabs">
+                                        <button class="decoded-tab active" data-target="discoveryVerification">AUTO</button>
+                                        <button class="decoded-tab" data-target="manualVerification">BYOK</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Area -->
+                            <div class="decoded-content-area decoded-signature-content-area">
+                                <button class="copy-icon-btn" id="copySignatureBtn" title="Copy Public Key" style="display: none;">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                                <!-- Discovery Tab (Auto OIDC) -->
+                                <div class="code-block tab-content active" id="discoveryVerification" data-content="discoveryVerification"></div>
+                                <div id="verificationResult"></div>
+
+                                <!-- Manual Tab (User provides key) -->
+                                <div class="tab-content" id="manualVerification" data-content="manualVerification">
+                                    <div id="secretInputGroup">
+                                        <!--
+                                        <div class="panel-label-row">
+                                            <div class="panel-label">PUBLIC KEY / SECRET</div>
+                                            <div class="margin-left-auto">
+                                                <button class="copy-btn" id="clearSecretBtn" title="Reset">Reset</button>
+                                            </div>
+                                        </div>
+                                        -->
+                                        <div 
+                                            id="secretInput" 
+                                            contenteditable="true"
+                                            spellcheck="false"
+                                            data-placeholder="Paste a public key or secret to verify the JWT signature"
+                                            ></div>
+                                        <div class="encoder-control-row">
+                                            <div class="encoder-control-left">
+                                                <div class="encoder-control-inner">
+                                                    <select class="standard-select-muted" id="algorithmSelectManual" required>
+                                                        <option value="" selected>Algorithm</option>
+                                                        <option value="HS256">HMAC SHA256 (HS256)</option>
+                                                        <option value="HS384">HMAC SHA384 (HS384)</option>
+                                                        <option value="HS512">HMAC SHA512 (HS512)</option>
+                                                        <option value="RS256">RSA SHA256 (RS256)</option>
+                                                        <option value="RS384">RSA SHA384 (RS384)</option>
+                                                        <option value="RS512">RSA SHA512 (RS512)</option>
+                                                        <option value="ES256">ECDSA SHA256 (ES256)</option>
+                                                        <option value="ES384">ECDSA SHA384 (ES384)</option>
+                                                        <option value="ES512">ECDSA SHA512 (ES512)</option>
+                                                        <option value="PS256">RSA-PSS SHA256 (PS256)</option>
+                                                        <option value="PS384">RSA-PSS SHA384 (PS384)</option>
+                                                        <option value="PS512">RSA-PSS SHA512 (PS512)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="checkbox-group checkbox-group-no-margin">
+                                                    <input type="checkbox" id="base64Checkbox">
+                                                    <label for="base64Checkbox" class="checkbox-label">B64</label>
+                                                </div>
+                                            </div>
+                                            <div class="encoder-control-right">
+                                                <select id="keyFormatSelect" class="standard-select-muted" required>
+                                                    <option value="" selected>Key Format</option>
+                                                    <option value="raw">Raw secret</option>
+                                                    <option value="jwk">JWK</option>
+                                                    <option value="pem">PEM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="verificationResultManual"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Encoder Tab -->
+        <div class="tab-content" id="encoder">
+            <div class="main-content">
+                <!-- Left: Token Configuration -->
+                <div class="panel">
+                    <div class="panel-header">CONFIGURE TOKEN</div>
+                    
+                    <!-- Header -->
+                    <div class="mb-2">
+                        <div class="panel-label">Header</div>
+                        <textarea 
+                            class="standard-input" 
+                            id="encodeHeaderInput" 
+                            spellcheck="false">{"alg":"HS256","typ":"JWT"}</textarea>
+                    </div>
+
+                    <!-- Payload -->
+                    <div class="mb-2">
+                        <div class="panel-label">Payload</div>
+                        <textarea 
+                            class="standard-input" 
+                            id="encodePayloadInput" 
+                            spellcheck="false">{"sub":"1234567890","name":"John Doe","iat":1516239022}</textarea>
+                    </div>
+
+                    <!-- Secret -->
+                    <div class="mb-2">
+                        <div class="panel-label-row">
+                            <div class="panel-label panel-label-no-margin">Secret</div>
+                            <div class="checkbox-group checkbox-group-no-margin">
+                                <input type="checkbox" id="base64CheckboxEncode">
+                                <label for="base64CheckboxEncode" class="checkbox-label">B64 encoded</label>
+                            </div>
+                        </div>
+                        <textarea 
+                            class="standard-input" 
+                            id="encodeSecretInput" 
+                            placeholder="256-bit-secret"
+                            spellcheck="false"
+                            autocomplete="off"></textarea>
+                    </div>
+
+                    <!-- Algorithm -->
+                    <div class="mb-2">
+                        <select class="standard-select" id="encodeAlgorithmSelect" required>
+                            <option value="" selected>Algorithm</option>
+                            <option value="HS256">HMAC SHA256 (HS256)</option>
+                            <option value="HS384">HMAC SHA384 (HS384)</option>
+                            <option value="HS512">HMAC SHA512 (HS512)</option>
+                        </select>
+                    </div>
+
+                    <!-- Generate button -->
+                    <div class="encoder-button-row">
+                        <button class="primary-button" id="generateBtn">Generate</button>
+                    </div>
+                </div>
+
+                <!-- Right: Generated Token -->
+                <div class="panel encoder-panel-right">
+                    <div class="panel-header">GENERATED JWT</div>
+                    <div id="generatedJwtWrapper">
+                        <button class="copy-icon-btn" id="copyGeneratedBtn" title="Copy JWT" style="display: none;">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <div id="generatedPlaceholder">Generated JWT will appear here</div>
+                        <textarea 
+                            id="generatedJwtOutput" 
+                            readonly
+                            spellcheck="false"></textarea>
+                    </div>
+                    
+                    <div id="generateResult"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- URL Help Modal -->
+    <div id="urlHelpModal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close modal-close-floating" id="closeUrlHelpModal" type="button">&times;</button>
+            <!-- <div class="modal-header">
+                <h3>Decoding Options</h3>
+                <button class="modal-close" id="closeUrlHelpModal" type="button">&times;</button>
+            </div> -->
+            <div class="modal-body">
+                <p class="help-intro">JWT decoder can recieve ID and Access tokens via three different methods</p>
+
+                <h4 class="help-step-title">
+                    <span class="help-step-num">-</span>
+                    <span class="help-step-text">Paste token direct into decoder (All flows)</span>
+                </h4>
+                <p class="help-step-desc">Useful for non-browser or service-level scenarios, such astoken aquisition in code</p>
+                <h4 class="help-step-title">
+                    <span class="help-step-num">-</span>
+                    <span class="help-step-text">Add tokens as URL parameters (User flows)</span>
+                </h4>
+                <p class="help-step-desc">Good for one-offs, use tokens copied from an authenticated browser session, as URL parameters:</p>
+                <div class="help-step-sub">
+                    <div class="help-step-subtitle">Single Token (ID or Access):</div>
+                    <div class="code-example-wrapper">
+                        <button class="copy-icon-btn modal-copy-icon-btn" id="copyUrlFormatBtn" title="Copy URL" type="button">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <div class="code-example" id="urlFormatExample"></div>
+                    </div>
+
+                    <div class="help-step-subtitle">Multiple Tokens (ID + Access):</div>
+                    <div class="code-example-wrapper">
+                        <button class="copy-icon-btn modal-copy-icon-btn" id="copyUrlMultiBtn" title="Copy URL" type="button">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <div class="code-example" id="urlMultiTokenExample"></div>
+                    </div>
+                </div>
+
+                <h4 class="help-step-title">
+                    <span class="help-step-num">-</span>
+                    <span class="help-step-text">Login Redirection (User flows)</span>
+                </h4>
+                <p class="help-step-desc">For repeat testing, configure an OAuth redirect to JWT decoder:</p>
+                <ol class="help-step-list">
+                    <li>Locate your Entra app registration, go to <strong>Authentication</strong>, and add this <strong>Redirect URI</strong>
+                        <div class="code-example-wrapper">
+                            <button class="copy-icon-btn modal-copy-icon-btn" id="copyUrlRedirectBtn" title="Copy URL" type="button">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                            <div class="code-example" id="urlRedirectUri"></div>
+                        </div>
+                    </li>
+                    <li>Under <strong>Implicit grant and hybrid flows</strong>, select <strong>ID</strong>/<strong>Access tokens</strong> and save changes</li>
+                    <li>
+                        Enter the tenant ID/domain and app ID to create a smart URL for use in the browser
+                        <div class="help-step-inputs">
+                            <input id="oauthTenantInput" class="help-step-input" type="text" spellcheck="false" autocomplete="off" placeholder="Tenant ID (GUID or MOERA domain)">
+                            <input id="oauthClientIdInput" class="help-step-input" type="text" spellcheck="false" autocomplete="off" placeholder="App ID (client_id GUID)">
+                        </div>
+                    </li>
+                </ol>
+                
+                <ul style="list-style: none; padding-left: 1.5rem;">
+                    <li style="margin-bottom: 1rem;">
+                        <strong>ID Token Only:</strong>
+                        <div class="code-example-wrapper">
+                            <button class="copy-icon-btn modal-copy-icon-btn" id="copyOAuthIdOnlyBtn" title="Copy URL" type="button">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                            <div class="code-example code-example-small" id="urlOAuthExampleIdOnly"></div>
+                        </div>
+                    </li>
+                    <li style="margin-bottom: 1rem;">
+                        <strong>ID+Access Token:</strong>
+                        <div class="code-example-wrapper">
+                            <button class="copy-icon-btn modal-copy-icon-btn" id="copyOAuthBothBtn" title="Copy URL" type="button">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                            <div class="code-example code-example-small" id="urlOAuthExampleBoth"></div>
+                        </div>
+                    </li>
+                    <li>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                            💡 <strong>Tip:</strong> The <code>response_mode=fragment</code> ensures tokens stay in the URL hash and are never sent backend
+                        </p>
+                    </li>
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>All operations performed client-side, tokens never leave the browser</p>
+    </footer>
+
+    <!-- Jose Library -->
+    <script type="module">
+        import * as jose from 'https://cdn.jsdelivr.net/npm/jose@5.9.6/+esm';
+        
+        // Make jose available globally
+        window.jose = jose;
+
+        // ============================================================================
+        // DEBUG MODE
+        // ============================================================================
+        const DEBUG = new URLSearchParams(window.location.search).has('debug');
+        const debug = (...args) => { if (DEBUG) console.log(...args); };
+        const debugError = (...args) => { if (DEBUG) console.error(...args); };
+
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+        function autoResizeTextarea(textarea) {
+            if (!textarea) return;
+            // Skip auto-resize for jwtInputField - it uses flex to fill container
+            if (textarea.id === 'jwtInputField') return;
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(textarea.scrollHeight, 128) + 'px'; // 128px = 8rem min-height
+        }
+
+        // ============================================================================
+        // THEME MANAGEMENT
+        // ============================================================================
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('jwt-theme') || 'light';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                htmlElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('jwt-theme', newTheme);
+                updateThemeButton(newTheme);
+            });
+        }
+
+        function updateThemeButton(theme) {
+            if (themeIcon) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                } else {
+                    themeIcon.textContent = '🌙';
+                }
+            }
+            if (themeToggle) {
+                if (theme === 'dark') {
+                    themeToggle.setAttribute('title', 'Switch to light mode');
+                } else {
+                    themeToggle.setAttribute('title', 'Switch to dark mode');
+                }
+            }
+        }
+
+        // ============================================================================
+        // TAB MANAGEMENT
+        // ============================================================================
+        // Only select main tabs (decoder/encoder), not sub-tabs (JSON/CLAIMS TABLE)
+        const mainTabs = document.querySelectorAll('.main-tabs[data-tab]');
+        const mainTabContents = document.querySelectorAll('#decoder, #encoder');
+
+        mainTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Update active states
+                mainTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                mainTabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetTab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // ============================================================================
+        // JWT DECODING
+        // ============================================================================
+        const jwtHeaderSegment = document.getElementById('jwtHeaderSegment');
+        const jwtPayloadSegment = document.getElementById('jwtPayloadSegment');
+        const jwtSignatureSegment = document.getElementById('jwtSignatureSegment');
+        const jwtInputField = document.getElementById('jwtInputField');
+        const jwtSingleInput = document.getElementById('jwtSingleInput');
+        const jwtStructure = document.getElementById('jwtStructure');
+        const jwtInputError = document.getElementById('jwtInputError');
+        const decodedHeader = document.getElementById('decodedHeader');
+        const decodedPayload = document.getElementById('decodedPayload');
+
+        // Store the original pristine token for verification (contenteditable can modify text)
+        let originalToken = '';
+
+        // Switch between single input and segment view
+        function showSingleInput() {
+            jwtSingleInput.style.display = 'flex';
+            jwtStructure.style.display = 'none';
+            const structureLabelRow = document.getElementById('structureLabelRow');
+            if (structureLabelRow) structureLabelRow.style.display = 'none';
+            // Update panel header text only
+            const encodedPanelHeaderText = document.getElementById('encodedPanelHeaderText');
+            const encodedPanelHeader = document.getElementById('encodedPanelHeader');
+            if (encodedPanelHeaderText) {
+                encodedPanelHeaderText.textContent = 'ENCODED JWT';
+            }
+            if (encodedPanelHeader) {
+                encodedPanelHeader.style.padding = '1rem 0 1rem 0.2rem';
+            }
+            // Auto-resize in case there's existing content
+            setTimeout(() => {
+                autoResizeTextarea(jwtInputField);
+                centerPlaceholder();
+            }, 0);
+        }
+
+        function showSegmentView() {
+            jwtSingleInput.style.display = 'none';
+            jwtStructure.style.display = 'flex';
+            const structureLabelRow = document.getElementById('structureLabelRow');
+            if (structureLabelRow) structureLabelRow.style.display = 'flex';
+            // Update panel header text only
+            const encodedPanelHeaderText = document.getElementById('encodedPanelHeaderText');
+            const encodedPanelHeader = document.getElementById('encodedPanelHeader');
+            if (encodedPanelHeaderText) {
+                encodedPanelHeaderText.textContent = 'ENCODED VALUE';
+            }
+            if (encodedPanelHeader) {
+                encodedPanelHeader.style.padding = '';
+            }
+        }
+
+        // Validate JWT structure
+        function validateJWTStructure(token) {
+            if (!token || typeof token !== 'string') {
+                return { valid: false, error: 'Token is required' };
+            }
+            
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                return { valid: false, error: 'Invalid structure. JWT debugger supports standards based JWT\'s containing three b64 url-encoded segments separated by dots, as per RFC7515' };
+            }
+            
+            if (!parts[0] || !parts[1]) {
+                return { valid: false, error: 'Invalid JWT. Header and payload cannot be empty' };
+            }
+            
+            return { valid: true, parts };
+        }
+
+        // Load token into segment view
+        function loadToken(token) {
+            const validation = validateJWTStructure(token);
+            
+            if (!validation.valid) {
+                jwtInputError.textContent = validation.error;
+                jwtInputError.style.display = 'block';
+                return false;
+            }
+            
+            jwtInputError.style.display = 'none';
+            
+            // Store pristine token for verification
+            originalToken = token;
+            
+            // Set segments
+            jwtHeaderSegment.textContent = validation.parts[0];
+            jwtPayloadSegment.textContent = validation.parts[1];
+            jwtSignatureSegment.textContent = validation.parts[2];
+            
+            // Switch to segment view
+            showSegmentView();
+            
+            // Decode the token
+            decodeJWT(token);
+            
+            // Auto-update Manual tab algorithm dropdown if Manual tab is active
+            const manualTab = document.querySelector('.decoded-tab[data-target="manualVerification"]');
+            if (manualTab && manualTab.classList.contains('active')) {
+                try {
+                    const header = jose.decodeProtectedHeader(token);
+                    const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+                    if (algorithmSelectManual && header.alg) {
+                        algorithmSelectManual.value = header.alg;
+                    }
+                } catch (e) {
+                    // Token might be invalid, ignore
+                }
+            }
+            
+            // Auto-switch to Discovery tab when JWT is loaded (only if supported algorithm)
+            try {
+                const header = jose.decodeProtectedHeader(token);
+                if (header.alg && (header.alg.startsWith('RS') || header.alg.startsWith('ES') || header.alg.startsWith('PS'))) {
+                    // Asymmetric algorithm - switch to Discovery for OIDC verification
+                    const discoveryTab = document.querySelector('.decoded-tab[data-target="discoveryVerification"]');
+                    if (discoveryTab && !discoveryTab.classList.contains('active')) {
+                        discoveryTab.click();
+                    }
+                }
+            } catch (e) {
+                // Token might be invalid, ignore
+            }
+            
+            return true;
+        }
+
+        // Get full JWT token from segments
+        function getFullToken() {
+            const header = jwtHeaderSegment.textContent.trim();
+            const payload = jwtPayloadSegment.textContent.trim();
+            const signature = jwtSignatureSegment.textContent.trim();
+            
+            if (!header && !payload && !signature) return '';
+            return `${header}.${payload}.${signature}`;
+        }
+
+        // Clear token and return to single input
+        function clearToken() {
+            // Clear original token
+            originalToken = '';
+            
+            // Hide token type tabs
+            const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+            if (tokenTypeTabs) tokenTypeTabs.style.display = 'none';
+            
+            // Clear stored tokens
+            if (window.storedTokens) {
+                window.storedTokens = { id_token: null, access_token: null };
+            }
+            
+            // Clear input fields
+            jwtInputField.value = '';
+            jwtHeaderSegment.textContent = '';
+            jwtPayloadSegment.textContent = '';
+            jwtSignatureSegment.textContent = '';
+            jwtInputError.style.display = 'none';
+            autoResizeTextarea(jwtInputField);
+            centerPlaceholder();
+            
+            // Clear verification section
+            document.getElementById('verificationResult').innerHTML = '';
+            const verificationResultManual = document.getElementById('verificationResultManual');
+            if (verificationResultManual) verificationResultManual.innerHTML = '';
+            const secretInput = document.getElementById('secretInput');
+            if (secretInput) {
+                secretInput.textContent = '';
+                secretInput.style.fontFamily = '';
+                secretInput.style.height = 'auto';
+                secretInput.innerHTML = '';
+            }
+            const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
+            if (autoFetchedKeyDiv) {
+                autoFetchedKeyDiv.innerHTML = '';
+                autoFetchedKeyDiv.style.fontFamily = '';
+                autoFetchedKeyDiv.style.display = 'block';
+            }
+            const hashNonceGroup = document.getElementById('hashNonceGroup');
+            if (hashNonceGroup) {
+                hashNonceGroup.style.display = 'none';
+            }
+            const autoFetchedKey = document.getElementById('discoveryVerification');
+            if (autoFetchedKey) {
+                autoFetchedKey.style.display = 'none';
+            }
+            const copySignatureBtn = document.getElementById('copySignatureBtn');
+            if (copySignatureBtn) {
+                copySignatureBtn.style.display = 'none';
+            }
+            
+            // Reset algorithm to default (Manual tab only)
+            const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+            if (algorithmSelectManual) {
+                algorithmSelectManual.value = 'HS256';
+            }
+            
+            // Clear URL
+            window.history.replaceState({}, '', window.location.origin + window.location.pathname);
+            
+            // Reuse decodeJWT to clear all decoded sections, tables, banners, and color classes
+            decodeJWT('');
+
+            // Reset right-hand decoded tabs to JSON / JSON / AUTO
+            const headerJsonTab = document.querySelector('.decoded-tab[data-target="headerJson"]');
+            const payloadJsonTab = document.querySelector('.decoded-tab[data-target="payloadJson"]');
+            const discoveryTab = document.querySelector('.decoded-tab[data-target="discoveryVerification"]');
+            if (headerJsonTab) headerJsonTab.click();
+            if (payloadJsonTab) payloadJsonTab.click();
+            if (discoveryTab) discoveryTab.click();
+            
+            // Switch to single input mode
+            showSingleInput();
+        }
+
+        // Center placeholder vertically in JWT input field
+        function centerPlaceholder() {
+            if (jwtInputField && jwtInputField.value.trim() === '') {
+                const height = jwtInputField.clientHeight;
+                const lineHeight = parseFloat(getComputedStyle(jwtInputField).lineHeight);
+                const paddingTop = (height - lineHeight) / 2;
+                jwtInputField.style.paddingTop = `${paddingTop}px`;
+                jwtInputField.style.textAlign = 'center';
+            } else if (jwtInputField) {
+                jwtInputField.style.paddingTop = '1rem';
+                jwtInputField.style.textAlign = 'left';
+            }
+        }
+
+        // Handle single input field
+        if (jwtInputField) {
+            const jwtExampleHint = document.getElementById('jwtExampleHint');
+
+            function base64UrlEncodeJson(obj) {
+                const json = JSON.stringify(obj);
+                const bytes = new TextEncoder().encode(json);
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+            }
+
+            async function createExampleJwtHs256(payloadObj, secret) {
+                const secretBytes = new TextEncoder().encode(secret);
+                return await new jose.SignJWT(payloadObj)
+                    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+                    .sign(secretBytes);
+            }
+
+            async function loadExampleTokens() {
+                const now = Math.floor(Date.now() / 1000);
+                const exp = now + 3600;
+
+                const exampleTenant = 'common';
+                const exampleClientId = '11111111-1111-1111-1111-111111111111';
+                const exampleSecret = 'example-secret';
+
+                const exampleIdToken = await createExampleJwtHs256(
+                    {
+                        ver: '2.0',
+                        iss: `https://login.microsoftonline.com/${exampleTenant}/v2.0`,
+                        aud: exampleClientId,
+                        tid: exampleTenant,
+                        sub: 'example-subject',
+                        name: 'Jane Doe',
+                        preferred_username: 'jane.doe@contoso.com',
+                        given_name: 'Jane',
+                        family_name: 'Doe',
+                        iat: now,
+                        nbf: now,
+                        exp: exp
+                    },
+                    exampleSecret
+                );
+
+                const exampleAccessToken = await createExampleJwtHs256(
+                    {
+                        ver: '2.0',
+                        iss: `https://login.microsoftonline.com/${exampleTenant}/v2.0`,
+                        aud: 'https://graph.microsoft.com',
+                        tid: exampleTenant,
+                        appid: exampleClientId,
+                        scp: 'User.Read Mail.Read',
+                        azp: exampleClientId,
+                        iat: now,
+                        nbf: now,
+                        exp: exp
+                    },
+                    exampleSecret
+                );
+
+                window.storedTokens = window.storedTokens || { id_token: null, access_token: null };
+                window.storedTokens.id_token = exampleIdToken;
+                window.storedTokens.access_token = exampleAccessToken;
+
+                const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+                if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
+                const tabBtns = tokenTypeTabs?.querySelectorAll('.token-type-tab') || [];
+
+                // Ensure token type tabs are wired (normally only wired on page load if tokens come via URL)
+                if (tokenTypeTabs && tokenTypeTabs.dataset.wired !== 'true') {
+                    tabBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const tokenType = btn.dataset.tokenType;
+                            const token = window.storedTokens?.[tokenType];
+                            if (!token) return;
+                            tabBtns.forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            loadToken(token);
+                        });
+                    });
+                    tokenTypeTabs.dataset.wired = 'true';
+                }
+
+                tabBtns.forEach(b => b.classList.remove('active'));
+                const idTab = tokenTypeTabs?.querySelector('.token-type-tab[data-token-type="id_token"]');
+                idTab?.classList.add('active');
+
+                // Switch signature verification to BYOK and preload secret so verification succeeds.
+                const manualTabBtn = document.querySelector('.decoded-tab[data-target="manualVerification"]');
+                manualTabBtn?.click();
+                const secretInputEl = document.getElementById('secretInput');
+                const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+                const keyFormatSelect = document.getElementById('keyFormatSelect');
+                const base64Checkbox = document.getElementById('base64Checkbox');
+                if (secretInputEl) secretInputEl.textContent = exampleSecret;
+                if (algorithmSelectManual) algorithmSelectManual.value = 'HS256';
+                if (keyFormatSelect) keyFormatSelect.value = 'raw';
+                if (base64Checkbox) base64Checkbox.checked = false;
+
+                // Populate input box for visibility/history, then load like a paste.
+                jwtInputField.value = exampleIdToken;
+                loadToken(exampleIdToken);
+            }
+
+            // Initial centering
+            setTimeout(centerPlaceholder, 0);
+            
+            // Re-center on window resize
+            window.addEventListener('resize', centerPlaceholder);
+            
+            jwtInputField.addEventListener('input', (e) => {
+                centerPlaceholder();
+                autoResizeTextarea(e.target);
+                const token = e.target.value.trim();
+                if (token) {
+                    loadToken(token);
+                }
+            });
+
+            jwtInputField.addEventListener('paste', (e) => {
+                setTimeout(() => {
+                    centerPlaceholder();
+                    autoResizeTextarea(jwtInputField);
+                    const token = jwtInputField.value.trim();
+                    if (token) {
+                        loadToken(token);
+                    }
+                }, 10);
+            });
+
+            const onShiftClickExample = (e) => {
+                if (!e.shiftKey) return;
+                e.preventDefault();
+                e.stopPropagation();
+                loadExampleTokens();
+            };
+
+            jwtInputField.addEventListener('click', onShiftClickExample);
+            jwtExampleHint?.addEventListener('click', onShiftClickExample);
+        }
+
+        // Colorize JWT segments in contenteditable div
+
+        // Handle input in any segment
+        function handleSegmentInput() {
+            const fullToken = getFullToken();
+            // Update original token when segments are manually edited
+            originalToken = fullToken;
+            decodeJWT(fullToken);
+        }
+
+        if (jwtHeaderSegment) jwtHeaderSegment.addEventListener('input', handleSegmentInput);
+        if (jwtPayloadSegment) jwtPayloadSegment.addEventListener('input', handleSegmentInput);
+        if (jwtSignatureSegment) jwtSignatureSegment.addEventListener('input', handleSegmentInput);
+
+        // Prevent paste with formatting
+        [jwtHeaderSegment, jwtPayloadSegment, jwtSignatureSegment].filter(Boolean).forEach(segment => {
+            segment.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                
+                // If pasting a full JWT token, split it across segments
+                if (text.includes('.')) {
+                    originalToken = text;
+                    setTokenSegments(text);
+                    decodeJWT(text);
+                } else {
+                    // Otherwise, just paste into current segment
+                    document.execCommand('insertText', false, text);
+                    // After paste, update original token from segments
+                    setTimeout(() => {
+                        originalToken = getFullToken();
+                    }, 0);
+                }
+            });
+        });
+
+        // Show status banner with color coding
+        function showStatusBanner(messages, type) {
+            const banner = document.getElementById('tokenStatusBanner');
+            if (!messages || messages.length === 0) {
+                banner.style.display = 'none';
+                return;
+            }
+            
+            const colors = {
+                success: { bg: '#d4edda', border: '#28a745', text: '#155724' },
+                warning: { bg: '#fff3cd', border: '#ffc107', text: '#856404' },
+                error: { bg: '#f8d7da', border: '#dc3545', text: '#721c24' }
+            };
+            
+            const color = colors[type] || colors.warning;
+            banner.style.display = 'block';
+            banner.style.background = color.bg;
+            banner.style.borderLeftColor = color.border;
+            banner.style.color = color.text;
+            banner.innerHTML = messages.map(msg => `<div>${msg}</div>`).join('');
+        }
+
+        // Standard JWT claim descriptions (RFC 7519, OIDC, Microsoft Entra ID)
+        const claimDescriptions = {
+            // Standard JWT Claims (RFC 7519)
+            'iss': 'Issuer - identifies principal that issued the JWT',
+            'sub': 'Subject - identifies the subject of the JWT',
+            'aud': 'Audience - identifies the recipients that the JWT is intended for',
+            'exp': 'Expiration Time - identifies the expiration time on or after which the JWT must not be accepted',
+            'nbf': 'Not Before - identifies the time before which the JWT must not be accepted',
+            'iat': 'Issued At - identifies the time at which the JWT was issued',
+            'jti': 'JWT ID - provides a unique identifier for the JWT',
+            
+            // JWS/JWE Header Claims
+            'alg': 'Algorithm - identifies the cryptographic algorithm used to secure the JWS',
+            'typ': 'Type - declares the media type of the JWT',
+            'cty': 'Content Type - declares the media type of the secured content',
+            'kid': 'Key ID - hint indicating which key was used to secure the JWS',
+            'x5t': 'X.509 Certificate SHA-1 Thumbprint',
+            'x5c': 'X.509 Certificate Chain',
+            'x5u': 'X.509 URL - URI that refers to a resource for an X.509 public key certificate',
+            'jwk': 'JSON Web Key - public key that corresponds to the key used to digitally sign the JWS',
+            
+            // OpenID Connect Standard Claims
+            'name': 'Full name of the user',
+            'given_name': 'Given name(s) or first name(s) of the user',
+            'family_name': 'Surname(s) or last name(s) of the user',
+            'middle_name': 'Middle name(s) of the user',
+            'nickname': 'Casual name of the user',
+            'preferred_username': 'Shorthand name by which the user wishes to be referred to',
+            'email': 'Email address of the user',
+            'email_verified': 'True if the email address has been verified; otherwise false',
+            'phone_number': 'Phone number of the user',
+            'phone_number_verified': 'True if the phone number has been verified; otherwise false',
+            'address': 'Physical mailing address of the user',
+            'profile': 'URL of the profile page for the user',
+            'picture': 'URL of the profile picture for the user',
+            'website': 'URL of the user\'s web page or blog',
+            'gender': 'Gender of the user',
+            'birthdate': 'Birthday of the user',
+            'zoneinfo': 'Time zone database representing the user\'s time zone',
+            'locale': 'Locale of the user',
+            'updated_at': 'Time the user\'s information was last updated',
+            
+            // OpenID Connect ID Token Claims
+            'azp': 'Authorized party - the party to which the ID Token was issued',
+            'nonce': 'Value used to associate a Client session with an ID Token',
+            'acr': 'Authentication Context Class Reference',
+            'amr': 'Authentication Methods References',
+            'auth_time': 'Time when the authentication occurred',
+            'at_hash': 'Access Token hash value',
+            'c_hash': 'Code hash value',
+            's_hash': 'State hash value',
+            
+            // Microsoft Entra ID (Azure AD) Specific Claims
+            'tid': 'Entra tenant ID',
+            'oid': 'Object ID - Immutable ID for the Entra user or service principal',
+            'upn': 'User Principal Name - user identifier in email format',
+            'unique_name': 'Unique name ID of user',
+            'pwd_exp': 'Seconds until password expires',
+            'pwd_url': 'URL where user can change password',
+            
+            // Roles and Permissions
+            'roles': 'Application roles assigned to the user or app',
+            'groups': 'Security group membership (OIDs or names)',
+            'wids': 'Well-Known IDs - Entra directory role template IDs',
+            'scp': 'Scope - delegated permissions granted to client application',
+            'hasgroups': 'True if user has more groups than can fit in token',
+            
+            // Application Claims
+            'app_displayname': 'Application display name',
+            'appid': 'Application ID (a.k.a Client ID)',
+            'appidacr': 'Application Authentication Context Class Reference',
+            'idtyp': 'Identity Type - indicates whether token is for user or application',
+            'azpacr': 'Authorized Party Authentication Context Class Reference',
+            
+            // Device and Session Claims
+            'deviceid': 'Device identifier',
+            'sid': 'USer session identifier',
+            'login_hint': 'User ID hint provided to authN flow',
+            
+            // Resource and Tenant Claims
+            'rh': 'Refresh Token Handle - Opaque ID for refresh token',
+            'uti': 'Unique Token Identifier - Internal use',
+            'xms_tcdt': 'Tenant Creation Date Time',
+            'xms_tdbr': 'Tenant Default Branding info',
+            
+            // Claims Transformation
+            'ctry': 'User country derived from authN request',
+            'ipaddr': 'IP address of the authenticating party',
+            'platf': 'Platform used for authentication',
+            
+            // Token Version and Type
+            'ver': 'Token schema version (v1 or 2)',
+            'idp': 'IdP that authenticated the subject',
+            'tfp': 'Trust Framework Policy - Azure AD B2C policy name',
+            'acct': 'Account Type - type of account (0=user, 1=guest)',
+            
+            // OAuth 2.0 Token Exchange
+            'client_id': 'Client ID - Identifier of the client application',
+            'grant_type': 'Grant Type - OAuth grant type used',
+            'scope': 'Space-separated list of scopes',
+            'resource': 'For which the token is intended for',
+            
+            // Microsoft Graph Specific
+            'idtyp': 'Identity Type - user or app',
+            'aio': 'Azure internal only use ',
+            'in_corp': 'True if request originated inside corpnet',
+            'onprem_sid': 'On-Prem Security ID (Windows SID)',
+            'puid': 'Users unique Passport ID',
+            'signin_state': 'Supplementary session login info',
+            'tenant_region_scope': 'Geo region of tenant',
+            'cloud_instance_name': 'MS cloud instance name (e.g., microsoftonline.com)',
+            'cloud_instance_host_name': 'Cloud instance host name',
+            'cloud_graph_host_name': 'Microsoft Graph host name for this cloud'
+        };
+
+        function decodeJWT(token) {
+            try {
+                if (!token || token.trim() === '') {
+                decodedHeader.innerHTML = '';
+                decodedPayload.innerHTML = '';
+                document.getElementById('headerClaimsTableBody').innerHTML = '';
+                document.getElementById('payloadClaimsTableBody').innerHTML = '';
+                const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
+                if (autoFetchedKeyDiv) {
+                    autoFetchedKeyDiv.innerHTML = '';
+                    autoFetchedKeyDiv.style.display = 'block';
+                }
+                const hashNonceGroup = document.getElementById('hashNonceGroup');
+                if (hashNonceGroup) hashNonceGroup.style.display = 'none';
+                const autoFetchedKey = document.getElementById('discoveryVerification');
+                if (autoFetchedKey) autoFetchedKey.style.display = 'none';
+                // Hide Copy buttons when no token
+                const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+                const copyPayloadBtn = document.getElementById('copyPayloadBtn');
+                const copySignatureBtn = document.getElementById('copySignatureBtn');
+                if (copyHeaderBtn) copyHeaderBtn.style.display = 'none';
+                if (copyPayloadBtn) copyPayloadBtn.style.display = 'none';
+                if (copySignatureBtn) copySignatureBtn.style.display = 'none';
+                showStatusBanner([], 'warning');
+                return;
+                }
+
+                const decoded = jose.decodeJwt(token);
+                const header = jose.decodeProtectedHeader(token);
+
+                // Display header JSON
+                decodedHeader.innerHTML = syntaxHighlight(JSON.stringify(header, null, 2));
+                
+                // Display payload JSON with claims validation
+                const payloadWithValidation = validateClaims(decoded);
+                decodedPayload.innerHTML = syntaxHighlight(JSON.stringify(payloadWithValidation, null, 2));
+                
+                // Populate claims tables
+                populateClaimsTable('headerClaimsTableBody', header);
+                populateClaimsTable('payloadClaimsTableBody', decoded);
+                
+                // Show Copy buttons when data is available
+                const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+                const copyPayloadBtn = document.getElementById('copyPayloadBtn');
+                if (copyHeaderBtn) copyHeaderBtn.style.display = 'block';
+                if (copyPayloadBtn) copyPayloadBtn.style.display = 'block';
+                
+                // Clear banner on successful decode
+                showStatusBanner([], 'success');
+                
+                // Algorithm is auto-detected from JWT header during verification
+                
+                // Always attempt verification when token changes
+                debug('Token decoded successfully, scheduling verification in 100ms');
+                setTimeout(() => {
+                    debug('Executing scheduled verification from token decode');
+                    verifySignature();
+                }, 100);
+
+            } catch (error) {
+                // Try to decode parts individually for better error messages
+                const parts = token.split('.');
+                let headerDecoded = null;
+                let payloadDecoded = null;
+                let errorMessages = [];
+                
+                // Try to decode header
+                if (parts[0]) {
+                    try {
+                        const headerJson = atob(parts[0].replace(/-/g, '+').replace(/_/g, '/'));
+                        headerDecoded = JSON.parse(headerJson);
+                    } catch (e) {
+                        errorMessages.push('Invalid header encoding');
+                    }
+                }
+                
+                // Try to decode payload
+                if (parts[1]) {
+                    try {
+                        const payloadJson = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+                        payloadDecoded = JSON.parse(payloadJson);
+                    } catch (e) {
+                        errorMessages.push('The second segment (payload) doesn\'t appear to be valid RFC7519 JSON object ');
+                    }
+                }
+                
+                // Check for missing signature
+                if (!parts[2] || parts[2] === '') {
+                    errorMessages.push('Missing signature segment');
+                }
+                
+                // Show error banner
+                if (errorMessages.length > 0) {
+                    showStatusBanner(errorMessages, 'error');
+                }
+                
+                // Display decoded parts without inline error messages
+                if (headerDecoded) {
+                    decodedHeader.innerHTML = syntaxHighlight(JSON.stringify(headerDecoded, null, 2));
+                    populateClaimsTable('headerClaimsTableBody', headerDecoded);
+                } else {
+                    decodedHeader.innerHTML = '';
+                    document.getElementById('headerClaimsTableBody').innerHTML = '';
+                }
+                
+                if (payloadDecoded) {
+                    decodedPayload.innerHTML = syntaxHighlight(JSON.stringify(payloadDecoded, null, 2));
+                    populateClaimsTable('payloadClaimsTableBody', payloadDecoded);
+                } else {
+                    decodedPayload.innerHTML = '';
+                    document.getElementById('payloadClaimsTableBody').innerHTML = '';
+                }
+            }
+        }
+
+        function populateClaimsTable(tableBodyId, claims) {
+            const tbody = document.getElementById(tableBodyId);
+            tbody.innerHTML = '';
+            
+            if (!claims || Object.keys(claims).length === 0) {
+                return;
+            }
+            
+            Object.entries(claims).forEach(([key, value]) => {
+                const row = document.createElement('tr');
+                const keyCell = document.createElement('td');
+                const valueCell = document.createElement('td');
+                const descCell = document.createElement('td');
+                
+                keyCell.textContent = key;
+                valueCell.textContent = typeof value === 'object' ? JSON.stringify(value) : value;
+                descCell.textContent = claimDescriptions[key] || '';
+                descCell.style.color = 'var(--text-secondary)';
+                descCell.style.fontSize = '0.85rem';
+                descCell.classList.add('description-cell');
+                descCell.style.display = 'none'; // Hidden by default - shown when "i" button is clicked
+                
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                row.appendChild(descCell);
+                tbody.appendChild(row);
+            });
+        }
+
+        function validateClaims(payload) {
+            const now = Math.floor(Date.now() / 1000);
+            const result = { ...payload };
+
+            // Add validation comments
+            if (payload.exp) {
+                const expired = payload.exp < now;
+                result['__exp_status'] = expired ? '⚠️ EXPIRED' : '✓ Valid';
+                result['__exp_date'] = new Date(payload.exp * 1000).toISOString();
+            }
+
+            if (payload.nbf) {
+                const notYetValid = payload.nbf > now;
+                result['__nbf_status'] = notYetValid ? '⚠️ Not yet valid' : '✓ Valid';
+                result['__nbf_date'] = new Date(payload.nbf * 1000).toISOString();
+            }
+
+            if (payload.iat) {
+                result['__iat_date'] = new Date(payload.iat * 1000).toISOString();
+            }
+
+            return result;
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                        // Highlight specific keys
+                        const keyName = match.slice(1, -2); // Remove quotes and colon
+                        if (['aud', 'name', 'upn', 'roles', 'groups', 'given_name', 'family_name', 'scp', 'unique_name'].includes(keyName)) {
+                            cls += ' json-key-highlight';
+                        }
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // ============================================================================
+        // SIGNATURE VERIFICATION
+        // ============================================================================
+        const secretInput = document.getElementById('secretInput');
+        const base64Checkbox = document.getElementById('base64Checkbox');
+        const verificationResult = document.getElementById('verificationResult');
+        
+        function normalizeSecretInput() {
+            if (!secretInput) return;
+            if (secretInput.textContent.trim() === '') {
+                secretInput.innerHTML = '';
+            }
+        }
+
+        function autoResizeSecretInput() {
+            if (!secretInput) return;
+            normalizeSecretInput();
+            secretInput.style.height = 'auto';
+            const minHeight = 54;
+            secretInput.style.height = `${Math.max(secretInput.scrollHeight, minHeight)}px`;
+        }
+
+        function detectKeyFormatForSelect(value) {
+            if (!value) return '';
+            const trimmed = value.trim();
+            if (trimmed.startsWith('{') || trimmed.startsWith('["') || trimmed.startsWith('"keys"') || trimmed.startsWith('keys')) {
+                return 'jwk';
+            }
+            if (trimmed.includes('BEGIN')) return 'pem';
+            if (trimmed.startsWith('MI')) return 'pem';
+            return '';
+        }
+
+        function looksBase64(value) {
+            if (!value) return false;
+            const compact = value.replace(/\s+/g, '');
+            if (compact.length < 16) return false;
+            if (!/^[A-Za-z0-9+/=_-]+$/.test(compact)) return false;
+            const mod = compact.length % 4;
+            return mod === 0 || mod === 2 || mod === 3;
+        }
+
+        // Auto-verify when secret is entered (if token is present)
+        if (secretInput) {
+            secretInput.addEventListener('input', async (e) => {
+                autoResizeSecretInput();
+                debug('Secret input changed');
+                const token = getFullToken();
+                const secret = secretInput.textContent.trim();
+                const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+                const keyFormatSelect = document.getElementById('keyFormatSelect');
+                if (keyFormatSelect && !keyFormatSelect.value) {
+                    const detected = detectKeyFormatForSelect(secret);
+                    if (detected) {
+                        keyFormatSelect.value = detected;
+                    } else {
+                        // For HS* tokens, "raw secret" is the common case.
+                        const alg = algorithmSelectManual?.value || '';
+                        if (alg.startsWith('HS')) keyFormatSelect.value = 'raw';
+                    }
+                }
+                if (algorithmSelectManual && base64Checkbox && !base64Checkbox.checked) {
+                    const alg = algorithmSelectManual.value || '';
+                    if (alg.startsWith('HS') && looksBase64(secret)) {
+                        base64Checkbox.checked = true;
+                    }
+                }
+                debug('Has token:', !!token, 'Has secret:', !!secret);
+                if (token && secret) {
+                    debug('Triggering auto-verification from secret input');
+                    await verifySignature();
+                }
+            });
+
+            // Prevent formatted paste in secretInput
+            secretInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                document.execCommand('insertText', false, text);
+                autoResizeSecretInput();
+            });
+
+            secretInput.addEventListener('blur', () => {
+                normalizeSecretInput();
+            });
+        }
+        
+        // Auto-verify when manual algorithm changes
+        const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+        if (algorithmSelectManual) {
+            algorithmSelectManual.addEventListener('change', async () => {
+                debug('Algorithm changed (Manual tab)');
+                const token = getFullToken();
+                const secret = secretInput?.textContent?.trim();
+                debug('Has token:', !!token, 'Has secret:', !!secret);
+                if (token && secret) {
+                    debug('Triggering auto-verification from manual algorithm change');
+                    await verifySignature();
+                }
+            });
+        }
+        
+        // Auto-verify when base64 checkbox changes (if secret is present)
+        if (base64Checkbox) {
+            base64Checkbox.addEventListener('change', async () => {
+                debug('Base64 checkbox changed');
+                const token = getFullToken();
+                const secret = secretInput?.textContent?.trim();
+                debug('Has token:', !!token, 'Has secret:', !!secret);
+                if (token && secret) {
+                    debug('Triggering auto-verification from base64 checkbox');
+                    await verifySignature();
+                }
+            });
+        }
+
+        const keyFormatSelect = document.getElementById('keyFormatSelect');
+        if (keyFormatSelect) {
+            keyFormatSelect.addEventListener('change', async () => {
+                debug('Key format changed (Manual tab)');
+                const token = getFullToken();
+                const secret = secretInput?.textContent?.trim();
+                debug('Has token:', !!token, 'Has secret:', !!secret);
+                if (token && secret) {
+                    debug('Triggering auto-verification from key format change');
+                    await verifySignature();
+                }
+            });
+        }
+        
+        // Auto-verify when hash nonce checkbox changes
+        const hashNonceCheckbox = document.getElementById('hashNonceCheckbox');
+        if (hashNonceCheckbox) {
+            hashNonceCheckbox.addEventListener('change', async () => {
+                debug('Hash nonce checkbox changed');
+                const token = getFullToken();
+                debug('Has token:', !!token);
+                if (token) {
+                    debug('Triggering auto-verification from hash nonce checkbox');
+                    await verifySignature();
+                }
+            });
+        }
+
+        async function verifySignature() {
+            debug('=== verifySignature called ===');
+            try {
+                // Use original token if available (prevents contenteditable corruption), else reconstruct
+                const token = originalToken || getFullToken();
+                
+                // Check which tab is active
+                const isDiscoveryTab = document.getElementById('discoveryVerification')?.classList.contains('active');
+                const isManualTab = document.getElementById('manualVerification')?.classList.contains('active');
+                
+                debug('Discovery tab active:', isDiscoveryTab);
+                debug('Manual tab active:', isManualTab);
+                
+                // Get appropriate elements based on active tab
+                const secret = isManualTab ? (secretInput?.textContent?.trim() || '') : '';
+                const algorithm = isManualTab ? (document.getElementById('algorithmSelectManual')?.value || 'RS256') : null; // Discovery uses token header, Manual uses dropdown
+                const keyFormatSelect = isManualTab ? document.getElementById('keyFormatSelect') : null;
+                const selectedKeyFormat = keyFormatSelect ? keyFormatSelect.value : '';
+                const resultDiv = isManualTab ? 'verificationResultManual' : 'verificationResult';
+
+                debug('Using original token:', !!originalToken);
+                debug('Token length:', token.length);
+                debug('Secret length:', secret.length);
+                debug('Algorithm from dropdown:', algorithm);
+                debug('Key format selection:', selectedKeyFormat || '(auto)');
+                debug('Result div:', resultDiv);
+                
+                if (originalToken) {
+                    const reconstructed = getFullToken();
+                    debug('Token match check:', token === reconstructed ? 'MATCH' : 'DIFFERS');
+                    if (token !== reconstructed) {
+                        debug('Original token length:', originalToken.length);
+                        debug('Reconstructed token length:', reconstructed.length);
+                    }
+                }
+
+                // Clear verification result if no token
+                if (!token) {
+                    debug('No token, clearing result');
+                    showVerificationResult('', 'none', resultDiv);
+                    return;
+                }
+
+                // Decode header and payload to check algorithm and issuer
+                const header = jose.decodeProtectedHeader(token);
+                const payload = jose.decodeJwt(token);
+                debug('Token header:', header);
+                debug('Token payload:', payload);
+                debug('Token algorithm:', header.alg);
+                
+                // Auto-update algorithm dropdown to match token (Manual tab only, when empty)
+                if (isManualTab && header.alg) {
+                    const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+                    if (algorithmSelectManual && !algorithmSelectManual.value) {
+                        debug('Setting algorithm dropdown from empty to', header.alg);
+                        algorithmSelectManual.value = header.alg;
+                    }
+                }
+
+                const actualAlgorithm = isManualTab ? (algorithm || header.alg) : header.alg;
+                debug('Using algorithm:', actualAlgorithm);
+
+                let key;
+
+                // Discovery tab: handle HMAC tokens
+                if (isDiscoveryTab && actualAlgorithm.startsWith('HS')) {
+                    debug('Discovery tab - HMAC algorithm detected');
+                    showVerificationResult('HMAC tokens require a secret key. Switch to Manual tab to verify', 'info', resultDiv);
+                    return;
+                }
+
+                // Discovery tab: automatic JWKS verification for asymmetric algorithms
+                if (isDiscoveryTab && (actualAlgorithm.startsWith('RS') || actualAlgorithm.startsWith('ES') || actualAlgorithm.startsWith('PS'))) {
+                    debug('Discovery tab - attempting automatic JWKS verification');
+                    
+                    // Check if this is a Microsoft Graph access token with nonce field
+                    const audience = payload.aud;
+                    const isGraphToken = audience === '00000003-0000-0000-c000-000000000000' || 
+                                        (typeof audience === 'string' && audience.includes('graph.microsoft.com'));
+                    
+                    const hashNonceCheckbox = document.getElementById('hashNonceCheckbox');
+                    const hashNonceGroup = document.getElementById('hashNonceGroup');
+                    const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
+                    
+                    // Show/hide Hash nonce checkbox based on token type
+                    if (isGraphToken && header.nonce) {
+                        if (hashNonceGroup) hashNonceGroup.style.display = 'flex';
+                        
+                        // Always show message for MS Graph tokens to make it clear
+                        showVerificationResult('MS Graph access token detected. Hash nonce enabled for verification, or switch to Manual to provide your own key', 'info', resultDiv);
+                        
+                        // If checkbox not checked, stop here and don't proceed with verification
+                        if (!hashNonceCheckbox?.checked) {
+                            debug('Microsoft Graph access token detected with nonce field, checkbox not checked');
+                            if (autoFetchedKeyDiv) autoFetchedKeyDiv.style.display = 'none';
+                            const copySignatureBtn = document.getElementById('copySignatureBtn');
+                            if (copySignatureBtn) copySignatureBtn.style.display = 'none';
+                            showStatusBanner([], 'success'); // Clear any previous success banner
+                            return;
+                        }
+                        // Note: Don't show autoFetchedKeyDiv or copySignatureBtn here - they'll be shown after successful fetch
+                    } else {
+                        if (hashNonceGroup) hashNonceGroup.style.display = 'none';
+                    }
+                    
+                    // Clear any previous message in autoFetchedKey
+                    if (autoFetchedKeyDiv) {
+                        autoFetchedKeyDiv.innerHTML = '';
+                    }
+                    
+                    showVerificationResult('⏳ Fetching public key from issuer...', 'info', resultDiv);
+                    
+                    // Try to get JWKS endpoint from issuer
+                    const issuer = payload.iss;
+                    if (!issuer) {
+                        debug('No issuer found in token, cannot auto-verify');
+                        if (hashNonceGroup) hashNonceGroup.style.display = 'none';
+                        if (autoFetchedKeyDiv) autoFetchedKeyDiv.style.display = 'none';
+                        const copySignatureBtn = document.getElementById('copySignatureBtn');
+                        if (copySignatureBtn) copySignatureBtn.style.display = 'none';
+                        showVerificationResult('No issuer (iss) claim found in token. Cannot auto-fetch public key', 'warning', resultDiv);
+                        return;
+                    }
+                    
+                    debug('Token issuer:', issuer);
+                    
+                    // Use OIDC discovery to get JWKS URL from issuer
+                    let jwksUrl;
+                    try {
+                        // Special handling for Entra ID v1 tokens (sts.windows.net)
+                        // v1 discovery returns /common/ keys endpoint which may not have tenant-specific keys
+                        // So construct tenant-specific v1 keys endpoint directly
+                        if (issuer.includes('sts.windows.net')) {
+                            const tenantMatch = issuer.match(/\/([^/]+)\/?$/);
+                            const tenant = tenantMatch ? tenantMatch[1] : 'common';
+                            jwksUrl = `https://login.microsoftonline.com/${tenant}/discovery/keys`;
+                            debug('Entra ID v1 token detected, using tenant-specific v1 keys endpoint:', jwksUrl);
+                        } else {
+                            // For v2 tokens and other OIDC providers, use standard discovery
+                            // Construct OIDC discovery URL from issuer
+                            // Ensure issuer ends with trailing slash for proper URL construction
+                            const normalizedIssuer = issuer.endsWith('/') ? issuer : issuer + '/';
+                            const discoveryUrl = `${normalizedIssuer}.well-known/openid-configuration`;
+                            
+                            debug('Fetching OIDC discovery from:', discoveryUrl);
+                            
+                            // Fetch the discovery document
+                            const discoveryResponse = await fetch(discoveryUrl);
+                            if (!discoveryResponse.ok) {
+                                throw new Error(`OIDC discovery failed (HTTP ${discoveryResponse.status}). URL: ${discoveryUrl}`);
+                            }
+                            const discoveryDoc = await discoveryResponse.json();
+                            debug('OIDC discovery document:', discoveryDoc);
+                            
+                            if (!discoveryDoc.jwks_uri) {
+                                throw new Error('OIDC discovery document does not contain jwks_uri');
+                            }
+                            
+                            jwksUrl = discoveryDoc.jwks_uri;
+                            debug('JWKS URI from discovery:', jwksUrl);
+                        }
+                        
+                        debug('Fetching JWKS from:', jwksUrl);
+                        
+                        // Fetch the JWKS to get the actual public key
+                        let jwksResponse, jwksData;
+                        try {
+                            jwksResponse = await fetch(jwksUrl);
+                            if (!jwksResponse.ok) {
+                                throw new Error(`Failed to fetch JWKS (HTTP ${jwksResponse.status}). URL: ${jwksUrl}`);
+                            }
+                            jwksData = await jwksResponse.json();
+                        } catch (fetchError) {
+                            if (fetchError.message.includes('Failed to fetch') || fetchError.name === 'TypeError') {
+                                throw new Error(`Network error fetching JWKS. This may be due to CORS restrictions or network connectivity, URL: ${jwksUrl}`);
+                            }
+                            throw fetchError;
+                        }
+                        debug('JWKS data:', jwksData);
+                        
+                        if (!jwksData.keys || !Array.isArray(jwksData.keys) || jwksData.keys.length === 0) {
+                            throw new Error('JWKS response does not contain any keys');
+                        }
+                        
+                        // Find the key matching the token's kid
+                        const kid = header.kid;
+                        if (!kid) {
+                            throw new Error('Token header does not contain a "kid" (Key ID) claim. Cannot identify which public key to use');
+                        }
+                        
+                        const matchingKey = jwksData.keys.find(k => k.kid === kid);
+                        
+                        if (!matchingKey) {
+                            throw new Error(`No matching public key found in JWKS for kid: "${kid}". Available keys: ${jwksData.keys.map(k => k.kid).join(', ')}`);
+                        }
+                        
+                        debug('Found matching key:', matchingKey);
+                        
+                        // Import the specific key directly (more reliable than createRemoteJWKSet)
+                        debug('Importing JWK directly...');
+                        const publicKey = await jose.importJWK(matchingKey, actualAlgorithm);
+                        debug('Public key imported successfully');
+                        
+                        debug('Token details for verification:');
+                        debug('  - Length:', token.length);
+                        debug('  - First 50 chars:', token.substring(0, 50));
+                        debug('  - Last 50 chars:', token.substring(token.length - 50));
+                        debug('  - Contains newlines?', token.includes('\n'));
+                        debug('  - Contains carriage returns?', token.includes('\r'));
+                        
+                        // Apply nonce hash if checkbox is checked and token has nonce
+                        let tokenToVerify = token;
+                        let isMSGraphTokenVerified = false;
+                        const hashNonceCheckbox = document.getElementById('hashNonceCheckbox');
+                        if (hashNonceCheckbox?.checked && header.nonce) {
+                            debug('Applying SHA256 hash to nonce field for Microsoft Graph token...');
+                            isMSGraphTokenVerified = true;
+                            try {
+                                // Calculate SHA256 hash of nonce
+                                const encoder = new TextEncoder();
+                                const nonceBytes = encoder.encode(header.nonce);
+                                const hashBuffer = await crypto.subtle.digest('SHA-256', nonceBytes);
+                                const hashUint8Array = new Uint8Array(hashBuffer);
+                                
+                                // Encode as base64url (not regular base64)
+                                const hashBase64Url = jose.base64url.encode(hashUint8Array);
+                                debug('Original nonce:', header.nonce);
+                                debug('SHA256 hash (base64url):', hashBase64Url);
+                                
+                                // Reconstruct JWT with hashed nonce
+                                const modifiedHeader = { ...header, nonce: hashBase64Url };
+                                const parts = token.split('.');
+                                const newHeaderB64 = jose.base64url.encode(JSON.stringify(modifiedHeader));
+                                tokenToVerify = `${newHeaderB64}.${parts[1]}.${parts[2]}`;
+                                debug('Token reconstructed with hashed nonce');
+                            } catch (hashError) {
+                                debugError('Failed to apply nonce hash:', hashError);
+                                throw new Error(`Failed to apply SHA256 hash to nonce: ${hashError.message}`);
+                            }
+                        }
+                        
+                        debug('Calling jose.compactVerify (low-level verification)...');
+                        const { protectedHeader } = await jose.compactVerify(tokenToVerify, publicKey);
+                        debug('Signature verification successful! Protected header:', protectedHeader);
+                        
+                        // Display the public key with syntax highlighting in auto-fetched key div
+                        const publicKeyJson = JSON.stringify(matchingKey, null, 2);
+                        const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
+                        const copySignatureBtn = document.getElementById('copySignatureBtn');
+                        if (autoFetchedKeyDiv) {
+                            autoFetchedKeyDiv.innerHTML = syntaxHighlight(publicKeyJson);
+                            autoFetchedKeyDiv.style.fontFamily = 'monospace';
+                            autoFetchedKeyDiv.style.display = 'block';
+                        }
+                        // Show copy button when key is available
+                        if (copySignatureBtn) {
+                            copySignatureBtn.style.display = 'block';
+                        }
+                        
+                        // Clear verification result panel (success shown in top banner only)
+                        showVerificationResult('', 'none', resultDiv);
+                        const successMessage = isMSGraphTokenVerified 
+                            ? '✓ MSG signature verified via OIDC Discovery'
+                            : '✓ Signature verified via OIDC Discovery';
+                        showStatusBanner([successMessage], 'success');
+                        return;
+                        
+                    } catch (jwksError) {
+                        debugError('JWKS verification failed:', jwksError);
+                        debugError('Error details:', {
+                            message: jwksError.message,
+                            name: jwksError.name,
+                            code: jwksError.code,
+                            stack: jwksError.stack
+                        });
+                        
+                        // Provide more helpful error message
+                        // Hide the Public Key section on error
+                        if (hashNonceGroup) {
+                            hashNonceGroup.style.display = 'none';
+                        }
+                        if (autoFetchedKeyDiv) {
+                            autoFetchedKeyDiv.style.display = 'none';
+                        }
+                        const copySignatureBtn = document.getElementById('copySignatureBtn');
+                        if (copySignatureBtn) {
+                            copySignatureBtn.style.display = 'none';
+                        }
+                        
+                        let errorMsg = jwksError.message;
+                        if (errorMsg.includes('signature')) {
+                            errorMsg = 'Signature verification failed. The token may have been modified or signed with a different key';
+                        } else if (errorMsg.includes('audience')) {
+                            errorMsg = 'Audience validation failed. Token intended for a different audience';
+                        } else if (errorMsg.includes('issuer')) {
+                            errorMsg = 'Issuer validation failed. Token from unexpected issuer';
+                        }
+                        
+                        showVerificationResult(`Auto-verification failed: ${errorMsg}`, 'critical', resultDiv);
+                        return;
+                    }
+                }
+                
+                const normalizeQuotedInput = (value) => {
+                    const trimmed = value.trim();
+                    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+                        return trimmed.slice(1, -1).trim();
+                    }
+                    return trimmed;
+                };
+                const secretTrimmed = normalizeQuotedInput(secret);
+                const decodeBase64ToText = (value) => {
+                    const normalized = normalizeBase64(value);
+                    if (!isValidBase64(normalized)) {
+                        throw new Error('Invalid base64 secret. Uncheck "B64 encoded" or fix the input');
+                    }
+                    try {
+                        return atob(normalized);
+                    } catch (err) {
+                        throw new Error('Invalid base64 secret. Uncheck "B64 encoded" or fix the input');
+                    }
+                };
+                const manualSecretInput = base64Checkbox?.checked
+                    ? decodeBase64ToText(secretTrimmed)
+                    : secretTrimmed;
+
+                // Manual tab or HMAC algorithm: require manual secret/key input
+                if (!secretTrimmed && isManualTab) {
+                    debug('Manual tab - no secret provided');
+                    showVerificationResult('', 'none', resultDiv);
+                    return;
+                }
+
+                // If no secret provided for HMAC or after JWKS failure, show neutral state
+                if (!secretTrimmed) {
+                    debug('No secret, clearing result');
+                    showVerificationResult('', 'none');
+                    return;
+                }
+
+                // Manual verification with provided secret
+                debug('Using manual secret verification');
+                const detectKeyFormat = (value) => {
+                    if (!value) return '';
+                    if (value.startsWith('{')) return 'jwk';
+                    if (value.includes('BEGIN CERTIFICATE')) return 'x509';
+                    if (value.includes('BEGIN PUBLIC KEY') || value.includes('BEGIN EC PUBLIC KEY') || value.includes('BEGIN RSA PUBLIC KEY')) return 'spki';
+                    if (value.includes('BEGIN PRIVATE KEY')) return 'pkcs8';
+                    if (value.includes('BEGIN RSA PRIVATE KEY')) return 'pkcs1';
+                    return '';
+                };
+                function normalizeBase64(value) {
+                    const trimmed = value.replace(/\\s+/g, '');
+                    const base64 = trimmed.replace(/-/g, '+').replace(/_/g, '/');
+                    const padLength = (4 - (base64.length % 4)) % 4;
+                    return base64 + '='.repeat(padLength);
+                }
+                function isValidBase64(value) {
+                    if (!value) return false;
+                    if (value.length % 4 !== 0) return false;
+                    return /^[A-Za-z0-9+/=]+$/.test(value);
+                }
+                const wrapPem = (body, header, footer) => {
+                    const normalized = normalizeBase64(body.replace(/\\r/g, '').replace(/\\n/g, '').trim());
+                    const chunked = normalized.match(/.{1,64}/g)?.join('\\n') || normalized;
+                    return `${header}\\n${chunked}\\n${footer}`;
+                };
+                const isLikelySignature = (value) => {
+                    if (!value) return false;
+                    if (value.includes('BEGIN') || value.startsWith('{')) return false;
+                    if (value.includes('.')) {
+                        const parts = value.split('.');
+                        return parts.length === 3;
+                    }
+                    return /^[A-Za-z0-9_-]{40,}$/.test(value);
+                };
+                const isLikelyBase64Cert = (value) => {
+                    if (!value) return false;
+                    if (value.includes('BEGIN') || value.startsWith('{')) return false;
+                    if (value.length < 200) return false;
+                    if (!/^[A-Za-z0-9+/_=-]+$/.test(value) && !/^[A-Za-z0-9_-]+$/.test(value)) return false;
+                    return value.startsWith('MI');
+                };
+                const parseJwkInput = (value) => {
+                    try {
+                        let trimmed = value.trim();
+                        if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+                            trimmed = trimmed.slice(1, -1).trim();
+                        } else if (trimmed.startsWith('"') && trimmed.includes('"keys"')) {
+                            trimmed = trimmed.slice(1).trim();
+                            if (trimmed.endsWith('"')) {
+                                trimmed = trimmed.slice(0, -1).trim();
+                            }
+                        }
+                        const attempts = [];
+                        const base = (trimmed.startsWith('{') || trimmed.startsWith('['))
+                            ? trimmed
+                            : (trimmed.startsWith('"keys"') || trimmed.startsWith('keys') ? `{${trimmed}}` : trimmed);
+                        attempts.push(base);
+                        if (trimmed.startsWith('"keys"') || trimmed.startsWith('keys')) {
+                            attempts.push(`{${trimmed}}`);
+                        }
+                        if (trimmed.startsWith('"keys"') || trimmed.startsWith('keys')) {
+                            const normalized = `{${trimmed}}`;
+                            attempts.push(normalized.endsWith('}') ? normalized : `${normalized}}`);
+                            attempts.push(normalized.endsWith(']}') ? normalized : `${normalized}]}`);
+                            attempts.push(normalized.endsWith(']') ? `${normalized}` : `${normalized}]`);
+                        }
+                        let parsed = null;
+                        for (const attempt of attempts) {
+                            try {
+                                parsed = JSON.parse(attempt);
+                                break;
+                            } catch (err) {
+                                // keep trying
+                            }
+                        }
+                        if (!parsed) {
+                            return null;
+                        }
+                        if (parsed && Array.isArray(parsed.keys)) {
+                            const kid = header?.kid;
+                            if (kid) {
+                                const matchingKey = parsed.keys.find(k => k.kid === kid);
+                                if (matchingKey) return matchingKey;
+                            }
+                            if (parsed.keys.length === 1) return parsed.keys[0];
+                            throw new Error('JWKS contains multiple keys. Include a matching kid or select a single key');
+                        }
+                        if (parsed && parsed.kty) return parsed;
+                    } catch (err) {
+                        debug('JWK parse failed:', err);
+                    }
+                    return null;
+                };
+
+                if (!selectedKeyFormat && !detectKeyFormat(manualSecretInput) && isLikelySignature(manualSecretInput)) {
+                    throw new Error('That looks like a JWT signature or token. Paste a public key, JWK/JWKS, or X.509 certificate');
+                }
+
+                // Handle HMAC algorithms (symmetric)
+                if (actualAlgorithm.startsWith('HS')) {
+                    const looksLikeCert = secretTrimmed.startsWith('MI') || isLikelyBase64Cert(secretTrimmed);
+                    if (looksLikeCert) {
+                        throw new Error('This looks like a certificate/public key. HS algorithms require a shared secret, not a cert');
+                    }
+                    debug('HMAC algorithm detected');
+                    let secretBytes;
+                    if (selectedKeyFormat === 'jwk') {
+                        debug('Importing HMAC JWK');
+                        const jwk = parseJwkInput(manualSecretInput);
+                        if (!jwk) {
+                            throw new Error('Invalid JWK. Paste a valid JWK or switch Key Format');
+                        }
+                        key = await jose.importJWK(jwk, actualAlgorithm);
+                    } else if (base64Checkbox.checked) {
+                        debug('Base64 decoding secret');
+                        try {
+                            const normalized = normalizeBase64(secretTrimmed);
+                            if (!isValidBase64(normalized)) {
+                                throw new Error('Invalid base64 secret. Uncheck "B64 encoded" or fix the input');
+                            }
+                            secretBytes = Uint8Array.from(atob(normalized), c => c.charCodeAt(0));
+                        } catch (err) {
+                            throw new Error('Invalid base64 secret. Uncheck "B64 encoded" or fix the input');
+                        }
+                    } else {
+                        debug('Using secret as-is');
+                        secretBytes = new TextEncoder().encode(secretTrimmed);
+                    }
+                    if (!key) {
+                        debug('Secret bytes length:', secretBytes.length);
+                        key = await jose.importJWK({
+                            kty: 'oct',
+                            k: jose.base64url.encode(secretBytes),
+                            alg: actualAlgorithm
+                        }, actualAlgorithm);
+                        debug('HMAC key imported');
+                    }
+                } 
+                // Handle RSA algorithms (asymmetric)
+                else if (actualAlgorithm.startsWith('RS') || actualAlgorithm.startsWith('PS')) {
+                    debug('RSA algorithm detected');
+                    const preferX509 = !selectedKeyFormat && !detectKeyFormat(manualSecretInput) && isLikelyBase64Cert(manualSecretInput);
+                    const keyFormat = selectedKeyFormat || detectKeyFormat(manualSecretInput) || (preferX509 ? 'pem' : '');
+                    if (keyFormat === 'jwk') {
+                        const jwk = parseJwkInput(manualSecretInput);
+                        if (!jwk) {
+                            throw new Error('Invalid JWK. Paste a valid JWK or switch Key Format');
+                        }
+                        key = await jose.importJWK(jwk, actualAlgorithm);
+                    } else if (keyFormat === 'pem' || keyFormat === 'spki' || keyFormat === 'pkcs8' || keyFormat === 'x509') {
+                        const hasHeader = manualSecretInput.includes('BEGIN');
+                        const strictX509 = selectedKeyFormat === 'x509';
+                        if (preferX509 || keyFormat === 'x509' || !hasHeader) {
+                            const certPem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN CERTIFICATE-----', '-----END CERTIFICATE-----');
+                            try {
+                                key = await jose.importX509(certPem, actualAlgorithm);
+                            } catch (err) {
+                                if (strictX509) throw err;
+                            }
+                        }
+                        if (!key) {
+                            if (keyFormat === 'pkcs8') {
+                                const pkcs8Pem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
+                                key = await jose.importPKCS8(pkcs8Pem, actualAlgorithm);
+                            } else {
+                                const spkiPem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----');
+                                key = await jose.importSPKI(spkiPem, actualAlgorithm);
+                            }
+                        }
+                    } else if (keyFormat === 'pkcs1') {
+                        throw new Error('PKCS#1 private keys are not supported directly. Convert to PKCS#8 or paste a public key/JWK');
+                    } else {
+                        throw new Error('Unsupported key format. Select Key Format or paste JWK/PEM/X.509');
+                    }
+                    debug('RSA key imported');
+                }
+                // Handle ECDSA algorithms (asymmetric)
+                else if (actualAlgorithm.startsWith('ES')) {
+                    debug('ECDSA algorithm detected');
+                    const preferX509 = !selectedKeyFormat && !detectKeyFormat(manualSecretInput) && isLikelyBase64Cert(manualSecretInput);
+                    const keyFormat = selectedKeyFormat || detectKeyFormat(manualSecretInput) || (preferX509 ? 'pem' : '');
+                    if (keyFormat === 'jwk') {
+                        const jwk = parseJwkInput(manualSecretInput);
+                        if (!jwk) {
+                            throw new Error('Invalid JWK. Paste a valid JWK or switch Key Format.');
+                        }
+                        key = await jose.importJWK(jwk, actualAlgorithm);
+                    } else if (keyFormat === 'pem' || keyFormat === 'spki' || keyFormat === 'pkcs8' || keyFormat === 'x509') {
+                        const hasHeader = manualSecretInput.includes('BEGIN');
+                        const strictX509 = selectedKeyFormat === 'x509';
+                        if (preferX509 || keyFormat === 'x509' || !hasHeader) {
+                            const certPem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN CERTIFICATE-----', '-----END CERTIFICATE-----');
+                            try {
+                                key = await jose.importX509(certPem, actualAlgorithm);
+                            } catch (err) {
+                                if (strictX509) throw err;
+                            }
+                        }
+                        if (!key) {
+                            if (keyFormat === 'pkcs8') {
+                                const pkcs8Pem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
+                                key = await jose.importPKCS8(pkcs8Pem, actualAlgorithm);
+                            } else {
+                                const spkiPem = hasHeader ? manualSecretInput : wrapPem(manualSecretInput, '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----');
+                                key = await jose.importSPKI(spkiPem, actualAlgorithm);
+                            }
+                        }
+                    } else if (keyFormat === 'pkcs1') {
+                        throw new Error('PKCS#1 private keys are not supported directly. Convert to PKCS#8 or paste a public key/JWK');
+                    } else {
+                        throw new Error('Unsupported key format. Select Key Format or paste JWK/PEM/X.509');
+                    }
+                    debug('ECDSA key imported');
+                }
+
+                // Verify the JWT using jose library
+                debug('Calling jose.jwtVerify with manual key...');
+                // Skip claim validation (exp, nbf, iat) - we only care about signature
+                const { payload: verifiedPayload } = await jose.jwtVerify(token, key, {
+                    clockTolerance: Infinity // Ignore expiration/timing checks
+                });
+                debug('Verification successful! Payload:', verifiedPayload);
+                
+                // Clear verification result panel (success shown in top banner only)
+                showVerificationResult('', 'none');
+                showStatusBanner(['✓ Signature verified successfully!'], 'success');
+
+            } catch (error) {
+                debugError('=== Verification error ===');
+                debugError('Error name:', error.name);
+                debugError('Error message:', error.message);
+                debugError('Error stack:', error.stack);
+                // Only show invalid if there was an actual secret provided
+                const secret = secretInput.textContent.trim();
+                if (secret) {
+                    const looksLikeCert = secret.startsWith('MI') || secret.includes('BEGIN');
+                    const message = looksLikeCert
+                        ? 'This looks like a certificate/public key. HS algorithms require a shared secret, not a cert'
+                        : (error.message && error.message.includes('atob')
+                            ? 'Invalid base64 secret. Uncheck "B64 encoded" or fix the input'
+                            : error.message);
+                    showVerificationResult(`✗ Signature verification failed: ${message}`, 'critical');
+                }
+            }
+        }
+
+        function showVerificationResult(message, type, targetDiv) {
+            // Default to verificationResult if no target specified
+            let resultElement = verificationResult;
+            if (targetDiv) {
+                resultElement = typeof targetDiv === 'string' ? document.getElementById(targetDiv) : targetDiv;
+            }
+            
+            if (type === 'none' || !message) {
+                resultElement.innerHTML = '';
+                resultElement.style.display = 'none';
+                // Don't clear banner if token has parsing errors
+                const token = getFullToken();
+                if (token) {
+                    try {
+                        jose.decodeJwt(token);
+                        // Token is valid, just no verification result yet
+                        showStatusBanner([], 'success');
+                    } catch (e) {
+                        // Keep existing error banner
+                    }
+                }
+            } else {
+                resultElement.innerHTML = `<div class="status-badge ${type}">${message}</div>`;
+                resultElement.style.display = 'flex';
+                
+                // Update banner based on verification result
+                if (type === 'valid') {
+                    showStatusBanner([message], 'success');
+                } else if (type === 'critical' || type === 'invalid' || type === 'error') {
+                    showStatusBanner(['❌ Integrity issue is preventing signature verification'], 'warning');
+                }
+            }
+        }
+
+        // ============================================================================
+        // JWT ENCODING
+        // ============================================================================
+        const generateBtn = document.getElementById('generateBtn');
+        const encodeHeaderInput = document.getElementById('encodeHeaderInput');
+        const encodePayloadInput = document.getElementById('encodePayloadInput');
+        const encodeSecretInput = document.getElementById('encodeSecretInput');
+        const encodeAlgorithmSelect = document.getElementById('encodeAlgorithmSelect');
+        const generatedJwtOutput = document.getElementById('generatedJwtOutput');
+        const generateResult = document.getElementById('generateResult');
+
+        // Auto-resize encoder textareas
+        function autoResizeEncoderTextarea(textarea) {
+            if (!textarea) return;
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        [encodeHeaderInput, encodePayloadInput, encodeSecretInput].forEach(textarea => {
+            if (textarea) {
+                autoResizeEncoderTextarea(textarea);
+                textarea.addEventListener('input', () => autoResizeEncoderTextarea(textarea));
+                textarea.addEventListener('paste', () => {
+                    setTimeout(() => autoResizeEncoderTextarea(textarea), 0);
+                });
+            }
+        });
+
+        // Show/hide custom placeholder for generated JWT
+        const generatedPlaceholder = document.getElementById('generatedPlaceholder');
+        
+        function updateGeneratedPlaceholder() {
+            if (!generatedJwtOutput || !generatedPlaceholder) return;
+            if (generatedJwtOutput.value.trim() === '') {
+                generatedPlaceholder.style.display = 'block';
+            } else {
+                generatedPlaceholder.style.display = 'none';
+            }
+        }
+
+        if (generatedJwtOutput && generatedPlaceholder) {
+            updateGeneratedPlaceholder();
+            generatedJwtOutput.addEventListener('input', updateGeneratedPlaceholder);
+        }
+
+        if (generateBtn) {
+            generateBtn.addEventListener('click', async () => {
+                await generateJWT();
+            });
+        }
+
+        async function generateJWT() {
+            try {
+                const algorithm = encodeAlgorithmSelect.value;
+                const secret = encodeSecretInput.value.trim();
+                const headerJson = encodeHeaderInput.value.trim();
+                const payloadJson = encodePayloadInput.value.trim();
+
+                if (!secret) {
+                    showGenerateResult('Please enter a secret', 'invalid');
+                    return;
+                }
+
+                // Parse JSON inputs
+                let header, payload;
+                try {
+                    header = JSON.parse(headerJson);
+                    payload = JSON.parse(payloadJson);
+                } catch (e) {
+                    showGenerateResult('Invalid JSON in header or payload', 'invalid');
+                    return;
+                }
+
+                // Create secret key
+                const base64CheckboxEncode = document.getElementById('base64CheckboxEncode');
+                let secretBytes;
+                if (base64CheckboxEncode && base64CheckboxEncode.checked) {
+                    // Base64 decode the secret
+                    secretBytes = Uint8Array.from(atob(secret), c => c.charCodeAt(0));
+                } else {
+                    // Use secret as plain text
+                    secretBytes = new TextEncoder().encode(secret);
+                }
+                const key = await jose.importJWK({
+                    kty: 'oct',
+                    k: jose.base64url.encode(secretBytes),
+                    alg: algorithm
+                }, algorithm);
+
+                // Generate JWT (spread header first, then override alg with selected algorithm)
+                const jwt = await new jose.SignJWT(payload)
+                    .setProtectedHeader({ ...header, alg: algorithm })
+                    .sign(key);
+
+                generatedJwtOutput.value = jwt;
+                autoResizeTextarea(generatedJwtOutput);
+                updateGeneratedPlaceholder();
+                showGenerateResult('✓ JWT generated successfully!', 'valid');
+                
+                // Show copy icon when JWT is generated
+                const copyGeneratedBtn = document.getElementById('copyGeneratedBtn');
+                if (copyGeneratedBtn) copyGeneratedBtn.style.display = 'block';
+
+            } catch (error) {
+                debugError('Generation error:', error);
+                showGenerateResult(`✗ Failed to generate JWT: ${error.message}`, 'invalid');
+                
+                // Hide copy icon on error
+                const copyGeneratedBtn = document.getElementById('copyGeneratedBtn');
+                if (copyGeneratedBtn) copyGeneratedBtn.style.display = 'none';
+            }
+        }
+
+        function showGenerateResult(message, type) {
+            generateResult.innerHTML = `<div class="status-badge ${type}">${message}</div>`;
+        }
+
+        // ============================================================================
+        // COPY TO CLIPBOARD
+        // ============================================================================
+        const clearEncodedBtn = document.getElementById('clearEncodedBtn');
+        if (clearEncodedBtn) {
+            clearEncodedBtn.addEventListener('click', () => {
+                clearToken();
+            });
+        }
+
+        // Description column toggle buttons
+        const headerDescToggle = document.getElementById('headerDescToggle');
+        const payloadDescToggle = document.getElementById('payloadDescToggle');
+        
+        if (headerDescToggle) {
+            headerDescToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tbody = document.getElementById('headerClaimsTableBody');
+                const firstCell = tbody.querySelector('.description-cell');
+                const isCurrentlyHidden = firstCell && firstCell.style.display === 'none';
+                
+                tbody.querySelectorAll('.description-cell').forEach(cell => {
+                    cell.style.display = isCurrentlyHidden ? '' : 'none';
+                });
+            });
+        }
+        
+        if (payloadDescToggle) {
+            payloadDescToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tbody = document.getElementById('payloadClaimsTableBody');
+                const firstCell = tbody.querySelector('.description-cell');
+                const isCurrentlyHidden = firstCell && firstCell.style.display === 'none';
+                
+                tbody.querySelectorAll('.description-cell').forEach(cell => {
+                    cell.style.display = isCurrentlyHidden ? '' : 'none';
+                });
+            });
+        }
+        
+        const copySecretBtn = document.getElementById('copySecretBtn');
+        if (copySecretBtn) {
+            copySecretBtn.addEventListener('click', () => {
+                copyToClipboard(secretInput.textContent, 'Public key copied!');
+            });
+        }
+        
+        const clearSecretBtn = document.getElementById('clearSecretBtn');
+        if (clearSecretBtn) {
+            clearSecretBtn.addEventListener('click', () => {
+                const algorithmSelectManual = document.getElementById('algorithmSelectManual');
+                const keyFormatSelect = document.getElementById('keyFormatSelect');
+                if (secretInput) {
+                    secretInput.textContent = '';
+                    secretInput.innerHTML = '';
+                    normalizeSecretInput();
+                    secretInput.style.height = '54px';
+                }
+                if (base64Checkbox) base64Checkbox.checked = false;
+                if (algorithmSelectManual) algorithmSelectManual.value = '';
+                if (keyFormatSelect) keyFormatSelect.value = '';
+                showVerificationResult('', 'none', 'verificationResultManual');
+                autoResizeSecretInput();
+            });
+        }
+
+        const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+        if (copyHeaderBtn) {
+            copyHeaderBtn.addEventListener('click', () => {
+                const token = getFullToken();
+                if (token) {
+                    const header = jose.decodeProtectedHeader(token);
+                    const targetPanel = document.querySelector('#decodedHeader').closest('.decoded-content-area');
+                    copyToClipboard(JSON.stringify(header, null, 2), 'Header copied!', targetPanel);
+                }
+            });
+        }
+
+        const copyPayloadBtn = document.getElementById('copyPayloadBtn');
+        if (copyPayloadBtn) {
+            copyPayloadBtn.addEventListener('click', () => {
+                const token = getFullToken();
+                if (token) {
+                    const payload = jose.decodeJwt(token);
+                    const targetPanel = document.querySelector('#decodedPayload').closest('.decoded-content-area');
+                    copyToClipboard(JSON.stringify(payload, null, 2), 'Payload copied!', targetPanel);
+                }
+            });
+        }
+
+        const copySignatureBtn = document.getElementById('copySignatureBtn');
+        if (copySignatureBtn) {
+            copySignatureBtn.addEventListener('click', () => {
+                const autoFetchedKey = document.getElementById('discoveryVerification');
+                if (autoFetchedKey && autoFetchedKey.textContent.trim()) {
+                    const targetPanel = autoFetchedKey.closest('.decoded-content-area');
+                    copyToClipboard(autoFetchedKey.textContent, 'Public key copied!', targetPanel);
+                }
+            });
+        }
+
+        const copyGeneratedBtnElement = document.getElementById('copyGeneratedBtn');
+        if (copyGeneratedBtnElement) {
+            copyGeneratedBtnElement.addEventListener('click', () => {
+                const targetPanel = generatedJwtOutput.parentElement;
+                copyToClipboard(generatedJwtOutput.value, 'JWT copied!', targetPanel);
+            });
+        }
+
+        async function copyToClipboard(text, successMessage, targetElement) {
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                // Show "Copied" message in the center of the panel
+                if (targetElement) {
+                    const copiedMsg = document.createElement('div');
+                    copiedMsg.textContent = 'Copied';
+                    copiedMsg.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(74, 144, 226, 0.15);
+                        color: #4a90e2;
+                        border: 1px solid rgba(74, 144, 226, 0.3);
+                        padding: 0.5rem 1rem;
+                        border-radius: 4px;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                        z-index: 1000;
+                        pointer-events: none;
+                        animation: fadeOut 1.5s ease-out forwards;
+                    `;
+                    
+                    targetElement.style.position = 'relative';
+                    targetElement.appendChild(copiedMsg);
+                    
+                    setTimeout(() => {
+                        if (copiedMsg.parentNode) {
+                            copiedMsg.parentNode.removeChild(copiedMsg);
+                        }
+                    }, 1500);
+                }
+            } catch (err) {
+                debugError('Failed to copy:', err);
+            }
+        }
+
+        // ============================================================================
+        // SUB-TAB SWITCHING (JSON / CLAIMS TABLE)
+        // ============================================================================
+        function setSignatureTabPanels() {
+            const discoveryTab = document.querySelector('.decoded-tab[data-target="discoveryVerification"]');
+            const manualTab = document.querySelector('.decoded-tab[data-target="manualVerification"]');
+            const discoveryPanel = document.getElementById('discoveryVerification');
+            const manualPanel = document.getElementById('manualVerification');
+            const signatureContentArea = document.querySelector('.decoded-signature-content-area');
+
+            if (!discoveryTab || !manualTab || !discoveryPanel || !manualPanel) return;
+
+            if (manualTab.classList.contains('active')) {
+                discoveryPanel.classList.remove('active');
+                manualPanel.classList.add('active');
+                discoveryPanel.style.display = 'none';
+                manualPanel.style.display = 'block';
+                if (signatureContentArea) signatureContentArea.classList.add('signature-manual-active');
+            } else {
+                manualPanel.classList.remove('active');
+                discoveryPanel.classList.add('active');
+                manualPanel.style.display = 'none';
+                discoveryPanel.style.display = 'block';
+                if (signatureContentArea) signatureContentArea.classList.remove('signature-manual-active');
+            }
+        }
+
+        document.querySelectorAll('.tab[data-target], .decoded-tab[data-target]').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                
+                const target = tab.dataset.target;
+                const tabsContainer = tab.parentElement; // Get the .tabs or .decoded-tabs container
+                const tabsRow = tabsContainer.parentElement; // Get the .tabs-row or .decoded-tabs-row
+                const parentPanel = tabsRow.parentElement; // Get the parent panel (.decoded-section-panel or .mb-2)
+                
+                if (!parentPanel) return;
+                
+                // Check if this tab is already active BEFORE updating state
+                const wasAlreadyActive = tab.classList.contains('active');
+                
+                // Update tab active state within this tabs container
+                tabsContainer.querySelectorAll('.tab, .decoded-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Find content area (either direct children for old style, or .decoded-content-area for new style)
+                const contentArea = parentPanel.querySelector('.decoded-content-area') || parentPanel;
+                
+                // Update content visibility
+                contentArea.querySelectorAll('.tab-content[data-content]').forEach(content => {
+                    if (content.dataset.content === target) {
+                        content.classList.add('active');
+                        content.style.display = 'block';
+                    } else {
+                        content.classList.remove('active');
+                        content.style.display = 'none';
+                    }
+                });
+
+                // Signature tabs: toggle explicitly and skip generic sync
+                if (target === 'manualVerification' || target === 'discoveryVerification') {
+                    const discoveryPanel = document.getElementById('discoveryVerification');
+                    const manualPanel = document.getElementById('manualVerification');
+                    const signatureContentArea = document.querySelector('.decoded-signature-content-area');
+                    if (target === 'manualVerification') {
+                        if (discoveryPanel) discoveryPanel.style.display = 'none';
+                        if (manualPanel) manualPanel.style.display = 'block';
+                        if (discoveryPanel) discoveryPanel.classList.remove('active');
+                        if (manualPanel) manualPanel.classList.add('active');
+                        if (signatureContentArea) signatureContentArea.classList.add('signature-manual-active');
+                    } else {
+                        if (manualPanel) manualPanel.style.display = 'none';
+                        if (discoveryPanel) discoveryPanel.style.display = 'block';
+                        if (manualPanel) manualPanel.classList.remove('active');
+                        if (discoveryPanel) discoveryPanel.classList.add('active');
+                        if (signatureContentArea) signatureContentArea.classList.remove('signature-manual-active');
+                    }
+                } else {
+                    setSignatureTabPanels();
+                }
+
+                // Hide/show Hash nonce checkbox based on signature verification tab
+                const hashNonceGroup = document.getElementById('hashNonceGroup');
+                if (target === 'discoveryVerification') {
+                    // Hash nonce checkbox visibility is controlled by token type in verifySignature()
+                    // Don't change it here - let the verification logic handle it
+                    // Only trigger verification if we're actually switching TO this tab (wasn't already active)
+                    const token = getFullToken();
+                    if (token && !wasAlreadyActive) {
+                        debug('Switching to Discovery tab, triggering verification');
+                        verifySignature();
+                    } else if (wasAlreadyActive) {
+                        debug('Discovery tab already active, skipping re-verification');
+                    }
+                } else if (target === 'manualVerification') {
+                    setTimeout(autoResizeSecretInput, 0);
+                    // Always hide Hash nonce checkbox on Manual tab
+                    if (hashNonceGroup) hashNonceGroup.style.display = 'none';
+                    
+                    // Hide copy signature button on Manual tab (only used for Discovery tab public keys)
+                    const copySignatureBtn = document.getElementById('copySignatureBtn');
+                    if (copySignatureBtn) copySignatureBtn.style.display = 'none';
+                }
+                                
+                // Hide/show copy buttons based on active tab
+                const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+                const copyPayloadBtn = document.getElementById('copyPayloadBtn');
+                const headerDescToggle = document.getElementById('headerDescToggle');
+                const payloadDescToggle = document.getElementById('payloadDescToggle');
+                
+                // Check if this is header section
+                if (target === 'headerJson') {
+                    if (copyHeaderBtn) copyHeaderBtn.style.display = 'block';
+                    if (headerDescToggle) headerDescToggle.style.visibility = 'hidden';
+                } else if (target === 'headerTable') {
+                    if (copyHeaderBtn) copyHeaderBtn.style.display = 'none';
+                    if (headerDescToggle) headerDescToggle.style.visibility = 'visible';
+                    
+                    // Hide description cells by default when switching to Claims tab
+                    const headerTbody = document.getElementById('headerClaimsTableBody');
+                    if (headerTbody) {
+                        headerTbody.querySelectorAll('.description-cell').forEach(cell => {
+                            cell.style.display = 'none';
+                        });
+                    }
+                }
+                
+                // Check if this is payload section
+                if (target === 'payloadJson') {
+                    if (copyPayloadBtn) copyPayloadBtn.style.display = 'block';
+                    if (payloadDescToggle) payloadDescToggle.style.visibility = 'hidden';
+                } else if (target === 'payloadTable') {
+                    if (copyPayloadBtn) copyPayloadBtn.style.display = 'none';
+                    if (payloadDescToggle) payloadDescToggle.style.visibility = 'visible';
+                    
+                    // Hide description cells by default when switching to Claims tab
+                    const payloadTbody = document.getElementById('payloadClaimsTableBody');
+                    if (payloadTbody) {
+                        payloadTbody.querySelectorAll('.description-cell').forEach(cell => {
+                            cell.style.display = 'none';
+                        });
+                    }
+                }
+            });
+        });
+        
+
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+        debug('JWTly initialized');
+        debug('Jose library version:', jose);
+        setSignatureTabPanels();
+
+        // Handle token from URL query parameter or POST
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Store both tokens if available (make it global for access in clearToken)
+        window.storedTokens = {
+            id_token: null,
+            access_token: null
+        };
+        const storedTokens = window.storedTokens;
+        
+        // Check query params
+        storedTokens.id_token = urlParams.get('id_token') || urlParams.get('token');
+        storedTokens.access_token = urlParams.get('access_token');
+        
+        // Handle POST data (from OAuth redirect)
+        if (window.location.hash) {
+            const hashString = window.location.hash.substring(1);
+            debug('Raw hash string length:', hashString.length);
+            debug('Raw hash (first 100 chars):', hashString.substring(0, 100));
+            
+            // Manual parsing for more reliable token extraction
+            const idTokenMatch = hashString.match(/id_token=([^&]+)/);
+            const accessTokenMatch = hashString.match(/access_token=([^&]+)/);
+            
+            if (idTokenMatch) {
+                storedTokens.id_token = idTokenMatch[1];
+                debug('Extracted id_token via regex:', `${storedTokens.id_token.length} chars`);
+            }
+            
+            if (accessTokenMatch) {
+                storedTokens.access_token = accessTokenMatch[1];
+                debug('Extracted access_token via regex:', `${storedTokens.access_token.length} chars`);
+            }
+            
+            // Verify tokens weren't truncated
+            Object.keys(storedTokens).forEach(key => {
+                const token = storedTokens[key];
+                if (token) {
+                    const endsWithValidBase64 = /[A-Za-z0-9_-]$/.test(token);
+                    debug(`${key} ends with valid base64 char:`, endsWithValidBase64);
+                    if (!endsWithValidBase64) {
+                        debug(`WARNING: ${key} may be truncated!`);
+                    }
+                }
+            });
+        }
+
+        const hasIdToken = !!storedTokens.id_token;
+        const hasAccessToken = !!storedTokens.access_token;
+        const hasBothTokens = hasIdToken && hasAccessToken;
+        
+        debug('Tokens found:', { id_token: hasIdToken, access_token: hasAccessToken });
+
+        // Initialize based on whether tokens were provided
+        if (hasIdToken || hasAccessToken) {
+            const initialToken = storedTokens.id_token || storedTokens.access_token;
+            debug('Loading initial token...');
+            
+            // Show token type tabs if both tokens present
+            if (hasBothTokens) {
+                const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+                if (tokenTypeTabs) {
+                    tokenTypeTabs.style.display = 'flex';
+                    
+                    // Handle token type tab switching
+                    const tokenTypeTabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
+                    tokenTypeTabBtns.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const tokenType = btn.dataset.tokenType;
+                            const token = storedTokens[tokenType];
+                            
+                            if (token) {
+                                // Update active tab
+                                tokenTypeTabBtns.forEach(b => b.classList.remove('active'));
+                                btn.classList.add('active');
+                                
+                                // Load the selected token
+                                loadToken(token);
+                            }
+                        });
+                    });
+                }
+            }
+            
+            loadToken(initialToken);
+        } else {
+            debug('No token in URL, showing single input mode');
+            showSingleInput();
+        }
+
+        // ============================================================================
+        // URL HELP MODAL
+        // ============================================================================
+        const urlHelpBtn = document.getElementById('urlHelpBtn');
+        const urlHelpModal = document.getElementById('urlHelpModal');
+        const closeUrlHelpModal = document.getElementById('closeUrlHelpModal');
+        const modalBackdrop = urlHelpModal?.querySelector('.modal-backdrop');
+
+        const openUrlHelpModal = () => {
+            if (!urlHelpModal) return;
+            urlHelpModal.classList.add('show');
+        };
+
+        const closeUrlHelpModalFn = () => {
+            if (!urlHelpModal) return;
+            urlHelpModal.classList.remove('show');
+        };
+
+        if (urlHelpBtn && urlHelpModal) {
+            // Populate URL examples dynamically
+            const baseUrl = window.location.origin + window.location.pathname;
+            const urlFormatExample = document.getElementById('urlFormatExample');
+            const urlMultiTokenExample = document.getElementById('urlMultiTokenExample');
+            const urlRedirectUri = document.getElementById('urlRedirectUri');
+            const urlOAuthExampleIdOnly = document.getElementById('urlOAuthExampleIdOnly');
+            const urlOAuthExampleBoth = document.getElementById('urlOAuthExampleBoth');
+            const oauthTenantInput = document.getElementById('oauthTenantInput');
+            const oauthClientIdInput = document.getElementById('oauthClientIdInput');
+            const copyUrlFormatBtn = document.getElementById('copyUrlFormatBtn');
+            const copyUrlMultiBtn = document.getElementById('copyUrlMultiBtn');
+            const copyUrlRedirectBtn = document.getElementById('copyUrlRedirectBtn');
+            const copyOAuthIdOnlyBtn = document.getElementById('copyOAuthIdOnlyBtn');
+            const copyOAuthBothBtn = document.getElementById('copyOAuthBothBtn');
+
+            if (urlFormatExample) {
+                urlFormatExample.textContent = `${baseUrl}?id_token={YOUR_ID_TOKEN}`;
+            }
+
+            if (urlMultiTokenExample) {
+                urlMultiTokenExample.textContent = `${baseUrl}?id_token={YOUR_ID_TOKEN}&access_token={YOUR_ACCESS_TOKEN}`;
+            }
+
+            if (urlRedirectUri) {
+                urlRedirectUri.textContent = baseUrl;
+            }
+
+            const encodedRedirectUri = encodeURIComponent(baseUrl);
+            // Example-only nonce value (kept constant so URLs are copy/paste-ready)
+            const exampleNonce = 428197356;
+
+            const encodeIfReal = (value) => {
+                // Don't URL-encode placeholders like "{tenant}" / "{client_id}"
+                if (!value) return value;
+                return value.startsWith('{') ? value : encodeURIComponent(value);
+            };
+
+            const renderOAuthExamples = () => {
+                const tenantRaw = (oauthTenantInput?.value || '').trim();
+                const clientIdRaw = (oauthClientIdInput?.value || '').trim();
+
+                const tenant = tenantRaw || '{tenant}';
+                const clientId = clientIdRaw || '{client_id}';
+
+                const tenantPath = tenant.startsWith('{') ? tenant : encodeURIComponent(tenant);
+                const clientIdParam = encodeIfReal(clientId);
+
+                if (urlOAuthExampleIdOnly) {
+                    urlOAuthExampleIdOnly.textContent =
+                        `https://login.microsoftonline.com/${tenantPath}/oauth2/v2.0/authorize?` +
+                        `client_id=${clientIdParam}` +
+                        `&response_type=id_token` +
+                        `&redirect_uri=${encodedRedirectUri}` +
+                        `&scope=openid%20profile%20email` +
+                        `&response_mode=fragment` +
+                        `&nonce=${exampleNonce}`;
+                }
+
+                if (urlOAuthExampleBoth) {
+                    urlOAuthExampleBoth.textContent =
+                        `https://login.microsoftonline.com/${tenantPath}/oauth2/v2.0/authorize?` +
+                        `client_id=${clientIdParam}` +
+                        `&response_type=id_token%20token` +
+                        `&redirect_uri=${encodedRedirectUri}` +
+                        `&scope=openid%20profile%20email` +
+                        `&response_mode=fragment` +
+                        `&nonce=${exampleNonce}`;
+                }
+            };
+
+            renderOAuthExamples();
+            oauthTenantInput?.addEventListener('input', renderOAuthExamples);
+            oauthClientIdInput?.addEventListener('input', renderOAuthExamples);
+
+            const wireCopyBtn = (btn, sourceEl) => {
+                if (!btn || !sourceEl) return;
+                btn.addEventListener('click', () => {
+                    const text = (sourceEl.textContent || '').trim();
+                    if (!text) return;
+                    const targetPanel = btn.closest('.code-example-wrapper') || sourceEl;
+                    copyToClipboard(text, 'URL copied!', targetPanel);
+                });
+            };
+
+            wireCopyBtn(copyUrlFormatBtn, urlFormatExample);
+            wireCopyBtn(copyUrlMultiBtn, urlMultiTokenExample);
+            wireCopyBtn(copyUrlRedirectBtn, urlRedirectUri);
+            wireCopyBtn(copyOAuthIdOnlyBtn, urlOAuthExampleIdOnly);
+            wireCopyBtn(copyOAuthBothBtn, urlOAuthExampleBoth);
+
+            urlHelpBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openUrlHelpModal();
+            });
+
+            closeUrlHelpModal?.addEventListener('click', () => {
+                closeUrlHelpModalFn();
+            });
+
+            modalBackdrop?.addEventListener('click', () => {
+                closeUrlHelpModalFn();
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && urlHelpModal.classList.contains('show')) {
+                    closeUrlHelpModalFn();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "jwtly",
+  "version": "1.0.0",
+  "description": "A standalone, client-side tool for decoding, verifying, and generating JSON Web Tokens (JWT)",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Open index.html in your browser' && exit 0"
+  },
+  "keywords": [
+    "jwt",
+    "decoder",
+    "encoder",
+    "debugger",
+    "oauth",
+    "oidc",
+    "json-web-token",
+    "signature-verification"
+  ],
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/Rainier-MSFT/JWTly",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rainier-MSFT/JWTly.git"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
