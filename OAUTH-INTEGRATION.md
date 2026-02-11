@@ -54,6 +54,31 @@ const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/autho
 window.location.href = authUrl;
 ```
 
+## Auth Code + PKCE and JWTly
+
+JWTly can be used as a redirect URI for PKCE flows, but note:
+
+- The browser redirect contains a `code` (and possibly `state`) **not tokens**
+- JWTly can only decode tokens when it receives an `id_token` / `access_token` (paste or URL param)
+
+### SPA (public client) workflows
+
+Typical ways to extract tokens after the SPA redeems the code:
+
+- **DevTools Network**: find the token response (`/token`) and copy `access_token` / `id_token`
+- **MSAL.js**: call `acquireTokenSilent()` and inspect `result.accessToken` / `result.idToken`
+- **Debug UX (recommended for admins)**: add a "Open in JWTly" button that opens:
+  - `https://jwtly-host/?id_token=...&access_token=...`
+
+### Confidential client workflows
+
+Confidential clients usually redeem the `code` server-side and may never expose raw tokens to the browser.
+
+To validate claims with JWTly:
+
+- Copy the token from server-side logs/debug endpoints (dev-only) and paste it into JWTly
+- Or add an admin-only flow where the server returns tokens to a debug page that opens JWTly with URL params
+
 **Implicit Flow (Token in Hash):**
 ```javascript
 const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?` +

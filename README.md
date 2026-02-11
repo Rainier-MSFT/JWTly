@@ -39,6 +39,8 @@ To use as an OAuth redirect URL, configure your application with:
 https://yoursite.com/JWT/
 ```
 
+Note: For **Auth Code + PKCE**, the redirect returns a `code` (not tokens). Exchange the code for tokens in your app, then forward `id_token` / `access_token` to JWTly (paste or URL params). See `OAUTH-INTEGRATION.md`.
+
 ### Supported Algorithms
 
 **HMAC (Symmetric):**

@@ -1889,6 +1889,16 @@
                         Exchange the code for tokens in your app/backend, then open JWTly with <code>id_token</code> / <code>access_token</code> in the URL.
                     </li>
                     <li>
+                        <strong>SPA (PKCE) token extraction tips:</strong>
+                        <ul>
+                            <li><strong>DevTools:</strong> open <strong>Network</strong> and locate the <code>/token</code> response; copy <code>id_token</code> / <code>access_token</code></li>
+                            <li><strong>MSAL.js:</strong> call <code>acquireTokenSilent()</code> and log the returned <code>result.accessToken</code> / <code>result.idToken</code></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Confidential clients:</strong> tokens are typically redeemed server-side. To inspect claims, copy the token from server logs/debug tooling and paste into JWTly, or have the app open JWTly with the tokens as URL params (dev-only/admin-only).
+                    </li>
+                    <li>
                         Enter the tenant ID/domain and app ID to create a smart URL for use in the browser
                         <div class="help-step-inputs">
                             <input id="oauthTenantInput" class="help-step-input" type="text" spellcheck="false" autocomplete="off" placeholder="Tenant ID (GUID or MOERA domain)">
