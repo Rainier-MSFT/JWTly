@@ -1,150 +1,330 @@
 # JWTly
 
-A standalone, client-side tool for decoding, verifying, and generating JSON Web Tokens (JWT).
+> A client-side JWT decoder, validator, and encoder for developers and security engineers.
 
-🚀 **[Quick Start Guide](./QUICKSTART.md)** - Get up and running in 30 seconds!
+[![Azure Static Web Apps](https://img.shields.io/badge/Azure-Static%20Web%20Apps-blue)](https://green-bush-0c5254603.6.azurestaticapps.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Live App**: https://green-bush-0c5254603.6.azurestaticapps.net/
+
+---
 
 ## Features
 
-### Decoder
-- **Decode JWT tokens** - View header, payload, and signature
-- **Signature verification** - Support for HMAC, RSA, and ECDSA algorithms
-- **Claims validation** - Automatic validation of exp, nbf, and iat claims with human-readable timestamps
-- **Syntax highlighting** - Color-coded JSON output
-- **Copy to clipboard** - Quick copy for all sections
+### 🔓 Token Decoding
+- Decode JWT structure (header, payload, signature)
+- Visual claim validation with status indicators
+- Syntax highlighting for JSON
+- Support for ID tokens and access tokens
 
-### Encoder
-- **Generate JWTs** - Create signed tokens with custom header and payload
-- **HMAC signing** - Support for HS256, HS384, and HS512 algorithms
-- **JSON configuration** - Edit header and payload as JSON
+### ✅ Signature Verification
+- **Automatic verification** for asymmetric algorithms (RS256, ES256, PS256, etc.)
+- OIDC discovery for Azure AD, Google, Auth0, Okta, and others
+- **Manual verification** for HMAC (HS256, HS384, HS512)
+- Microsoft Graph token support with nonce hashing
 
-### OAuth Integration
-The tool can receive tokens from OAuth/OIDC flows:
+### 🔧 Token Encoding
+- Generate signed JWTs with HMAC algorithms
+- Custom header and payload configuration
+- Secret key support (plain text or base64-encoded)
 
-**Query Parameters:**
-```
-https://yoursite.com/JWT/?token=eyJhbGc...
-https://yoursite.com/JWT/?id_token=eyJhbGc...
-https://yoursite.com/JWT/?access_token=eyJhbGc...
-```
+### 🎨 User Experience
+- Dark/light theme toggle
+- Responsive design
+- Copy to clipboard for all sections
+- URL parameter support for token import
 
-**Hash Fragment (Implicit Flow):**
-```
-https://yoursite.com/JWT/#id_token=eyJhbGc...
-https://yoursite.com/JWT/#access_token=eyJhbGc...
-```
+### 🔒 Security & Privacy
+- **100% client-side** - tokens never leave your browser
+- No server processing, no logging, no storage
+- Open source and auditable
+- Best practice security headers
 
-To use as an OAuth redirect URL, configure your application with:
-```
-https://yoursite.com/JWT/
-```
+---
 
-Note: For **Auth Code + PKCE**, the redirect returns a `code` (not tokens). Exchange the code for tokens in your app, then forward `id_token` / `access_token` to JWTly (paste or URL params). See `OAUTH-INTEGRATION.md`.
+## Quick Start
 
-### Supported Algorithms
+### Access the App
 
-**HMAC (Symmetric):**
-- HS256 - HMAC SHA256
-- HS384 - HMAC SHA384
-- HS512 - HMAC SHA512
+Visit: **https://green-bush-0c5254603.6.azurestaticapps.net/**
 
-**RSA (Asymmetric):**
-- RS256 - RSA SHA256
-- RS384 - RSA SHA384
-- RS512 - RSA SHA512
-- PS256 - RSA-PSS SHA256
-- PS384 - RSA-PSS SHA384
-- PS512 - RSA-PSS SHA512
+### Decode a Token
 
-**ECDSA (Asymmetric):**
-- ES256 - ECDSA SHA256
-- ES384 - ECDSA SHA384
-- ES512 - ECDSA SHA512
+1. Paste your JWT into the "ENCODED JWT" field
+2. View decoded header and payload
+3. Check claim validation indicators
 
-## Usage
+### Verify a Signature
 
-### Decoding a JWT
+**Automatic (Azure AD, Google, etc.):**
+1. Paste token - verification happens automatically
+2. For Microsoft Graph tokens, check "Hash nonce field" if needed
 
-1. Paste your JWT token in the "Encoded JWT" textarea
-2. The header and payload will automatically decode and display
-3. Claims like `exp`, `nbf`, and `iat` are validated with status indicators
+**Manual (HMAC):**
+1. Paste token
+2. Enter secret key
+3. Check "B64 encoded" if applicable
 
-### Verifying a Signature
+### Generate a Token
 
-1. Decode your JWT first
-2. Select the algorithm used (must match the token's `alg` header)
-3. Enter the secret (for HMAC) or public key in PEM format (for RSA/ECDSA)
-4. Check "Secret is base64 encoded" if applicable
-5. Click "Verify Signature"
+1. Switch to "Encoder" tab
+2. Select algorithm (HS256/HS384/HS512)
+3. Edit header and payload JSON
+4. Enter secret key
+5. Click "Generate JWT"
 
-**Example HMAC Secret:**
-```
-your-256-bit-secret
-```
+---
 
-**Example RSA Public Key (PEM format):**
-```
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...
------END PUBLIC KEY-----
-```
+## Documentation
 
-### Generating a JWT
+| Document | Description |
+|----------|-------------|
+| [USER-GUIDE.md](docs/USER-GUIDE.md) | Complete user guide with features, usage, and troubleshooting |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Infrastructure setup, deployment, and maintenance guide |
+| [OAUTH-INTEGRATION.md](OAUTH-INTEGRATION.md) | OAuth/OIDC integration for redirect URLs |
+| [QUICKSTART.md](QUICKSTART.md) | Quick reference for common tasks |
 
-1. Switch to the "Encoder" tab
-2. Select the algorithm (HS256, HS384, or HS512)
-3. Edit the header JSON (default includes `alg` and `typ`)
-4. Edit the payload JSON with your claims
-5. Enter a secret key
-6. Click "Generate JWT"
-7. Copy the generated token from the output area
+---
 
-## Security & Privacy
+## Supported Algorithms
 
-- **Client-side only** - All operations are performed in your browser
-- **No data transmission** - Tokens never leave your device
-- **No logging** - Nothing is stored or logged
-- **Open source** - Powered by [jose](https://github.com/panva/jose) library
+### Asymmetric (Public Key Verification)
+- RS256, RS384, RS512 (RSA with SHA)
+- ES256, ES384, ES512 (ECDSA with SHA)
+- PS256, PS384, PS512 (RSA-PSS with SHA)
 
-## Technology Stack
+### Symmetric (Shared Secret)
+- HS256, HS384, HS512 (HMAC with SHA)
+
+---
+
+## Architecture
+
+### Technology Stack
 
 - **Pure HTML/CSS/JavaScript** - No build process required
-- **[jose](https://github.com/panva/jose)** - Industry-standard JWT library (v5.9.6)
-- **ES Modules** - Modern JavaScript imports from CDN
+- **[jose](https://github.com/panva/jose) v5.9.6** - Industry-standard JWT library
+- **ES Modules** - Modern JavaScript from CDN
 - **Web Crypto API** - Native browser cryptography
 
-## Theme Support
+### Hosting
 
-The tool includes light and dark themes:
-- Toggle between themes using the button in the header
-- Theme preference is saved to localStorage
-- Automatic theme persistence across sessions
+- **Platform**: Azure Static Web Apps (Standard SKU)
+- **Deployment**: GitHub Actions (automatic on push to master)
+- **Security**: IP restrictions, security headers, HTTPS only
+
+### Client-Side Only
+
+```
+User Browser
+    ↓
+JWT Input
+    ↓
+jose Library (client-side)
+    ├─→ Parse & Decode
+    ├─→ OIDC Discovery (if asymmetric)
+    └─→ Signature Verification
+    ↓
+Display Results
+```
+
+No tokens ever leave the browser. No server-side processing.
+
+---
+
+## Development
+
+### Prerequisites
+
+- Git
+- Modern web browser (Chrome 61+, Firefox 60+, Safari 11+, Edge 79+)
+- For deployment: Azure CLI, PowerShell 7+
+
+### Local Development
+
+```bash
+# Clone repository
+git clone https://github.com/Rainier-MSFT/JWTly.git
+cd JWTly
+
+# Open in browser
+# No build process needed - just open index.html
+```
+
+### Deployment
+
+Automatic deployment via GitHub Actions on push to `master`:
+
+```bash
+git add .
+git commit -m "Your changes"
+git push origin master
+```
+
+Deployment takes **1-2 minutes**.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete infrastructure setup.
+
+---
+
+## Infrastructure
+
+### Azure Resources
+
+| Resource | Value |
+|----------|-------|
+| Static Web App | JWTly |
+| Resource Group | rgazuuks-iam-tooling |
+| SKU | Standard (for IP restrictions) |
+| Location | West Europe |
+
+### Automated Setup
+
+```powershell
+cd infrastructure
+.\Deploy-JWTly.ps1
+```
+
+Creates/updates all Azure resources with proper configuration.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for details.
+
+---
+
+## Security
+
+### IP Restrictions
+
+Access is restricted to approved IP addresses (Standard SKU feature):
+- Office networks
+- VPN endpoints
+- Backup networks
+
+See `staticwebapp.config.json` for current allowlist.
+
+### Security Headers
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+
+### Content Security Policy
+
+Allows OIDC discovery from trusted identity providers:
+- Azure AD / Microsoft Entra ID
+- Google
+- Auth0
+- Okta
+
+---
 
 ## Browser Compatibility
 
-Requires a modern browser with support for:
+| Browser | Minimum Version |
+|---------|----------------|
+| Chrome | 61+ |
+| Firefox | 60+ |
+| Safari | 11+ |
+| Edge | 79+ |
+
+Requires support for:
 - ES Modules
 - Web Crypto API
 - LocalStorage
 - Clipboard API
 
-Supported browsers:
-- Chrome 61+
-- Firefox 60+
-- Safari 11+
-- Edge 79+
+---
 
-## About
+## Use Cases
 
-A standalone, open-source JWT debugging tool - no frameworks, no dependencies, just pure client-side JavaScript.
+### For Developers
+- Debug authentication flows
+- Inspect token claims and structure
+- Test API authorization
+- Understand JWT format
+- Create test tokens
 
-## License
+### For Security Engineers
+- Verify token signatures
+- Audit token claims
+- Investigate authentication issues
+- Test token expiration handling
+- Analyze Microsoft Graph tokens
 
-MIT License - Free to use, modify, and distribute.
+### For Identity Teams
+- Troubleshoot OIDC flows
+- Validate token issuers
+- Check claim mappings
+- Inspect role assignments
+
+---
+
+## Known Limitations
+
+1. **Microsoft Graph tokens**: Require nonce hashing for signature verification (non-standard)
+2. **CSP restrictions**: Only whitelisted domains for OIDC discovery
+3. **Client-side only**: Cannot validate server-side-only secrets
+4. **Encoder**: Only HMAC algorithms (RS256/ES256 signing planned)
+
+---
+
+## Contributing
+
+This is an internal security tool. For issues or feature requests:
+
+1. Create an issue in this repository
+2. Contact the Security Team
+3. Submit a pull request with improvements
+
+---
+
+## Roadmap
+
+### Planned Features
+- [ ] RSA/ECDSA token signing (encoder)
+- [ ] Token comparison tool
+- [ ] Claims template library
+- [ ] Export decoded token as JSON
+- [ ] Token expiration countdown timer
+- [ ] JWT validation reports
+
+---
 
 ## References
 
-- [JWT.io](https://jwt.io/) - Inspiration for UI/UX
+### Microsoft Documentation
+- [Azure AD Access Tokens](https://learn.microsoft.com/en-us/entra/identity-platform/access-tokens)
+- [Azure AD ID Tokens](https://learn.microsoft.com/en-us/entra/identity-platform/id-tokens)
+- [Microsoft Graph Token Nonce Issue](https://learn.microsoft.com/en-us/answers/questions/1459176/signature-verification-fails-for-access-token)
+
+### Standards
+- [RFC 7519 - JWT](https://tools.ietf.org/html/rfc7519)
+- [RFC 7515 - JWS](https://tools.ietf.org/html/rfc7515)
+- [RFC 7517 - JWK](https://tools.ietf.org/html/rfc7517)
+- [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
+
+### Tools
+- [jose Library](https://github.com/panva/jose) - JWT implementation
+- [JWT.io](https://jwt.io/) - JWT decoder reference
 - [JWT.ms](https://jwt.ms/) - Microsoft's JWT decoder
-- [jose library](https://github.com/panva/jose) - JWT implementation
-- [RFC 7519](https://tools.ietf.org/html/rfc7519) - JWT specification
+
+---
+
+## License
+
+MIT License - See [LICENSE](LICENSE) file for details.
+
+---
+
+## Support
+
+- **Repository**: https://github.com/Rainier-MSFT/JWTly
+- **Issues**: https://github.com/Rainier-MSFT/JWTly/issues
+- **Team**: Security Team
+- **Live App**: https://green-bush-0c5254603.6.azurestaticapps.net/
+
+---
+
+*Maintained by the Security Team*  
+*Last Updated: February 2026*

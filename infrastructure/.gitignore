@@ -1,0 +1,13 @@
+# Deployment tokens - never commit these!
+.deployment-token.txt
+*-deployment-token.txt
+*.token
+
+# Azure credentials
+*.publishsettings
+
+# Local configuration
+local.settings.json
+
+# Logs
+*.log
