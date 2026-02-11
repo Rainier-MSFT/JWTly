@@ -452,35 +452,41 @@ cd c:\Git\JWTly\infrastructure
 .\Deploy-JWTly.ps1
 ```
 
-### 3. Verify Configuration
+**What it does:**
+1. Creates/updates Azure Static Web App
+2. Retrieves deployment token
+3. **Asks if you want automation** (Y/N)
 
-```powershell
-# Check SWA created
-az staticwebapp show --name JWTly --resource-group rgazuuks-iam-tooling
+**If you choose automation (Y):**
+- Automatically updates GitHub secret
+- Automatically updates workflow file
+- Optionally commits and pushes changes
 
-# Check GitHub secret exists (auto-created)
-# Go to GitHub repo → Settings → Secrets
+**Script prompts:**
+```
+Save deployment token to file? (Y/N)
+Automate GitHub secret and workflow update? (Y/N)
+Commit and push workflow changes? (Y/N)
 ```
 
-### 4. Trigger Deployment
+### 3. Trigger Deployment (if needed)
 
 ```powershell
-# Any push to master triggers deployment
-git commit --allow-empty -m "Trigger initial deployment"
+# If you didn't auto-commit in step 2, push manually
 git push origin master
 ```
 
-### 5. Verify Deployment
+### 4. Verify Deployment
 
 ```bash
 # Check workflow
 gh run list --limit 1
 
 # Test access (from allowed IP)
-curl -I https://green-bush-0c5254603.6.azurestaticapps.net/
+curl -I https://[new-hostname].azurestaticapps.net/
 ```
 
-**Total Time**: ~5 minutes
+**Total Time**: ~5 minutes (fully automated)
 
 ---
 
