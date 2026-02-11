@@ -250,10 +250,23 @@
             opacity: 0.8;
         }
         
-        .theme-toggle #themeIcon {
-            filter: brightness(0.7) saturate(0.8);
-            font-size: 1.8rem;
+        .theme-toggle .theme-icon {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            shape-rendering: geometricPrecision;
+            display: block;
         }
+
+        /* Show the appropriate icon based on current theme (icon indicates the "toggle to" target) */
+        .theme-toggle .theme-icon-sun { display: none; }
+        .theme-toggle .theme-icon-moon { display: block; }
+        [data-theme="dark"] .theme-toggle .theme-icon-sun { display: block; }
+        [data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
 
         /* When theme control lives in encoded panel header */
         #encodedPanelHeader {
@@ -277,9 +290,9 @@
             background: var(--bg-tertiary);
         }
 
-        #encodedPanelHeader .theme-toggle #themeIcon {
-            filter: none;
-            font-size: 1.2rem;
+        #encodedPanelHeader .theme-toggle .theme-icon {
+            width: 18px;
+            height: 18px;
         }
 
         /* ============================================================================
@@ -1521,8 +1534,21 @@
                                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
                         </button>
-                        <button class="theme-toggle" id="themeToggle" title="Theme & options" type="button">
-                            <span id="themeIcon">🌙</span>
+                        <button class="theme-toggle" id="themeToggle" title="Switch to dark mode" type="button">
+                            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"></path>
+                            </svg>
+                            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4"></circle>
+                                <path d="M12 2v2"></path>
+                                <path d="M12 20v2"></path>
+                                <path d="M4.93 4.93 6.34 6.34"></path>
+                                <path d="M17.66 17.66 19.07 19.07"></path>
+                                <path d="M2 12h2"></path>
+                                <path d="M20 12h2"></path>
+                                <path d="M4.93 19.07 6.34 17.66"></path>
+                                <path d="M17.66 6.34 19.07 4.93"></path>
+                            </svg>
                         </button>
                     </div>
                     
@@ -2002,7 +2028,6 @@
         // THEME MANAGEMENT
         // ============================================================================
         const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
         const htmlElement = document.documentElement;
 
         // Load saved theme
@@ -2021,13 +2046,6 @@
         }
 
         function updateThemeButton(theme) {
-            if (themeIcon) {
-                if (theme === 'dark') {
-                    themeIcon.textContent = '☀️';
-                } else {
-                    themeIcon.textContent = '🌙';
-                }
-            }
             if (themeToggle) {
                 if (theme === 'dark') {
                     themeToggle.setAttribute('title', 'Switch to light mode');
