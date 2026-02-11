@@ -255,6 +255,78 @@
             font-size: 1.8rem;
         }
 
+        /* Theme menu (context menu) */
+        .theme-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            min-width: 180px;
+            padding: 0.35rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            z-index: 2000;
+            display: none;
+        }
+
+        .theme-menu.show {
+            display: block;
+        }
+
+        .theme-menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.55rem 0.6rem;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .theme-menu-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .theme-menu-check {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* When theme control lives in encoded panel header */
+        #encodedPanelHeader {
+            position: relative;
+        }
+
+        #encodedPanelHeader .theme-toggle {
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #encodedPanelHeader .theme-toggle:hover {
+            opacity: 1;
+            background: var(--bg-tertiary);
+        }
+
+        #encodedPanelHeader .theme-toggle #themeIcon {
+            filter: none;
+            font-size: 1.2rem;
+        }
+
         /* ============================================================================
            MAIN LAYOUT
            ============================================================================ */
@@ -1466,11 +1538,6 @@
                 <h1>JWTly</h1>
                 <p class="header-subtitle">Decode, verify, and generate JWT tokens</p>
             </div>
-            <div class="header-meta">
-                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-                    <span id="themeIcon">🌙</span>
-                </button>
-            </div>
         </div>
     </header>
 
@@ -1499,6 +1566,17 @@
                                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
                         </button>
+                        <button class="theme-toggle" id="themeToggle" title="Theme & options" type="button">
+                            <span id="themeIcon">🌙</span>
+                        </button>
+                        <div class="theme-menu" id="themeMenu" role="menu" aria-label="Theme menu">
+                            <button class="theme-menu-item" type="button" data-theme="light">
+                                <span>Light theme</span><span class="theme-menu-check" data-check="light"></span>
+                            </button>
+                            <button class="theme-menu-item" type="button" data-theme="dark">
+                                <span>Dark theme</span><span class="theme-menu-check" data-check="dark"></span>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Token Type Tabs (shown when multiple tokens loaded) -->
@@ -1978,6 +2056,7 @@
         // ============================================================================
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
+        const themeMenu = document.getElementById('themeMenu');
         const htmlElement = document.documentElement;
 
         // Load saved theme
@@ -1985,13 +2064,44 @@
         htmlElement.setAttribute('data-theme', savedTheme);
         updateThemeButton(savedTheme);
 
+        function setTheme(newTheme) {
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('jwt-theme', newTheme);
+            updateThemeButton(newTheme);
+        }
+
+        function setThemeMenuChecks(theme) {
+            if (!themeMenu) return;
+            themeMenu.querySelectorAll('[data-check]').forEach(el => {
+                el.textContent = el.getAttribute('data-check') === theme ? '✓' : '';
+            });
+        }
+
+        function toggleThemeMenu(forceOpen) {
+            if (!themeMenu) return;
+            const open = themeMenu.classList.contains('show');
+            const next = typeof forceOpen === 'boolean' ? forceOpen : !open;
+            themeMenu.classList.toggle('show', next);
+        }
+
         if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = htmlElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                htmlElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('jwt-theme', newTheme);
-                updateThemeButton(newTheme);
+            themeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleThemeMenu();
+            });
+        }
+
+        if (themeMenu) {
+            themeMenu.querySelectorAll('.theme-menu-item[data-theme]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const t = btn.getAttribute('data-theme');
+                    if (!t) return;
+                    setTheme(t);
+                    setThemeMenuChecks(t);
+                    toggleThemeMenu(false);
+                });
             });
         }
 
@@ -2004,13 +2114,23 @@
                 }
             }
             if (themeToggle) {
-                if (theme === 'dark') {
-                    themeToggle.setAttribute('title', 'Switch to light mode');
-                } else {
-                    themeToggle.setAttribute('title', 'Switch to dark mode');
-                }
+                themeToggle.setAttribute('title', 'Theme & options');
             }
+            setThemeMenuChecks(theme);
         }
+
+        // Close theme menu on outside click / Escape
+        document.addEventListener('click', (e) => {
+            if (!themeMenu || !themeMenu.classList.contains('show')) return;
+            const target = e.target;
+            if (!(target instanceof Element)) return;
+            if (themeMenu.contains(target) || themeToggle?.contains(target)) return;
+            toggleThemeMenu(false);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleThemeMenu(false);
+        });
 
         // ============================================================================
         // TAB MANAGEMENT
