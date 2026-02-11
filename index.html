@@ -1870,7 +1870,7 @@
                     <span class="help-step-num">-</span>
                     <span class="help-step-text">Login Redirection (User flows)</span>
                 </h4>
-                <p class="help-step-desc">For repeat testing, configure an OAuth redirect to JWT decoder:</p>
+                <p class="help-step-desc">For repeat testing, configure an OAuth redirect to JWTly:</p>
                 <ol class="help-step-list">
                     <li>Locate your Entra app registration, go to <strong>Authentication</strong>, and add this <strong>Redirect URI</strong>
                         <div class="code-example-wrapper">
@@ -1884,6 +1884,10 @@
                         </div>
                     </li>
                     <li>Under <strong>Implicit grant and hybrid flows</strong>, select <strong>ID</strong>/<strong>Access tokens</strong> and save changes</li>
+                    <li>
+                        Using <strong>Auth Code + PKCE</strong>? That redirect returns a <code>code</code> (not tokens), so JWTly won't auto-load a token.
+                        Exchange the code for tokens in your app/backend, then open JWTly with <code>id_token</code> / <code>access_token</code> in the URL.
+                    </li>
                     <li>
                         Enter the tenant ID/domain and app ID to create a smart URL for use in the browser
                         <div class="help-step-inputs">
