@@ -228,6 +228,7 @@
             display: flex;
             align-items: center;
             gap: 1.5rem;
+            position: relative; /* anchor menu */
         }
 
         .theme-toggle {
@@ -249,8 +250,8 @@
         .theme-toggle:hover {
             opacity: 0.8;
         }
-        
-        .theme-toggle .theme-icon {
+
+        .theme-toggle .menu-icon {
             width: 18px;
             height: 18px;
             stroke: currentColor;
@@ -258,42 +259,63 @@
             fill: none;
             stroke-linecap: round;
             stroke-linejoin: round;
-            shape-rendering: geometricPrecision;
             display: block;
         }
 
-        /* Show the appropriate icon based on current theme (icon indicates the "toggle to" target) */
-        .theme-toggle .theme-icon-sun { display: none; }
-        .theme-toggle .theme-icon-moon { display: block; }
-        [data-theme="dark"] .theme-toggle .theme-icon-sun { display: block; }
-        [data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
-
-        /* When theme control lives in encoded panel header */
-        #encodedPanelHeader {
-            position: relative;
+        /* Simple context menu */
+        .app-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 170px;
+            padding: 0.35rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            z-index: 99999;
+            display: none;
         }
 
-        #encodedPanelHeader .theme-toggle {
-            background: transparent;
-            color: var(--text-secondary);
-            padding: 4px;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            display: inline-flex;
+        .app-menu.show {
+            display: block;
+        }
+
+        .app-menu-item {
+            width: 100%;
+            display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.55rem 0.6rem;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-align: left;
         }
 
-        #encodedPanelHeader .theme-toggle:hover {
-            opacity: 1;
+        .app-menu-item:hover {
             background: var(--bg-tertiary);
         }
 
-        #encodedPanelHeader .theme-toggle .theme-icon {
-            width: 18px;
-            height: 18px;
+        .app-menu-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
         }
+
+        .theme-icon-sun { display: none; }
+        .theme-icon-moon { display: block; }
+        [data-theme="dark"] .theme-icon-sun { display: block; }
+        [data-theme="dark"] .theme-icon-moon { display: none; }
 
         /* ============================================================================
            MAIN LAYOUT
@@ -1506,6 +1528,42 @@
                 <h1>JWTly</h1>
                 <p class="header-subtitle">Decode, verify, and generate JWT tokens</p>
             </div>
+            <div class="header-meta">
+                <button class="theme-toggle" id="themeToggle" title="Options" type="button">
+                    <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </button>
+                <div class="app-menu" id="appMenu" role="menu" aria-label="Options menu">
+                    <button class="app-menu-item" type="button" id="menuToggleTheme">
+                        <span>Toggle theme</span>
+                        <svg class="theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"></path>
+                        </svg>
+                        <svg class="theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2"></path>
+                            <path d="M12 20v2"></path>
+                            <path d="M4.93 4.93 6.34 6.34"></path>
+                            <path d="M17.66 17.66 19.07 19.07"></path>
+                            <path d="M2 12h2"></path>
+                            <path d="M20 12h2"></path>
+                            <path d="M4.93 19.07 6.34 17.66"></path>
+                            <path d="M17.66 6.34 19.07 4.93"></path>
+                        </svg>
+                    </button>
+                    <button class="app-menu-item" type="button" id="menuHelp">
+                        <span>Token import options</span>
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -1527,29 +1585,6 @@
                 <div class="panel jwt-input-panel">
                     <div class="panel-header" id="encodedPanelHeader" style="padding: 1rem 0 1rem 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
                         <span id="encodedPanelHeaderText">ENCODED JWT</span>
-                        <button class="help-icon-btn" id="urlHelpBtn" title="Token import options" type="button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                            </svg>
-                        </button>
-                        <button class="theme-toggle" id="themeToggle" title="Switch to dark mode" type="button">
-                            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"></path>
-                            </svg>
-                            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="12" cy="12" r="4"></circle>
-                                <path d="M12 2v2"></path>
-                                <path d="M12 20v2"></path>
-                                <path d="M4.93 4.93 6.34 6.34"></path>
-                                <path d="M17.66 17.66 19.07 19.07"></path>
-                                <path d="M2 12h2"></path>
-                                <path d="M20 12h2"></path>
-                                <path d="M4.93 19.07 6.34 17.66"></path>
-                                <path d="M17.66 6.34 19.07 4.93"></path>
-                            </svg>
-                        </button>
                     </div>
                     
                     <!-- Token Type Tabs (shown when multiple tokens loaded) -->
@@ -2025,35 +2060,71 @@
         }
 
         // ============================================================================
-        // THEME MANAGEMENT
+        // THEME MANAGEMENT & MENU
         // ============================================================================
         const themeToggle = document.getElementById('themeToggle');
+        const appMenu = document.getElementById('appMenu');
+        const menuToggleTheme = document.getElementById('menuToggleTheme');
+        const menuHelp = document.getElementById('menuHelp');
         const htmlElement = document.documentElement;
 
         // Load saved theme
         const savedTheme = localStorage.getItem('jwt-theme') || 'light';
         htmlElement.setAttribute('data-theme', savedTheme);
-        updateThemeButton(savedTheme);
 
+        function setTheme(newTheme) {
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('jwt-theme', newTheme);
+        }
+
+        function toggleMenu(forceOpen) {
+            if (!appMenu) return;
+            const open = appMenu.classList.contains('show');
+            const next = typeof forceOpen === 'boolean' ? forceOpen : !open;
+            appMenu.classList.toggle('show', next);
+        }
+
+        // Main menu button
         if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = htmlElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                htmlElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('jwt-theme', newTheme);
-                updateThemeButton(newTheme);
+            themeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
             });
         }
 
-        function updateThemeButton(theme) {
-            if (themeToggle) {
-                if (theme === 'dark') {
-                    themeToggle.setAttribute('title', 'Switch to light mode');
-                } else {
-                    themeToggle.setAttribute('title', 'Switch to dark mode');
-                }
-            }
+        // Theme toggle menu item
+        if (menuToggleTheme) {
+            menuToggleTheme.addEventListener('click', (e) => {
+                e.preventDefault();
+                const current = htmlElement.getAttribute('data-theme');
+                const newTheme = current === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+                toggleMenu(false);
+            });
         }
+
+        // Help menu item
+        if (menuHelp) {
+            menuHelp.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMenu(false);
+                document.getElementById('urlHelpModal')?.classList.add('show');
+            });
+        }
+
+        // Close menu on outside click / Escape
+        document.addEventListener('click', (e) => {
+            if (!appMenu || !appMenu.classList.contains('show')) return;
+            const target = e.target;
+            if (!(target instanceof Element)) return;
+            if (appMenu.contains(target) || themeToggle?.contains(target)) return;
+            toggleMenu(false);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleMenu(false);
+        });
 
         // ============================================================================
         // TAB MANAGEMENT
@@ -4094,7 +4165,6 @@
         // ============================================================================
         // URL HELP MODAL
         // ============================================================================
-        const urlHelpBtn = document.getElementById('urlHelpBtn');
         const urlHelpModal = document.getElementById('urlHelpModal');
         const closeUrlHelpModal = document.getElementById('closeUrlHelpModal');
         const modalBackdrop = urlHelpModal?.querySelector('.modal-backdrop');
@@ -4109,7 +4179,7 @@
             urlHelpModal.classList.remove('show');
         };
 
-        if (urlHelpBtn && urlHelpModal) {
+        if (urlHelpModal) {
             // Populate URL examples dynamically
             const baseUrl = window.location.origin + window.location.pathname;
             const urlFormatExample = document.getElementById('urlFormatExample');
@@ -4199,12 +4269,6 @@
             wireCopyBtn(copyUrlRedirectBtn, urlRedirectUri);
             wireCopyBtn(copyOAuthIdOnlyBtn, urlOAuthExampleIdOnly);
             wireCopyBtn(copyOAuthBothBtn, urlOAuthExampleBoth);
-
-            urlHelpBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openUrlHelpModal();
-            });
 
             closeUrlHelpModal?.addEventListener('click', () => {
                 closeUrlHelpModalFn();
