@@ -77,12 +77,9 @@ Visit: **https://green-bush-0c5254603.6.azurestaticapps.net/**
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [USER-GUIDE.md](docs/USER-GUIDE.md) | Complete user guide with features, usage, and troubleshooting |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Infrastructure setup, deployment, and maintenance guide |
-| [OAUTH-INTEGRATION.md](OAUTH-INTEGRATION.md) | OAuth/OIDC integration for redirect URLs |
-| [QUICKSTART.md](QUICKSTART.md) | Quick reference for common tasks |
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Deploy and maintain the infrastructure
+- [OAUTH-INTEGRATION.md](OAUTH-INTEGRATION.md) - OAuth/OIDC integration
+- [QUICKSTART.md](QUICKSTART.md) - Quick reference
 
 ---
 
