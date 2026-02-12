@@ -59,7 +59,13 @@ param(
 
     [Parameter(Mandatory = $false)]
     [ValidateSet('Free', 'Standard')]
-    [string]$SkuName = 'Standard'
+    [string]$SkuName = 'Standard',
+
+    [Parameter(Mandatory = $false)]
+    [string]$RepositoryUrl = 'https://github.com/Rainier-MSFT/JWTly',
+
+    [Parameter(Mandatory = $false)]
+    [string]$Branch = 'master'
 )
 
 Set-StrictMode -Version Latest
@@ -209,6 +215,8 @@ else {
             --resource-group $ResourceGroup `
             --location $Location `
             --sku $SkuName `
+            --source $RepositoryUrl `
+            --branch $Branch `
             --tags $tagString `
             --output json 2>&1
         

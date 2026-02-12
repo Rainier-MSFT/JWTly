@@ -42,6 +42,18 @@ Complete guide for deploying and managing the JWTly Azure Static Web App.
 
 ---
 
+## Important Notes
+
+**⚠️ Known Issues:**
+- Azure Policy may override `team` tag (team=Security becomes team=IT)
+- CLI creation requires `--source` parameter to link GitHub repo
+- Workflow must have `skip_app_build: true` for static HTML apps
+- Do NOT use OIDC tokens (`github_id_token`) - conflicts with API token
+
+See [LESSONS-LEARNED.md](LESSONS-LEARNED.md) for detailed troubleshooting.
+
+---
+
 ## Prerequisites
 
 ### Required Tools
