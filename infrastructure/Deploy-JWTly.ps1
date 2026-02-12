@@ -191,11 +191,8 @@ else {
     Write-Step "Creating Static Web App"
     
     $tags = @{
-        'product' = 'Security'
-        'domain' = 'Identity'
         'team' = 'Security'
-        'application' = 'JWTly'
-        'managedby' = 'Infrastructure-as-Code'
+        'product' = 'Security'
     }
     
     $tagString = ($tags.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join ' '
@@ -345,7 +342,7 @@ if ($automate -eq 'Y' -or $automate -eq 'y') {
     $workflowsPath = Join-Path $repoRoot ".github\workflows"
     
     if (Test-Path $workflowsPath) {
-        $workflowFiles = Get-ChildItem -Path $workflowsPath -Filter "azure-static-web-apps-*.yml"
+        $workflowFiles = @(Get-ChildItem -Path $workflowsPath -Filter "azure-static-web-apps-*.yml")
         
         if ($workflowFiles.Count -gt 0) {
             Write-Info "Found $($workflowFiles.Count) workflow file(s)"
