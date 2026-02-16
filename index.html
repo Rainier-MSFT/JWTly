@@ -2234,13 +2234,6 @@
         }
 
         // ============================================================================
-        // DEBUG MODE
-        // ============================================================================
-        const DEBUG = new URLSearchParams(window.location.search).has('debug');
-        const debug = (...args) => { if (DEBUG) console.log(...args); };
-        const debugError = (...args) => { if (DEBUG) console.error(...args); };
-
-        // ============================================================================
         // UTILITY FUNCTIONS
         // ============================================================================
         function autoResizeTextarea(textarea) {
@@ -3028,9 +3021,7 @@
                 // Algorithm is auto-detected from JWT header during verification
                 
                 // Always attempt verification when token changes
-                debug('Token decoded successfully, scheduling verification in 100ms');
                 setTimeout(() => {
-                    debug('Executing scheduled verification from token decode');
                     verifySignature();
                 }, 100);
 
@@ -3213,7 +3204,6 @@
         if (secretInput) {
             secretInput.addEventListener('input', async (e) => {
                 autoResizeSecretInput();
-                debug('Secret input changed');
                 const token = getFullToken();
                 const secret = secretInput.textContent.trim();
                 const algorithmSelectManual = document.getElementById('algorithmSelectManual');
@@ -3234,9 +3224,7 @@
                         base64Checkbox.checked = true;
                     }
                 }
-                debug('Has token:', !!token, 'Has secret:', !!secret);
                 if (token && secret) {
-                    debug('Triggering auto-verification from secret input');
                     await verifySignature();
                 }
             });
@@ -3258,12 +3246,9 @@
         const algorithmSelectManual = document.getElementById('algorithmSelectManual');
         if (algorithmSelectManual) {
             algorithmSelectManual.addEventListener('change', async () => {
-                debug('Algorithm changed (Manual tab)');
                 const token = getFullToken();
                 const secret = secretInput?.textContent?.trim();
-                debug('Has token:', !!token, 'Has secret:', !!secret);
                 if (token && secret) {
-                    debug('Triggering auto-verification from manual algorithm change');
                     await verifySignature();
                 }
             });
@@ -3272,12 +3257,9 @@
         // Auto-verify when base64 checkbox changes (if secret is present)
         if (base64Checkbox) {
             base64Checkbox.addEventListener('change', async () => {
-                debug('Base64 checkbox changed');
                 const token = getFullToken();
                 const secret = secretInput?.textContent?.trim();
-                debug('Has token:', !!token, 'Has secret:', !!secret);
                 if (token && secret) {
-                    debug('Triggering auto-verification from base64 checkbox');
                     await verifySignature();
                 }
             });
@@ -3286,12 +3268,9 @@
         const keyFormatSelect = document.getElementById('keyFormatSelect');
         if (keyFormatSelect) {
             keyFormatSelect.addEventListener('change', async () => {
-                debug('Key format changed (Manual tab)');
                 const token = getFullToken();
                 const secret = secretInput?.textContent?.trim();
-                debug('Has token:', !!token, 'Has secret:', !!secret);
                 if (token && secret) {
-                    debug('Triggering auto-verification from key format change');
                     await verifySignature();
                 }
             });
@@ -3301,18 +3280,14 @@
         const hashNonceCheckbox = document.getElementById('hashNonceCheckbox');
         if (hashNonceCheckbox) {
             hashNonceCheckbox.addEventListener('change', async () => {
-                debug('Hash nonce checkbox changed');
                 const token = getFullToken();
-                debug('Has token:', !!token);
                 if (token) {
-                    debug('Triggering auto-verification from hash nonce checkbox');
                     await verifySignature();
                 }
             });
         }
 
         async function verifySignature() {
-            debug('=== verifySignature called ===');
             try {
                 // Use original token if available (prevents contenteditable corruption), else reconstruct
                 const token = originalToken || getFullToken();
@@ -3321,9 +3296,6 @@
                 const isDiscoveryTab = document.getElementById('discoveryVerification')?.classList.contains('active');
                 const isManualTab = document.getElementById('manualVerification')?.classList.contains('active');
                 
-                debug('Discovery tab active:', isDiscoveryTab);
-                debug('Manual tab active:', isManualTab);
-                
                 // Get appropriate elements based on active tab
                 const secret = isManualTab ? (secretInput?.textContent?.trim() || '') : '';
                 const algorithm = isManualTab ? (document.getElementById('algorithmSelectManual')?.value || 'RS256') : null; // Discovery uses token header, Manual uses dropdown
@@ -3331,25 +3303,8 @@
                 const selectedKeyFormat = keyFormatSelect ? keyFormatSelect.value : '';
                 const resultDiv = isManualTab ? 'verificationResultManual' : 'verificationResult';
 
-                debug('Using original token:', !!originalToken);
-                debug('Token length:', token.length);
-                debug('Secret length:', secret.length);
-                debug('Algorithm from dropdown:', algorithm);
-                debug('Key format selection:', selectedKeyFormat || '(auto)');
-                debug('Result div:', resultDiv);
-                
-                if (originalToken) {
-                    const reconstructed = getFullToken();
-                    debug('Token match check:', token === reconstructed ? 'MATCH' : 'DIFFERS');
-                    if (token !== reconstructed) {
-                        debug('Original token length:', originalToken.length);
-                        debug('Reconstructed token length:', reconstructed.length);
-                    }
-                }
-
                 // Clear verification result if no token
                 if (!token) {
-                    debug('No token, clearing result');
                     showVerificationResult('', 'none', resultDiv);
                     return;
                 }
@@ -3357,34 +3312,27 @@
                 // Decode header and payload to check algorithm and issuer
                 const header = jose.decodeProtectedHeader(token);
                 const payload = jose.decodeJwt(token);
-                debug('Token header:', header);
-                debug('Token payload:', payload);
-                debug('Token algorithm:', header.alg);
                 
                 // Auto-update algorithm dropdown to match token (Manual tab only, when empty)
                 if (isManualTab && header.alg) {
                     const algorithmSelectManual = document.getElementById('algorithmSelectManual');
                     if (algorithmSelectManual && !algorithmSelectManual.value) {
-                        debug('Setting algorithm dropdown from empty to', header.alg);
                         algorithmSelectManual.value = header.alg;
                     }
                 }
 
                 const actualAlgorithm = isManualTab ? (algorithm || header.alg) : header.alg;
-                debug('Using algorithm:', actualAlgorithm);
 
                 let key;
 
                 // Discovery tab: handle HMAC tokens
                 if (isDiscoveryTab && actualAlgorithm.startsWith('HS')) {
-                    debug('Discovery tab - HMAC algorithm detected');
                     showVerificationResult('HMAC tokens require a secret key. Switch to Manual tab to verify', 'info', resultDiv);
                     return;
                 }
 
                 // Discovery tab: automatic JWKS verification for asymmetric algorithms
                 if (isDiscoveryTab && (actualAlgorithm.startsWith('RS') || actualAlgorithm.startsWith('ES') || actualAlgorithm.startsWith('PS'))) {
-                    debug('Discovery tab - attempting automatic JWKS verification');
                     
                     // Check if this is a Microsoft Graph access token with nonce field
                     const audience = payload.aud;
@@ -3404,7 +3352,6 @@
                         
                         // If checkbox not checked, stop here and don't proceed with verification
                         if (!hashNonceCheckbox?.checked) {
-                            debug('Microsoft Graph access token detected with nonce field, checkbox not checked');
                             if (autoFetchedKeyDiv) autoFetchedKeyDiv.style.display = 'none';
                             const copySignatureBtn = document.getElementById('copySignatureBtn');
                             if (copySignatureBtn) copySignatureBtn.style.display = 'none';
@@ -3426,7 +3373,6 @@
                     // Try to get JWKS endpoint from issuer
                     const issuer = payload.iss;
                     if (!issuer) {
-                        debug('No issuer found in token, cannot auto-verify');
                         if (hashNonceGroup) hashNonceGroup.style.display = 'none';
                         if (autoFetchedKeyDiv) autoFetchedKeyDiv.style.display = 'none';
                         const copySignatureBtn = document.getElementById('copySignatureBtn');
@@ -3434,8 +3380,6 @@
                         showVerificationResult('No issuer (iss) claim found in token. Cannot auto-fetch public key', 'warning', resultDiv);
                         return;
                     }
-                    
-                    debug('Token issuer:', issuer);
                     
                     // Use OIDC discovery to get JWKS URL from issuer
                     let jwksUrl;
@@ -3447,7 +3391,6 @@
                             const tenantMatch = issuer.match(/\/([^/]+)\/?$/);
                             const tenant = tenantMatch ? tenantMatch[1] : 'common';
                             jwksUrl = `https://login.microsoftonline.com/${tenant}/discovery/keys`;
-                            debug('Entra ID v1 token detected, using tenant-specific v1 keys endpoint:', jwksUrl);
                         } else {
                             // For v2 tokens and other OIDC providers, use standard discovery
                             // Construct OIDC discovery URL from issuer
@@ -3455,25 +3398,19 @@
                             const normalizedIssuer = issuer.endsWith('/') ? issuer : issuer + '/';
                             const discoveryUrl = `${normalizedIssuer}.well-known/openid-configuration`;
                             
-                            debug('Fetching OIDC discovery from:', discoveryUrl);
-                            
                             // Fetch the discovery document
                             const discoveryResponse = await fetch(discoveryUrl);
                             if (!discoveryResponse.ok) {
                                 throw new Error(`OIDC discovery failed (HTTP ${discoveryResponse.status}). URL: ${discoveryUrl}`);
                             }
                             const discoveryDoc = await discoveryResponse.json();
-                            debug('OIDC discovery document:', discoveryDoc);
                             
                             if (!discoveryDoc.jwks_uri) {
                                 throw new Error('OIDC discovery document does not contain jwks_uri');
                             }
                             
                             jwksUrl = discoveryDoc.jwks_uri;
-                            debug('JWKS URI from discovery:', jwksUrl);
                         }
-                        
-                        debug('Fetching JWKS from:', jwksUrl);
                         
                         // Fetch the JWKS to get the actual public key
                         let jwksResponse, jwksData;
@@ -3489,7 +3426,6 @@
                             }
                             throw fetchError;
                         }
-                        debug('JWKS data:', jwksData);
                         
                         if (!jwksData.keys || !Array.isArray(jwksData.keys) || jwksData.keys.length === 0) {
                             throw new Error('JWKS response does not contain any keys');
@@ -3507,26 +3443,14 @@
                             throw new Error(`No matching public key found in JWKS for kid: "${kid}". Available keys: ${jwksData.keys.map(k => k.kid).join(', ')}`);
                         }
                         
-                        debug('Found matching key:', matchingKey);
-                        
                         // Import the specific key directly (more reliable than createRemoteJWKSet)
-                        debug('Importing JWK directly...');
                         const publicKey = await jose.importJWK(matchingKey, actualAlgorithm);
-                        debug('Public key imported successfully');
-                        
-                        debug('Token details for verification:');
-                        debug('  - Length:', token.length);
-                        debug('  - First 50 chars:', token.substring(0, 50));
-                        debug('  - Last 50 chars:', token.substring(token.length - 50));
-                        debug('  - Contains newlines?', token.includes('\n'));
-                        debug('  - Contains carriage returns?', token.includes('\r'));
                         
                         // Apply nonce hash if checkbox is checked and token has nonce
                         let tokenToVerify = token;
                         let isMSGraphTokenVerified = false;
                         const hashNonceCheckbox = document.getElementById('hashNonceCheckbox');
                         if (hashNonceCheckbox?.checked && header.nonce) {
-                            debug('Applying SHA256 hash to nonce field for Microsoft Graph token...');
                             isMSGraphTokenVerified = true;
                             try {
                                 // Calculate SHA256 hash of nonce
@@ -3537,24 +3461,18 @@
                                 
                                 // Encode as base64url (not regular base64)
                                 const hashBase64Url = jose.base64url.encode(hashUint8Array);
-                                debug('Original nonce:', header.nonce);
-                                debug('SHA256 hash (base64url):', hashBase64Url);
                                 
                                 // Reconstruct JWT with hashed nonce
                                 const modifiedHeader = { ...header, nonce: hashBase64Url };
                                 const parts = token.split('.');
                                 const newHeaderB64 = jose.base64url.encode(JSON.stringify(modifiedHeader));
                                 tokenToVerify = `${newHeaderB64}.${parts[1]}.${parts[2]}`;
-                                debug('Token reconstructed with hashed nonce');
                             } catch (hashError) {
-                                debugError('Failed to apply nonce hash:', hashError);
                                 throw new Error(`Failed to apply SHA256 hash to nonce: ${hashError.message}`);
                             }
                         }
                         
-                        debug('Calling jose.compactVerify (low-level verification)...');
                         const { protectedHeader } = await jose.compactVerify(tokenToVerify, publicKey);
-                        debug('Signature verification successful! Protected header:', protectedHeader);
                         
                         // Display the public key with syntax highlighting in auto-fetched key div
                         const publicKeyJson = JSON.stringify(matchingKey, null, 2);
@@ -3579,14 +3497,6 @@
                         return;
                         
                     } catch (jwksError) {
-                        debugError('JWKS verification failed:', jwksError);
-                        debugError('Error details:', {
-                            message: jwksError.message,
-                            name: jwksError.name,
-                            code: jwksError.code,
-                            stack: jwksError.stack
-                        });
-                        
                         // Provide more helpful error message
                         // Hide the Public Key section on error
                         if (hashNonceGroup) {
@@ -3639,20 +3549,17 @@
 
                 // Manual tab or HMAC algorithm: require manual secret/key input
                 if (!secretTrimmed && isManualTab) {
-                    debug('Manual tab - no secret provided');
                     showVerificationResult('', 'none', resultDiv);
                     return;
                 }
 
                 // If no secret provided for HMAC or after JWKS failure, show neutral state
                 if (!secretTrimmed) {
-                    debug('No secret, clearing result');
                     showVerificationResult('', 'none');
                     return;
                 }
 
                 // Manual verification with provided secret
-                debug('Using manual secret verification');
                 const detectKeyFormat = (value) => {
                     if (!value) return '';
                     if (value.startsWith('{')) return 'jwk';
@@ -3742,7 +3649,7 @@
                         }
                         if (parsed && parsed.kty) return parsed;
                     } catch (err) {
-                        debug('JWK parse failed:', err);
+                        // JWK parse failed
                     }
                     return null;
                 };
@@ -3757,17 +3664,14 @@
                     if (looksLikeCert) {
                         throw new Error('This looks like a certificate/public key. HS algorithms require a shared secret, not a cert');
                     }
-                    debug('HMAC algorithm detected');
                     let secretBytes;
                     if (selectedKeyFormat === 'jwk') {
-                        debug('Importing HMAC JWK');
                         const jwk = parseJwkInput(manualSecretInput);
                         if (!jwk) {
                             throw new Error('Invalid JWK. Paste a valid JWK or switch Key Format');
                         }
                         key = await jose.importJWK(jwk, actualAlgorithm);
                     } else if (base64Checkbox.checked) {
-                        debug('Base64 decoding secret');
                         try {
                             const normalized = normalizeBase64(secretTrimmed);
                             if (!isValidBase64(normalized)) {
@@ -3778,22 +3682,18 @@
                             throw new Error('Invalid base64 secret. Uncheck "B64 encoded" or fix the input');
                         }
                     } else {
-                        debug('Using secret as-is');
                         secretBytes = new TextEncoder().encode(secretTrimmed);
                     }
                     if (!key) {
-                        debug('Secret bytes length:', secretBytes.length);
                         key = await jose.importJWK({
                             kty: 'oct',
                             k: jose.base64url.encode(secretBytes),
                             alg: actualAlgorithm
                         }, actualAlgorithm);
-                        debug('HMAC key imported');
                     }
                 } 
                 // Handle RSA algorithms (asymmetric)
                 else if (actualAlgorithm.startsWith('RS') || actualAlgorithm.startsWith('PS')) {
-                    debug('RSA algorithm detected');
                     const preferX509 = !selectedKeyFormat && !detectKeyFormat(manualSecretInput) && isLikelyBase64Cert(manualSecretInput);
                     const keyFormat = selectedKeyFormat || detectKeyFormat(manualSecretInput) || (preferX509 ? 'pem' : '');
                     if (keyFormat === 'jwk') {
@@ -3827,11 +3727,9 @@
                     } else {
                         throw new Error('Unsupported key format. Select Key Format or paste JWK/PEM/X.509');
                     }
-                    debug('RSA key imported');
                 }
                 // Handle ECDSA algorithms (asymmetric)
                 else if (actualAlgorithm.startsWith('ES')) {
-                    debug('ECDSA algorithm detected');
                     const preferX509 = !selectedKeyFormat && !detectKeyFormat(manualSecretInput) && isLikelyBase64Cert(manualSecretInput);
                     const keyFormat = selectedKeyFormat || detectKeyFormat(manualSecretInput) || (preferX509 ? 'pem' : '');
                     if (keyFormat === 'jwk') {
@@ -3865,26 +3763,19 @@
                     } else {
                         throw new Error('Unsupported key format. Select Key Format or paste JWK/PEM/X.509');
                     }
-                    debug('ECDSA key imported');
                 }
 
                 // Verify the JWT using jose library
-                debug('Calling jose.jwtVerify with manual key...');
                 // Skip claim validation (exp, nbf, iat) - we only care about signature
                 const { payload: verifiedPayload } = await jose.jwtVerify(token, key, {
                     clockTolerance: Infinity // Ignore expiration/timing checks
                 });
-                debug('Verification successful! Payload:', verifiedPayload);
                 
                 // Clear verification result panel (success shown in top banner only)
                 showVerificationResult('', 'none');
                 showStatusBanner(['✓ Signature verified successfully!'], 'success');
 
             } catch (error) {
-                debugError('=== Verification error ===');
-                debugError('Error name:', error.name);
-                debugError('Error message:', error.message);
-                debugError('Error stack:', error.stack);
                 // Only show invalid if there was an actual secret provided
                 const secret = secretInput.textContent.trim();
                 if (secret) {
@@ -4037,7 +3928,6 @@
                 if (copyGeneratedBtn) copyGeneratedBtn.style.display = 'block';
 
             } catch (error) {
-                debugError('Generation error:', error);
                 showGenerateResult(`✗ Failed to generate JWT: ${error.message}`, 'invalid');
                 
                 // Hide copy icon on error
@@ -4194,7 +4084,7 @@
                     }, 1500);
                 }
             } catch (err) {
-                debugError('Failed to copy:', err);
+                // Copy failed silently
             }
         }
 
@@ -4287,10 +4177,7 @@
                     // Only trigger verification if we're actually switching TO this tab (wasn't already active)
                     const token = getFullToken();
                     if (token && !wasAlreadyActive) {
-                        debug('Switching to Discovery tab, triggering verification');
                         verifySignature();
-                    } else if (wasAlreadyActive) {
-                        debug('Discovery tab already active, skipping re-verification');
                     }
                 } else if (target === 'manualVerification') {
                     setTimeout(autoResizeSecretInput, 0);
@@ -4348,8 +4235,6 @@
         // ============================================================================
         // INITIALIZATION
         // ============================================================================
-        debug('JWTly initialized');
-        debug('Jose library version:', jose);
         setSignatureTabPanels();
 
         // Handle token from URL query parameter or POST
@@ -4369,8 +4254,6 @@
         // Handle POST data (from OAuth redirect)
         if (window.location.hash) {
             const hashString = window.location.hash.substring(1);
-            debug('Raw hash string length:', hashString.length);
-            debug('Raw hash (first 100 chars):', hashString.substring(0, 100));
             
             // Manual parsing for more reliable token extraction
             const idTokenMatch = hashString.match(/id_token=([^&]+)/);
@@ -4378,43 +4261,25 @@
             
             if (idTokenMatch) {
                 storedTokens.id_token = idTokenMatch[1];
-                debug('Extracted id_token via regex:', `${storedTokens.id_token.length} chars`);
             }
             
             if (accessTokenMatch) {
                 storedTokens.access_token = accessTokenMatch[1];
-                debug('Extracted access_token via regex:', `${storedTokens.access_token.length} chars`);
             }
-            
-            // Verify tokens weren't truncated
-            Object.keys(storedTokens).forEach(key => {
-                const token = storedTokens[key];
-                if (token) {
-                    const endsWithValidBase64 = /[A-Za-z0-9_-]$/.test(token);
-                    debug(`${key} ends with valid base64 char:`, endsWithValidBase64);
-                    if (!endsWithValidBase64) {
-                        debug(`WARNING: ${key} may be truncated!`);
-                    }
-                }
-            });
         }
 
         const hasIdToken = !!storedTokens.id_token;
         const hasAccessToken = !!storedTokens.access_token;
         const hasBothTokens = hasIdToken && hasAccessToken;
-        
-        debug('Tokens found:', { id_token: hasIdToken, access_token: hasAccessToken });
 
         // Initialize based on whether tokens were provided
         if (hasIdToken || hasAccessToken) {
             const initialToken = storedTokens.id_token || storedTokens.access_token;
             const initialTokenType = hasIdToken ? 'id_token' : 'access_token';
-            debug('Loading initial token:', initialTokenType);
             
             // loadToken will handle tabs setup
             loadToken(initialToken, initialTokenType);
         } else {
-            debug('No token in URL, showing single input mode');
             showSingleInput();
         }
 
