@@ -54,9 +54,14 @@
         /* Light theme: override tools.css dark defaults */
         :root .standard-input,
         :root .standard-select,
-        :root .standard-select-muted,
         :root .standard-filter-input {
             background-color: #ffffff;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+        
+        :root .standard-select-muted {
+            background-color: var(--bg-secondary);
             border-color: #cbd5e1;
             color: #1e293b;
         }
@@ -86,7 +91,10 @@
             appearance: none;
         }
         
-        :root .standard-select,
+        :root .standard-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+        }
+        
         :root .standard-select-muted {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
         }
@@ -95,11 +103,18 @@
         [data-theme="dark"] .standard-select-muted {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23a0b0c099' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
         }
-        :root .standard-select:invalid,
+        :root .standard-select:invalid {
+            color: #888;
+        }
+        
         :root .standard-select-muted:invalid {
             color: #888;
         }
-        :root .standard-select option[value=""],
+        
+        :root .standard-select option[value=""] {
+            color: #888;
+        }
+        
         :root .standard-select-muted option[value=""] {
             color: #888;
         }
@@ -112,10 +127,14 @@
         [data-theme="dark"] .standard-select-muted option[value=""] {
             color: #888;
         }
-        :root .standard-select option,
-        :root .standard-select-muted option {
+        :root .standard-select option {
             color: #1e293b;
             background-color: #ffffff;
+        }
+        
+        :root .standard-select-muted option {
+            color: #1e293b;
+            background-color: var(--bg-secondary);
         }
         
         [data-theme="dark"] .standard-select option,
@@ -123,7 +142,12 @@
             color: #888;
             background-color: color(srgb 0.09 0.12 0.1);
         }
-        :root .standard-select:focus,
+        :root .standard-select:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: #94a3b8;
+        }
+        
         :root .standard-select-muted:focus {
             outline: none;
             box-shadow: none;
