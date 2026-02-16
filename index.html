@@ -978,22 +978,58 @@
         [data-theme="dark"] .panel-header-decoded { color: rgb(192 132 252); }
         [data-theme="dark"] .panel-header-payload { color: rgb(96 165 250); }
         [data-theme="dark"] .panel-header-signature { color: rgb(52 211 153); }
-        .decoded-tabs { display: flex; gap: 0; justify-content: flex-start; border-radius: 6px; padding: 0.25rem; }
-        .decoded-tab { background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; padding: 0.2rem 1rem; cursor: pointer; border-radius: 4px; transition: all 0.2s; outline: none; }
-        .decoded-tab:hover:not(.active) { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); }
+        .decoded-tabs { display: flex; gap: 0.25rem; justify-content: flex-start; border-radius: 6px; padding: 0.25rem; }
+        
+        /* Light theme tabs - inactive tabs have white overlay, active tabs show row color */
+        :root .decoded-tab { 
+            background: rgba(255, 255, 255, 0.5) !important; 
+            border: none; 
+            color: var(--text-secondary); 
+            font-size: 0.85rem; 
+            font-weight: 500; 
+            padding: 0.2rem 1rem; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: all 0.2s; 
+            outline: none; 
+        }
+        
+        :root .decoded-tab:hover:not(.active) { 
+            background: rgba(255, 255, 255, 0.7) !important; 
+            color: var(--text-primary); 
+        }
         
         :root .decoded-tab.active { 
             color: var(--text-primary) !important; 
-            background: rgba(0, 0, 0, 0.1) !important; 
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
-            font-weight: 600;
+            background: transparent !important; 
+            font-weight: 600 !important;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) inset !important;
+        }
+        
+        /* Dark theme tabs */
+        [data-theme="dark"] .decoded-tab { 
+            background: transparent !important; 
+            border: none; 
+            color: var(--text-secondary); 
+            font-size: 0.85rem; 
+            font-weight: 500; 
+            padding: 0.2rem 1rem; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: all 0.2s; 
+            outline: none; 
+        }
+        
+        [data-theme="dark"] .decoded-tab:hover:not(.active) { 
+            background: rgba(255, 255, 255, 0.05) !important; 
+            color: var(--text-primary); 
         }
         
         [data-theme="dark"] .decoded-tab.active { 
             color: var(--text-primary) !important; 
             background: rgba(0, 0, 0, 0.4) !important; 
+            font-weight: 600 !important;
             box-shadow: none !important;
-            font-weight: 600;
         }
         #manualVerification.tab-content.active { display: block !important; }
         #discoveryVerification.tab-content.active { display: block !important; }
