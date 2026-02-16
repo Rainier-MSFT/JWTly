@@ -2,6 +2,10 @@
   "$schema": "https://json.schemastore.org/staticwebapp.config.json",
   "routes": [
     {
+      "route": "/",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/*",
       "allowedRoles": ["anonymous"]
     }
