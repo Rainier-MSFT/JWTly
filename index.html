@@ -2380,10 +2380,13 @@
                 const tabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
                 tabBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
+                        // Skip if already active
+                        if (btn.classList.contains('active')) return;
+                        
                         const tokenType = btn.dataset.tokenType;
                         const token = window.storedTokens?.[tokenType];
                         if (!token) return;
-                        loadToken(token);
+                        loadToken(token, tokenType);
                     });
                 });
                 tokenTypeTabs.dataset.wired = 'true';
