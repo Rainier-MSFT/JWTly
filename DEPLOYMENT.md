@@ -20,16 +20,6 @@ git commit -m "Your changes"
 git push origin master
 ```
 
-## IP Restrictions
-
-Only these IPs can access:
-- 62.30.200.221/32
-- 193.117.224.186/32
-- 193.117.232.246/32
-- 193.115.224.50/32
-
-To add IPs: Edit `staticwebapp.config.json` and push.
-
 ## Complete Rebuild
 
 ### Via Azure Portal (Recommended)

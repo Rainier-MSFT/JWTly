@@ -10,12 +10,7 @@
     "rewrite": "/index.html"
   },
   "networking": {
-    "allowedIpRanges": [
-      "62.30.200.221/32",
-      "193.117.224.186/32",
-      "193.117.232.246/32",
-      "193.115.224.50/32"
-    ]
+    "allowedIpRanges": []
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
