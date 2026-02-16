@@ -2534,7 +2534,12 @@
             async function createExampleJwtHs256(payloadObj, secret) {
                 const secretBytes = new TextEncoder().encode(secret);
                 return await new jose.SignJWT(payloadObj)
-                    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+                    .setProtectedHeader({ 
+                        alg: 'HS256', 
+                        typ: 'JWT',
+                        kid: 'example-key-2024',
+                        cty: 'JWT'
+                    })
                     .sign(secretBytes);
             }
 
@@ -2544,7 +2549,7 @@
 
                 const exampleTenant = 'common';
                 const exampleClientId = '11111111-1111-1111-1111-111111111111';
-                const exampleSecret = 'example-secret';
+                const exampleSecret = 'example-secret-hs256-for-demo-purposes-only';
 
                 const exampleIdToken = await createExampleJwtHs256(
                     {
