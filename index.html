@@ -2490,7 +2490,7 @@
         }
 
         // Load token into segment view
-        function loadToken(token) {
+        function loadToken(token, knownTokenType) {
             const validation = validateJWTStructure(token);
             
             if (!validation.valid) {
@@ -2501,9 +2501,14 @@
             
             // Store token if not already stored
             window.storedTokens = window.storedTokens || { id_token: null, access_token: null };
-            const tokenType = detectTokenType(token);
-            if (!window.storedTokens[tokenType]) {
-                window.storedTokens[tokenType] = token;
+            
+            // Use known type if provided, otherwise detect
+            let tokenType = knownTokenType;
+            if (!tokenType) {
+                tokenType = detectTokenType(token);
+                if (!window.storedTokens[tokenType]) {
+                    window.storedTokens[tokenType] = token;
+                }
             }
             
             // Update token type tabs UI
@@ -2740,8 +2745,6 @@
                 window.storedTokens.id_token = exampleIdToken;
                 window.storedTokens.access_token = exampleAccessToken;
 
-                // Tabs will be updated by loadToken via updateTokenTypeTabs
-
                 // Switch signature verification to BYOK and preload secret so verification succeeds.
                 const manualTabBtn = document.querySelector('.decoded-tab[data-target="manualVerification"]');
                 manualTabBtn?.click();
@@ -2754,9 +2757,9 @@
                 if (keyFormatSelect) keyFormatSelect.value = 'raw';
                 if (base64Checkbox) base64Checkbox.checked = false;
 
-                // Populate input box for visibility/history, then load like a paste.
+                // Populate input box for visibility/history, then load with known type
                 jwtInputField.value = exampleIdToken;
-                loadToken(exampleIdToken);
+                loadToken(exampleIdToken, 'id_token');
             }
 
             // Initial centering
@@ -4402,15 +4405,11 @@
         // Initialize based on whether tokens were provided
         if (hasIdToken || hasAccessToken) {
             const initialToken = storedTokens.id_token || storedTokens.access_token;
-            debug('Loading initial token...');
-            
-            // Determine which token type to load
             const initialTokenType = hasIdToken ? 'id_token' : 'access_token';
+            debug('Loading initial token:', initialTokenType);
             
-            // Update tabs will be called by loadToken
-            // (no need to set up here as updateTokenTypeTabs handles everything)
-            
-            loadToken(initialToken);
+            // loadToken will handle tabs setup
+            loadToken(initialToken, initialTokenType);
         } else {
             debug('No token in URL, showing single input mode');
             showSingleInput();
