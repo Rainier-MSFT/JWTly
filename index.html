@@ -2358,6 +2358,61 @@
         // Store the original pristine token for verification (contenteditable can modify text)
         let originalToken = '';
 
+        // Update token type tabs based on stored tokens
+        function updateTokenTypeTabs(activeTokenType) {
+            const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+            if (!tokenTypeTabs) return;
+            
+            const storedTokens = window.storedTokens || {};
+            const hasIdToken = !!storedTokens.id_token;
+            const hasAccessToken = !!storedTokens.access_token;
+            
+            // Only show tabs if we have at least one token
+            if (!hasIdToken && !hasAccessToken) {
+                tokenTypeTabs.style.display = 'none';
+                return;
+            }
+            
+            tokenTypeTabs.style.display = 'flex';
+            
+            // Wire up click handlers if not already done
+            if (tokenTypeTabs.dataset.wired !== 'true') {
+                const tabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tokenType = btn.dataset.tokenType;
+                        const token = window.storedTokens?.[tokenType];
+                        if (!token) return;
+                        loadToken(token);
+                    });
+                });
+                tokenTypeTabs.dataset.wired = 'true';
+            }
+            
+            const tabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
+            tabBtns.forEach(btn => {
+                const tokenType = btn.dataset.tokenType;
+                const hasToken = tokenType === 'id_token' ? hasIdToken : hasAccessToken;
+                
+                // Enable/disable based on token availability
+                if (!hasToken) {
+                    btn.disabled = true;
+                    const otherType = tokenType === 'id_token' ? 'Access' : 'ID';
+                    btn.setAttribute('title', `Only ${otherType} token in payload`);
+                } else {
+                    btn.disabled = false;
+                    btn.removeAttribute('title');
+                }
+                
+                // Set active state
+                if (tokenType === activeTokenType) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         // Switch between single input and segment view
         function showSingleInput() {
             jwtSingleInput.style.display = 'flex';
@@ -2414,6 +2469,26 @@
             return { valid: true, parts };
         }
 
+        // Detect token type (ID token or Access token) based on claims
+        function detectTokenType(token) {
+            try {
+                const decoded = jose.decodeJwt(token);
+                // Access tokens typically have 'scp' or target MS Graph/API
+                const hasScopes = decoded.scp || decoded.scope;
+                const isGraphToken = decoded.aud && typeof decoded.aud === 'string' && 
+                    (decoded.aud.includes('graph.microsoft') || decoded.aud.includes('://'));
+                
+                // If it has scopes or targets an API, it's likely an access token
+                if (hasScopes || isGraphToken) {
+                    return 'access_token';
+                }
+                // Otherwise assume ID token
+                return 'id_token';
+            } catch (e) {
+                return 'id_token'; // default
+            }
+        }
+
         // Load token into segment view
         function loadToken(token) {
             const validation = validateJWTStructure(token);
@@ -2423,6 +2498,16 @@
                 jwtInputError.style.display = 'block';
                 return false;
             }
+            
+            // Store token if not already stored
+            window.storedTokens = window.storedTokens || { id_token: null, access_token: null };
+            const tokenType = detectTokenType(token);
+            if (!window.storedTokens[tokenType]) {
+                window.storedTokens[tokenType] = token;
+            }
+            
+            // Update token type tabs UI
+            updateTokenTypeTabs(tokenType);
             
             jwtInputError.style.display = 'none';
             
@@ -2655,34 +2740,7 @@
                 window.storedTokens.id_token = exampleIdToken;
                 window.storedTokens.access_token = exampleAccessToken;
 
-                const tokenTypeTabs = document.getElementById('tokenTypeTabs');
-                if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
-                
-                const tabBtns = tokenTypeTabs?.querySelectorAll('.token-type-tab') || [];
-
-                // Ensure token type tabs are wired (normally only wired on page load if tokens come via URL)
-                if (tokenTypeTabs && tokenTypeTabs.dataset.wired !== 'true') {
-                    tabBtns.forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const tokenType = btn.dataset.tokenType;
-                            const token = window.storedTokens?.[tokenType];
-                            if (!token) return;
-                            tabBtns.forEach(b => b.classList.remove('active'));
-                            btn.classList.add('active');
-                            loadToken(token);
-                        });
-                    });
-                    tokenTypeTabs.dataset.wired = 'true';
-                }
-
-                // Enable both buttons and set active state
-                tabBtns.forEach(b => {
-                    b.disabled = false;
-                    b.removeAttribute('title');
-                    b.classList.remove('active');
-                });
-                const idTab = tokenTypeTabs?.querySelector('.token-type-tab[data-token-type="id_token"]');
-                idTab?.classList.add('active');
+                // Tabs will be updated by loadToken via updateTokenTypeTabs
 
                 // Switch signature verification to BYOK and preload secret so verification succeeds.
                 const manualTabBtn = document.querySelector('.decoded-tab[data-target="manualVerification"]');
@@ -4346,41 +4404,11 @@
             const initialToken = storedTokens.id_token || storedTokens.access_token;
             debug('Loading initial token...');
             
-            // Show token type tabs whenever any token is loaded
-            const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+            // Determine which token type to load
+            const initialTokenType = hasIdToken ? 'id_token' : 'access_token';
             
-            if (tokenTypeTabs) {
-                tokenTypeTabs.style.display = 'flex';
-                
-                // Handle token type tab switching and disabled states
-                const tokenTypeTabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
-                tokenTypeTabBtns.forEach(btn => {
-                    const tokenType = btn.dataset.tokenType;
-                    const token = storedTokens[tokenType];
-                    
-                    // Set disabled state and tooltip
-                    if (!token) {
-                        btn.disabled = true;
-                        const otherType = tokenType === 'id_token' ? 'Access' : 'ID';
-                        btn.setAttribute('title', `Only ${otherType} token detected`);
-                    } else {
-                        btn.disabled = false;
-                        btn.removeAttribute('title');
-                    }
-                    
-                    // Add click handler
-                    btn.addEventListener('click', () => {
-                        if (token) {
-                            // Update active tab
-                            tokenTypeTabBtns.forEach(b => b.classList.remove('active'));
-                            btn.classList.add('active');
-                            
-                            // Load the selected token
-                            loadToken(token);
-                        }
-                    });
-                });
-            }
+            // Update tabs will be called by loadToken
+            // (no need to set up here as updateTokenTypeTabs handles everything)
             
             loadToken(initialToken);
         } else {
