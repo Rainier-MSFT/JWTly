@@ -2455,7 +2455,7 @@
             
             const parts = token.split('.');
             if (parts.length !== 3) {
-                return { valid: false, error: 'Invalid structure. JWT debugger supports standards based JWT\'s containing three b64 url-encoded segments separated by dots, as per RFC7515' };
+                return { valid: false, error: 'Invalid structure. JWTly supports standards based JWT\'s containing three b64 url-encoded segments separated by dots, as per RFC7515' };
             }
             
             if (!parts[0] || !parts[1]) {
