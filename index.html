@@ -1152,7 +1152,7 @@
         .decoded-signature-content-area.signature-manual-active #discoveryVerification { display: none !important; }
         #algorithmSelectManual,
         #keyFormatSelect {
-            border-radius: 6px;
+            border-radius: 4px;
         }
         
         /* Match dropdown backgrounds to signature verification section */
@@ -2863,23 +2863,23 @@
         // Standard JWT claim descriptions (RFC 7519, OIDC, Microsoft Entra ID)
         const claimDescriptions = {
             // Standard JWT Claims (RFC 7519)
-            'iss': 'Issuer - identifies principal that issued the JWT',
-            'sub': 'Subject - identifies the subject of the JWT',
-            'aud': 'Audience - identifies the recipients that the JWT is intended for',
-            'exp': 'Expiration Time - identifies the expiration time on or after which the JWT must not be accepted',
-            'nbf': 'Not Before - identifies the time before which the JWT must not be accepted',
-            'iat': 'Issued At - identifies the time at which the JWT was issued',
-            'jti': 'JWT ID - provides a unique identifier for the JWT',
+            'iss': 'Issuer, identifies principal that issued the JWT',
+            'sub': 'Subject, identifies the principal that is the subject of the JWT',
+            'aud': 'Audience, identifies the recipients that the JWT is intended for',
+            'exp': 'identifies the expiration time on or after which the JWT must not be accepted',
+            'nbf': 'Not Before, identifies the time before which the JWT must not be accepted',
+            'iat': 'Issued At, identifies the time at which the JWT was issued',
+            'jti': 'JWT ID, provides a unique identifier for the JWT',
             
             // JWS/JWE Header Claims
-            'alg': 'Algorithm - identifies the cryptographic algorithm used to secure the JWS',
-            'typ': 'Type - declares the media type of the JWT',
-            'cty': 'Content Type - declares the media type of the secured content',
+            'alg': 'Algorithm, identifies the cryptographic algorithm used to secure the JWS',
+            'typ': 'Type, declares the media type of the JWT',
+            'cty': 'Content Type, declares the media type of the secured content',
             'kid': 'Key ID - hint indicating which key was used to secure the JWS',
             'x5t': 'X.509 Certificate SHA-1 Thumbprint',
             'x5c': 'X.509 Certificate Chain',
             'x5u': 'X.509 URL - URI that refers to a resource for an X.509 public key certificate',
-            'jwk': 'JSON Web Key - public key that corresponds to the key used to digitally sign the JWS',
+            'jwk': 'JSON Web Key - public key used to digitally sign the JWS',
             
             // OpenID Connect Standard Claims
             'name': 'Full name of the user',
@@ -2903,10 +2903,10 @@
             'updated_at': 'Time the user\'s information was last updated',
             
             // OpenID Connect ID Token Claims
-            'azp': 'Authorized party - the party to which the ID Token was issued',
+            'azp': 'Authorized party to which the ID Token was issued',
             'nonce': 'Value used to associate a Client session with an ID Token',
-            'acr': 'Authentication Context Class Reference',
-            'amr': 'Authentication Methods References',
+            'acr': 'Authentication Context Class Reference (authN hooks)',
+            'amr': 'Authentication Methods References (Entra authN methods)',
             'auth_time': 'Time when the authentication occurred',
             'at_hash': 'Access Token hash value',
             'c_hash': 'Code hash value',
@@ -2914,56 +2914,56 @@
             
             // Microsoft Entra ID (Azure AD) Specific Claims
             'tid': 'Entra tenant ID',
-            'oid': 'Object ID - Immutable ID for the Entra user or service principal',
-            'upn': 'User Principal Name - user identifier in email format',
+            'oid': 'Immutable ID of the Entra user or service principal',
+            'upn': 'User Principal Name (User ID in email format)',
             'unique_name': 'Unique name ID of user',
             'pwd_exp': 'Seconds until password expires',
             'pwd_url': 'URL where user can change password',
             
             // Roles and Permissions
-            'roles': 'Application roles assigned to the user or app',
+            'roles': 'App roles assigned to the user or app',
             'groups': 'Security group membership (OIDs or names)',
-            'wids': 'Well-Known IDs - Entra directory role template IDs',
-            'scp': 'Scope - delegated permissions granted to client application',
+            'wids': 'Well-Known Entra directory role template IDs',
+            'scp': 'Delegated scope of permissions granted to client app',
             'hasgroups': 'True if user has more groups than can fit in token',
             
             // Application Claims
-            'app_displayname': 'Application display name',
-            'appid': 'Application ID (a.k.a Client ID)',
-            'appidacr': 'Application Authentication Context Class Reference',
-            'idtyp': 'Identity Type - indicates whether token is for user or application',
+            'app_displayname': 'Appl display name',
+            'appid': 'Appl ID (a.k.a Client ID)',
+            'appidacr': 'App Authentication Context Class Reference',
+            'idtyp': 'Indicates whether token is for user or app',
             'azpacr': 'Authorized Party Authentication Context Class Reference',
             
             // Device and Session Claims
-            'deviceid': 'Device identifier',
-            'sid': 'USer session identifier',
+            'deviceid': 'Device identifier derived from authN flow',
+            'sid': 'User session identifier',
             'login_hint': 'User ID hint provided to authN flow',
             
             // Resource and Tenant Claims
-            'rh': 'Refresh Token Handle - Opaque ID for refresh token',
-            'uti': 'Unique Token Identifier - Internal use',
+            'rh': 'Refresh Token Handle (Opaque ID)',
+            'uti': 'Unique Token Identifier (Internal use)',
             'xms_tcdt': 'Tenant Creation Date Time',
             'xms_tdbr': 'Tenant Default Branding info',
             
             // Claims Transformation
-            'ctry': 'User country derived from authN request',
-            'ipaddr': 'IP address of the authenticating party',
-            'platf': 'Platform used for authentication',
+            'ctry': 'Client location, derived from authN flow',
+            'ipaddr': 'Client source IP, derived from authN flow',
+            'platf': 'Client platform, derived from authN flow',
             
             // Token Version and Type
             'ver': 'Token schema version (v1 or 2)',
             'idp': 'IdP that authenticated the subject',
-            'tfp': 'Trust Framework Policy - Azure AD B2C policy name',
-            'acct': 'Account Type - type of account (0=user, 1=guest)',
+            'tfp': 'Trust Framework Policy (Entra ID B2C policy name)',
+            'acct': 'Account Type (0=user, 1=guest)',
             
             // OAuth 2.0 Token Exchange
-            'client_id': 'Client ID - Identifier of the client application',
-            'grant_type': 'Grant Type - OAuth grant type used',
+            'client_id': 'Identifier of the client app',
+            'grant_type': 'OAuth grant type used',
             'scope': 'Space-separated list of scopes',
-            'resource': 'For which the token is intended for',
+            'resource': 'Target for which the token is intended for',
             
             // Microsoft Graph Specific
-            'idtyp': 'Identity Type - user or app',
+            'idtyp': 'Identity Type (user/app)',
             'aio': 'Azure internal only use ',
             'in_corp': 'True if request originated inside corpnet',
             'onprem_sid': 'On-Prem Security ID (Windows SID)',
