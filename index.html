@@ -979,15 +979,22 @@
         [data-theme="dark"] .panel-header-payload { color: rgb(96 165 250); }
         [data-theme="dark"] .panel-header-signature { color: rgb(52 211 153); }
         .decoded-tabs { display: flex; gap: 0; justify-content: flex-start; border-radius: 6px; padding: 0.25rem; }
-        .decoded-tab { background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; padding: 0.2rem 1rem; cursor: pointer; border-radius: 2px; transition: all 0.2s; outline: none; }
-        .decoded-tab:hover:not(.active) { background: rgba(255, 255, 255, 0.05); }
-        :root .decoded-tab.active { color: var(--text-primary); background: rgba(0, 0, 0, 0.08); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
-        [data-theme="dark"] .decoded-tab.active { 
-            color: var(--text-primary); 
-            background: rgba(0, 0, 0, 0.4); 
-            box-shadow: none;
+        .decoded-tab { background: transparent; border: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; padding: 0.2rem 1rem; cursor: pointer; border-radius: 4px; transition: all 0.2s; outline: none; }
+        .decoded-tab:hover:not(.active) { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); }
+        
+        :root .decoded-tab.active { 
+            color: var(--text-primary) !important; 
+            background: rgba(0, 0, 0, 0.1) !important; 
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+            font-weight: 600;
         }
-        .decoded-tab:hover:not(.active) { color: var(--text-primary); }
+        
+        [data-theme="dark"] .decoded-tab.active { 
+            color: var(--text-primary) !important; 
+            background: rgba(0, 0, 0, 0.4) !important; 
+            box-shadow: none !important;
+            font-weight: 600;
+        }
         #manualVerification.tab-content.active { display: block !important; }
         #discoveryVerification.tab-content.active { display: block !important; }
         /* CACHE BUST: 2026-02-03-v3-FINAL-OVERLAY-FIX */
@@ -2411,11 +2418,17 @@
                         iss: `https://login.microsoftonline.com/${exampleTenant}/v2.0`,
                         aud: exampleClientId,
                         tid: exampleTenant,
-                        sub: 'example-subject',
+                        oid: '22222222-2222-2222-2222-222222222222',
+                        sub: 'example-subject-12345',
                         name: 'Jane Doe',
                         preferred_username: 'jane.doe@contoso.com',
+                        email: 'jane.doe@contoso.com',
                         given_name: 'Jane',
                         family_name: 'Doe',
+                        unique_name: 'jane.doe@contoso.com',
+                        upn: 'jane.doe@contoso.com',
+                        roles: ['Admin', 'User.Manager'],
+                        groups: ['33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444'],
                         iat: now,
                         nbf: now,
                         exp: exp
@@ -2429,9 +2442,16 @@
                         iss: `https://login.microsoftonline.com/${exampleTenant}/v2.0`,
                         aud: 'https://graph.microsoft.com',
                         tid: exampleTenant,
+                        oid: '22222222-2222-2222-2222-222222222222',
+                        sub: 'example-subject-12345',
                         appid: exampleClientId,
-                        scp: 'User.Read Mail.Read',
+                        scp: 'User.Read Mail.Read Directory.Read.All',
+                        roles: ['Directory.Read.All'],
+                        wids: ['62e90394-69f5-4237-9190-012177145e10', '194ae4cb-b126-40b2-bd5b-6091b380977d'],
                         azp: exampleClientId,
+                        name: 'Jane Doe',
+                        unique_name: 'jane.doe@contoso.com',
+                        upn: 'jane.doe@contoso.com',
                         iat: now,
                         nbf: now,
                         exp: exp
