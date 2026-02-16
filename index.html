@@ -1398,19 +1398,9 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        /* Token type indicator (for single token) */
-        .token-type-indicator {
-            margin-bottom: 1rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-tertiary);
-            border-radius: 6px;
-            text-align: center;
-        }
-        
-        .token-type-indicator span {
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            font-weight: 500;
+        .token-type-tab:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
 
         /* Modal styles */
@@ -1764,15 +1754,10 @@
                         <span id="encodedPanelHeaderText">ENCODED JWT</span>
                     </div>
                     
-                    <!-- Token Type Tabs (shown when multiple tokens loaded) -->
+                    <!-- Token Type Tabs (shown when tokens loaded) -->
                     <div id="tokenTypeTabs" class="token-type-tabs" style="display: none;">
                         <button class="token-type-tab active" data-token-type="id_token">ID Token</button>
                         <button class="token-type-tab" data-token-type="access_token">Access Token</button>
-                    </div>
-                    
-                    <!-- Single Token Indicator (shown when only one token loaded) -->
-                    <div id="tokenTypeIndicator" class="token-type-indicator" style="display: none;">
-                        <span id="tokenTypeLabel"></span>
                     </div>
 
                     <div id="structureLabelRow" class="panel-label-row panel-label-row-end" style="display: none;">
@@ -2491,11 +2476,9 @@
             // Clear original token
             originalToken = '';
             
-            // Hide token type tabs and indicator
+            // Hide token type tabs
             const tokenTypeTabs = document.getElementById('tokenTypeTabs');
-            const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
             if (tokenTypeTabs) tokenTypeTabs.style.display = 'none';
-            if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
             
             // Clear stored tokens
             if (window.storedTokens) {
@@ -2663,11 +2646,7 @@
                 window.storedTokens.access_token = exampleAccessToken;
 
                 const tokenTypeTabs = document.getElementById('tokenTypeTabs');
-                const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
-                
-                // Show tabs (since we have both tokens), hide indicator
                 if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
-                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
                 
                 const tabBtns = tokenTypeTabs?.querySelectorAll('.token-type-tab') || [];
 
@@ -2686,7 +2665,12 @@
                     tokenTypeTabs.dataset.wired = 'true';
                 }
 
-                tabBtns.forEach(b => b.classList.remove('active'));
+                // Enable both buttons and set active state
+                tabBtns.forEach(b => {
+                    b.disabled = false;
+                    b.removeAttribute('title');
+                    b.classList.remove('active');
+                });
                 const idTab = tokenTypeTabs?.querySelector('.token-type-tab[data-token-type="id_token"]');
                 idTab?.classList.add('active');
 
@@ -4352,43 +4336,40 @@
             const initialToken = storedTokens.id_token || storedTokens.access_token;
             debug('Loading initial token...');
             
-            // Show token type tabs if both tokens present, or indicator if only one
+            // Show token type tabs whenever any token is loaded
             const tokenTypeTabs = document.getElementById('tokenTypeTabs');
-            const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
-            const tokenTypeLabel = document.getElementById('tokenTypeLabel');
             
-            if (hasBothTokens) {
-                // Show tabs for both tokens
-                if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
-                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
+            if (tokenTypeTabs) {
+                tokenTypeTabs.style.display = 'flex';
                 
-                if (tokenTypeTabs) {
-                    // Handle token type tab switching
-                    const tokenTypeTabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
-                    tokenTypeTabBtns.forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const tokenType = btn.dataset.tokenType;
-                            const token = storedTokens[tokenType];
+                // Handle token type tab switching and disabled states
+                const tokenTypeTabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
+                tokenTypeTabBtns.forEach(btn => {
+                    const tokenType = btn.dataset.tokenType;
+                    const token = storedTokens[tokenType];
+                    
+                    // Set disabled state and tooltip
+                    if (!token) {
+                        btn.disabled = true;
+                        const otherType = tokenType === 'id_token' ? 'Access' : 'ID';
+                        btn.setAttribute('title', `Only ${otherType} token detected`);
+                    } else {
+                        btn.disabled = false;
+                        btn.removeAttribute('title');
+                    }
+                    
+                    // Add click handler
+                    btn.addEventListener('click', () => {
+                        if (token) {
+                            // Update active tab
+                            tokenTypeTabBtns.forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
                             
-                            if (token) {
-                                // Update active tab
-                                tokenTypeTabBtns.forEach(b => b.classList.remove('active'));
-                                btn.classList.add('active');
-                                
-                                // Load the selected token
-                                loadToken(token);
-                            }
-                        });
+                            // Load the selected token
+                            loadToken(token);
+                        }
                     });
-                }
-            } else {
-                // Show single token indicator
-                if (tokenTypeTabs) tokenTypeTabs.style.display = 'none';
-                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'block';
-                if (tokenTypeLabel) {
-                    const tokenType = hasIdToken ? 'ID Token' : 'Access Token';
-                    tokenTypeLabel.textContent = tokenType;
-                }
+                });
             }
             
             loadToken(initialToken);
