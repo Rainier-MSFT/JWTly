@@ -10,14 +10,14 @@
            THEME VARIABLES
            ============================================================================ */
         :root {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f1f5f9;
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #fafbfc;
+            --bg-tertiary: #f3f4f6;
             --text-primary: #0f172a;
             --text-secondary: #64748b;
             --text-muted: #94a3b8;
-            --border-color: #e2e8f0;
-            --shadow: rgba(0, 0, 0, 0.05);
+            --border-color: #d1d5db;
+            --shadow: rgba(0, 0, 0, 0.08);
             --accent-blue: #3b82f6;
             --accent-purple: #8b5cf6;
             --accent-cyan: #06b6d4;
@@ -26,10 +26,10 @@
             --warning: #f59e0b;
             --info: #0ea5e9;
             --header-color: #1e293b;
-            --code-bg: #f8fafc;
+            --code-bg: #f5f6f8;
             --input-bg: #ffffff;
             --input-border: #cbd5e1;
-            --textarea-bg: #f8fafc;
+            --textarea-bg: #f5f6f8;
         }
 
         [data-theme="dark"] {
@@ -379,7 +379,7 @@
         }
         
         :root .panel {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
         }
         
         [data-theme="dark"] .panel {
@@ -750,8 +750,8 @@
 
         /* Light theme JWT segments */
         :root .jwt-segment-header {
-            background: rgba(237, 233, 254, 0.9);
-            border: 1px solid rgba(167, 139, 250, 0.5);
+            background: rgba(237, 233, 254, 0.95);
+            border: 1px solid rgba(167, 139, 250, 0.6);
             border-radius: 4px;
         }
         
@@ -760,8 +760,8 @@
         }
 
         :root .jwt-segment-payload {
-            background: rgba(224, 242, 254, 0.9);
-            border: 1px solid rgba(96, 165, 250, 0.5);
+            background: rgba(224, 242, 254, 0.95);
+            border: 1px solid rgba(96, 165, 250, 0.6);
             border-radius: 4px;
         }
         
@@ -770,8 +770,8 @@
         }
 
         :root .jwt-segment-signature {
-            background: rgba(220, 252, 231, 0.9);
-            border: 1px solid rgba(52, 211, 153, 0.5);
+            background: rgba(220, 252, 231, 0.95);
+            border: 1px solid rgba(52, 211, 153, 0.6);
             border-radius: 4px;
         }
         
@@ -946,7 +946,7 @@
         .decoded-section-panel { background: var(--bg-secondary); border-radius: 6px; overflow: hidden; }
         
         :root .decoded-section-panel {
-            box-shadow: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
         
         [data-theme="dark"] .decoded-section-panel {
@@ -955,9 +955,9 @@
         }
         
         /* Light theme panel borders */
-        :root .decoded-section-panel.decoded-header-panel { border: 1px solid rgba(167, 139, 250, 0.4); }
-        :root .decoded-section-panel.decoded-payload-panel { border: 1px solid rgba(96, 165, 250, 0.4); }
-        :root .decoded-section-panel.decoded-signature-panel { border: 1px solid rgba(52, 211, 153, 0.4); }
+        :root .decoded-section-panel.decoded-header-panel { border: 1px solid rgba(167, 139, 250, 0.5); }
+        :root .decoded-section-panel.decoded-payload-panel { border: 1px solid rgba(96, 165, 250, 0.5); }
+        :root .decoded-section-panel.decoded-signature-panel { border: 1px solid rgba(52, 211, 153, 0.5); }
         
         /* Dark theme panel borders */
         [data-theme="dark"] .decoded-section-panel.decoded-header-panel { border: 1px solid rgb(108 93 119 / 30%); }
@@ -1082,21 +1082,21 @@
         /* Decoded section background tints */
         /* Light theme decoded content areas */
         :root .decoded-header-content-area {
-            background: rgba(237, 233, 254, 0.8) !important;
+            background: rgba(237, 233, 254, 0.95) !important;
             border: none;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
 
         :root .decoded-payload-content-area {
-            background: rgba(224, 242, 254, 0.8) !important;
+            background: rgba(224, 242, 254, 0.95) !important;
             border: none;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
 
         :root .decoded-signature-content-area {
-            background: rgba(220, 252, 231, 0.8) !important;
+            background: rgba(220, 252, 231, 0.95) !important;
             border: none;
         }
 
@@ -1122,15 +1122,15 @@
 
         /* Light theme tabs row backgrounds - match content areas */
         :root .decoded-tabs-row.decoded-header-row {
-            background: rgba(237, 233, 254, 0.8);
+            background: rgba(237, 233, 254, 0.95);
         }
 
         :root .decoded-tabs-row.decoded-payload-row {
-            background: rgba(224, 242, 254, 0.8);
+            background: rgba(224, 242, 254, 0.95);
         }
 
         :root .decoded-tabs-row.decoded-signature-row {
-            background: rgba(220, 252, 231, 0.8);
+            background: rgba(220, 252, 231, 0.95);
         }
 
         /* Dark theme tabs row backgrounds */
