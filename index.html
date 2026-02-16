@@ -51,7 +51,7 @@
         /* ============================================================================
            THEME OVERRIDES FOR STANDARD INPUTS
            ============================================================================ */
-        /* Light theme: override tools.css dark defaults */
+        /* Light theme */
         :root .standard-input,
         :root .standard-select,
         :root .standard-filter-input {
@@ -66,7 +66,7 @@
             color: #1e293b;
         }
 
-        /* Dark theme: use tools.css defaults */
+        /* Dark theme */
         [data-theme="dark"] .standard-input,
         [data-theme="dark"] .standard-select,
         [data-theme="dark"] .standard-select-muted,
@@ -1133,8 +1133,6 @@
         }
         #manualVerification.tab-content.active { display: block !important; }
         #discoveryVerification.tab-content.active { display: block !important; }
-        /* CACHE BUST: 2026-02-03-v3-FINAL-OVERLAY-FIX */
-        /* CACHE BUST: 2026-02-03-v15-CLEAN-ALIGNMENT */
         .decoded-content-area { position: relative; padding: 1rem; min-height: 64px; border-radius: 8px; }
         :root .decoded-content-area .code-block { background: rgba(255, 255, 255, 0.95) !important; border-radius: 6px; padding: 1rem; word-break: break-all; min-height: 64px; }
         [data-theme="dark"] .decoded-content-area .code-block { 
@@ -2347,6 +2345,9 @@
         const jwtInputError = document.getElementById('jwtInputError');
         const decodedHeader = document.getElementById('decodedHeader');
         const decodedPayload = document.getElementById('decodedPayload');
+        const structureLabelRow = document.getElementById('structureLabelRow');
+        const encodedPanelHeaderText = document.getElementById('encodedPanelHeaderText');
+        const encodedPanelHeader = document.getElementById('encodedPanelHeader');
 
         // Store the original pristine token for verification (contenteditable can modify text)
         let originalToken = '';
@@ -2413,18 +2414,9 @@
         function showSingleInput() {
             jwtSingleInput.style.display = 'flex';
             jwtStructure.style.display = 'none';
-            const structureLabelRow = document.getElementById('structureLabelRow');
             if (structureLabelRow) structureLabelRow.style.display = 'none';
-            // Update panel header text only
-            const encodedPanelHeaderText = document.getElementById('encodedPanelHeaderText');
-            const encodedPanelHeader = document.getElementById('encodedPanelHeader');
-            if (encodedPanelHeaderText) {
-                encodedPanelHeaderText.textContent = 'ENCODED JWT';
-            }
-            if (encodedPanelHeader) {
-                encodedPanelHeader.style.padding = '1rem 0 1rem 0.2rem';
-            }
-            // Auto-resize in case there's existing content
+            if (encodedPanelHeaderText) encodedPanelHeaderText.textContent = 'ENCODED JWT';
+            if (encodedPanelHeader) encodedPanelHeader.style.padding = '1rem 0 1rem 0.2rem';
             setTimeout(() => {
                 autoResizeTextarea(jwtInputField);
                 centerPlaceholder();
@@ -2434,17 +2426,9 @@
         function showSegmentView() {
             jwtSingleInput.style.display = 'none';
             jwtStructure.style.display = 'flex';
-            const structureLabelRow = document.getElementById('structureLabelRow');
             if (structureLabelRow) structureLabelRow.style.display = 'flex';
-            // Update panel header text only
-            const encodedPanelHeaderText = document.getElementById('encodedPanelHeaderText');
-            const encodedPanelHeader = document.getElementById('encodedPanelHeader');
-            if (encodedPanelHeaderText) {
-                encodedPanelHeaderText.textContent = 'ENCODED VALUE';
-            }
-            if (encodedPanelHeader) {
-                encodedPanelHeader.style.padding = '';
-            }
+            if (encodedPanelHeaderText) encodedPanelHeaderText.textContent = 'ENCODED VALUE';
+            if (encodedPanelHeader) encodedPanelHeader.style.padding = '';
         }
 
         // Validate JWT structure
@@ -2601,30 +2585,18 @@
                 secretInput.style.height = 'auto';
                 secretInput.innerHTML = '';
             }
-            const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
-            if (autoFetchedKeyDiv) {
-                autoFetchedKeyDiv.innerHTML = '';
-                autoFetchedKeyDiv.style.fontFamily = '';
-                autoFetchedKeyDiv.style.display = 'block';
+            const discoveryDiv = document.getElementById('discoveryVerification');
+            if (discoveryDiv) {
+                discoveryDiv.innerHTML = '';
+                discoveryDiv.style.fontFamily = '';
+                discoveryDiv.style.display = 'none';
             }
             const hashNonceGroup = document.getElementById('hashNonceGroup');
-            if (hashNonceGroup) {
-                hashNonceGroup.style.display = 'none';
-            }
-            const autoFetchedKey = document.getElementById('discoveryVerification');
-            if (autoFetchedKey) {
-                autoFetchedKey.style.display = 'none';
-            }
+            if (hashNonceGroup) hashNonceGroup.style.display = 'none';
             const copySignatureBtn = document.getElementById('copySignatureBtn');
-            if (copySignatureBtn) {
-                copySignatureBtn.style.display = 'none';
-            }
-            
-            // Reset algorithm to default (Manual tab only)
+            if (copySignatureBtn) copySignatureBtn.style.display = 'none';
             const algorithmSelectManual = document.getElementById('algorithmSelectManual');
-            if (algorithmSelectManual) {
-                algorithmSelectManual.value = 'HS256';
-            }
+            if (algorithmSelectManual) algorithmSelectManual.value = 'HS256';
             
             // Clear URL
             window.history.replaceState({}, '', window.location.origin + window.location.pathname);
@@ -2969,25 +2941,23 @@
         };
 
         function decodeJWT(token) {
+            const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+            const copyPayloadBtn = document.getElementById('copyPayloadBtn');
+            const copySignatureBtn = document.getElementById('copySignatureBtn');
+            const discoveryDiv = document.getElementById('discoveryVerification');
+            const hashNonceGroup = document.getElementById('hashNonceGroup');
+
             try {
                 if (!token || token.trim() === '') {
                 decodedHeader.innerHTML = '';
                 decodedPayload.innerHTML = '';
                 document.getElementById('headerClaimsTableBody').innerHTML = '';
                 document.getElementById('payloadClaimsTableBody').innerHTML = '';
-                const autoFetchedKeyDiv = document.getElementById('discoveryVerification');
-                if (autoFetchedKeyDiv) {
-                    autoFetchedKeyDiv.innerHTML = '';
-                    autoFetchedKeyDiv.style.display = 'block';
+                if (discoveryDiv) {
+                    discoveryDiv.innerHTML = '';
+                    discoveryDiv.style.display = 'none';
                 }
-                const hashNonceGroup = document.getElementById('hashNonceGroup');
                 if (hashNonceGroup) hashNonceGroup.style.display = 'none';
-                const autoFetchedKey = document.getElementById('discoveryVerification');
-                if (autoFetchedKey) autoFetchedKey.style.display = 'none';
-                // Hide Copy buttons when no token
-                const copyHeaderBtn = document.getElementById('copyHeaderBtn');
-                const copyPayloadBtn = document.getElementById('copyPayloadBtn');
-                const copySignatureBtn = document.getElementById('copySignatureBtn');
                 if (copyHeaderBtn) copyHeaderBtn.style.display = 'none';
                 if (copyPayloadBtn) copyPayloadBtn.style.display = 'none';
                 if (copySignatureBtn) copySignatureBtn.style.display = 'none';
@@ -3010,8 +2980,6 @@
                 populateClaimsTable('payloadClaimsTableBody', decoded);
                 
                 // Show Copy buttons when data is available
-                const copyHeaderBtn = document.getElementById('copyHeaderBtn');
-                const copyPayloadBtn = document.getElementById('copyPayloadBtn');
                 if (copyHeaderBtn) copyHeaderBtn.style.display = 'block';
                 if (copyPayloadBtn) copyPayloadBtn.style.display = 'block';
                 
@@ -4270,7 +4238,6 @@
 
         const hasIdToken = !!storedTokens.id_token;
         const hasAccessToken = !!storedTokens.access_token;
-        const hasBothTokens = hasIdToken && hasAccessToken;
 
         // Initialize based on whether tokens were provided
         if (hasIdToken || hasAccessToken) {
