@@ -910,10 +910,9 @@
             background: transparent; 
             border: none; 
             cursor: pointer; 
-            display: flex; 
+            display: none;
             align-items: center; 
             justify-content: center; 
-            visibility: hidden;
             transition: all 0.2s;
         }
         
@@ -1650,7 +1649,7 @@
     <header>
         <div class="header-content">
             <div>
-                <h1>JWTly</h1>
+                <h1 id="appTitle">JWTly</h1>
                 <p class="header-subtitle">Decode, verify, and generate JWT tokens</p>
             </div>
             <div class="header-meta">
@@ -2165,6 +2164,21 @@
         
         // Make jose available globally
         window.jose = jose;
+
+        // ============================================================================
+        // DYNAMIC TITLE BASED ON HOSTNAME
+        // ============================================================================
+        const hostname = window.location.hostname.toLowerCase();
+        const appTitle = document.getElementById('appTitle');
+        
+        if (appTitle) {
+            if (hostname.includes('jotly')) {
+                appTitle.textContent = 'JOTly';
+            } else if (hostname.includes('jwtf')) {
+                appTitle.textContent = 'JWTF';
+            }
+            // Default is already "JWTly" from HTML
+        }
 
         // ============================================================================
         // DEBUG MODE
@@ -4169,10 +4183,10 @@
                 // Check if this is header section
                 if (target === 'headerJson') {
                     if (copyHeaderBtn) copyHeaderBtn.style.display = 'block';
-                    if (headerDescToggle) headerDescToggle.style.visibility = 'hidden';
+                    if (headerDescToggle) headerDescToggle.style.display = 'none';
                 } else if (target === 'headerTable') {
                     if (copyHeaderBtn) copyHeaderBtn.style.display = 'none';
-                    if (headerDescToggle) headerDescToggle.style.visibility = 'visible';
+                    if (headerDescToggle) headerDescToggle.style.display = 'flex';
                     
                     // Hide description cells by default when switching to Claims tab
                     const headerTbody = document.getElementById('headerClaimsTableBody');
@@ -4186,10 +4200,10 @@
                 // Check if this is payload section
                 if (target === 'payloadJson') {
                     if (copyPayloadBtn) copyPayloadBtn.style.display = 'block';
-                    if (payloadDescToggle) payloadDescToggle.style.visibility = 'hidden';
+                    if (payloadDescToggle) payloadDescToggle.style.display = 'none';
                 } else if (target === 'payloadTable') {
                     if (copyPayloadBtn) copyPayloadBtn.style.display = 'none';
-                    if (payloadDescToggle) payloadDescToggle.style.visibility = 'visible';
+                    if (payloadDescToggle) payloadDescToggle.style.display = 'flex';
                     
                     // Hide description cells by default when switching to Claims tab
                     const payloadTbody = document.getElementById('payloadClaimsTableBody');
