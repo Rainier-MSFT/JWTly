@@ -625,6 +625,7 @@
 
         .panel-label-row-end {
             align-items: flex-end;
+            margin-bottom: 0.25rem;
         }
 
         .margin-left-auto {
@@ -1181,7 +1182,7 @@
             padding: 0.2rem 0.4rem; 
             font-size: 0.75rem; 
             background: transparent; 
-            border: none; 
+            border: 1px solid rgba(136, 136, 136, 0.25); 
             color: #8888887d; 
             cursor: pointer; 
             border-radius: 4px; 
@@ -1192,11 +1193,13 @@
         .nuke-btn:hover { 
             color: var(--text-secondary); 
             background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(136, 136, 136, 0.4);
         }
         
         [data-theme="dark"] .nuke-btn:hover { 
             color: var(--text-primary); 
             background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(136, 136, 136, 0.4);
         }
         .copy-icon-btn { position: absolute; top: 1.6rem; right: 1.6rem; width: 24px; height: 24px; padding: 4px; background: #1a1a1a00; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: none; z-index: 10; outline: none; }
         .copy-icon-btn svg { width: 16px; height: 16px; stroke: #8888887d; stroke-width: 2; fill: none; transition: stroke 0.2s; }
