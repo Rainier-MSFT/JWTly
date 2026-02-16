@@ -903,14 +903,49 @@
             width: auto;
         }
         
-        .description-toggle-btn { width: 24px; height: 24px; padding: 4px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; visibility: hidden; }
+        .description-toggle-btn { 
+            width: 28px; 
+            height: 28px; 
+            padding: 4px; 
+            background: transparent; 
+            border: none; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        
+        :root .description-toggle-btn {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            margin-right: 0px;
+        }
+        
+        :root .description-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+        
         .description-toggle-btn:focus,
         .description-toggle-btn:active {
             background: transparent;
             box-shadow: none;
             outline: none;
         }
-        .kv-tags-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: var(--accent-blue); font-size: 12px; font-weight: 600; font-style: italic; font-family: Georgia, serif; border-radius: 4px; }
+        
+        .kv-tags-info-icon { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 18px; 
+            height: 18px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            font-style: italic; 
+            font-family: Georgia, serif; 
+            border-radius: 4px; 
+        }
+        
         /* Light theme info icons */
         :root .decoded-header-row .kv-tags-info-icon { color: #6d28d9; background: transparent; }
         :root .decoded-payload-row .kv-tags-info-icon { color: #1e40af; background: transparent; }
@@ -1143,10 +1178,27 @@
         [data-theme="dark"] .copy-btn { box-shadow: none; }
         [data-theme="dark"] .copy-btn:hover { box-shadow: none; }
         
-        .nuke-btn { padding: 0.2rem 0.4rem; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid #3d3d3da6; color: var(--text-secondary); cursor: pointer; border-radius: 4px; transition: all 0.2s; outline: none; }
-        .nuke-btn:hover { background: var(--bg-secondary); }
-        [data-theme="dark"] .nuke-btn { box-shadow: none; }
-        [data-theme="dark"] .nuke-btn:hover { box-shadow: none; }
+        .nuke-btn { 
+            padding: 0.2rem 0.4rem; 
+            font-size: 0.75rem; 
+            background: transparent; 
+            border: none; 
+            color: #8888887d; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: all 0.2s; 
+            outline: none; 
+        }
+        
+        .nuke-btn:hover { 
+            color: var(--text-secondary); 
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        [data-theme="dark"] .nuke-btn:hover { 
+            color: var(--text-primary); 
+            background: rgba(255, 255, 255, 0.05);
+        }
         .copy-icon-btn { position: absolute; top: 1.6rem; right: 1.6rem; width: 24px; height: 24px; padding: 4px; background: #1a1a1a00; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: none; z-index: 10; outline: none; }
         .copy-icon-btn svg { width: 16px; height: 16px; stroke: #8888887d; stroke-width: 2; fill: none; transition: stroke 0.2s; }
         .panel-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
