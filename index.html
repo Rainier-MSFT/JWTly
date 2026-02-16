@@ -1145,6 +1145,17 @@
         #keyFormatSelect {
             border-radius: 6px;
         }
+        
+        /* Match dropdown backgrounds to signature verification section */
+        :root #algorithmSelectManual,
+        :root #keyFormatSelect {
+            background-color: rgba(220, 252, 231, 0.95) !important;
+        }
+        
+        [data-theme="dark"] #algorithmSelectManual,
+        [data-theme="dark"] #keyFormatSelect {
+            background-color: rgba(5, 46, 22, 0.2) !important;
+        }
         :root #manualVerification #secretInput {
             background: rgba(255, 255, 255, 0.95);
             color: #1e293b;
@@ -1385,6 +1396,21 @@
         [data-theme="dark"] .token-type-tab.active {
             background: rgba(0, 0, 0, 0.4);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Token type indicator (for single token) */
+        .token-type-indicator {
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .token-type-indicator span {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         /* Modal styles */
@@ -1742,6 +1768,11 @@
                     <div id="tokenTypeTabs" class="token-type-tabs" style="display: none;">
                         <button class="token-type-tab active" data-token-type="id_token">ID Token</button>
                         <button class="token-type-tab" data-token-type="access_token">Access Token</button>
+                    </div>
+                    
+                    <!-- Single Token Indicator (shown when only one token loaded) -->
+                    <div id="tokenTypeIndicator" class="token-type-indicator" style="display: none;">
+                        <span id="tokenTypeLabel"></span>
                     </div>
 
                     <div id="structureLabelRow" class="panel-label-row panel-label-row-end" style="display: none;">
@@ -2460,9 +2491,11 @@
             // Clear original token
             originalToken = '';
             
-            // Hide token type tabs
+            // Hide token type tabs and indicator
             const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+            const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
             if (tokenTypeTabs) tokenTypeTabs.style.display = 'none';
+            if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
             
             // Clear stored tokens
             if (window.storedTokens) {
@@ -2630,7 +2663,12 @@
                 window.storedTokens.access_token = exampleAccessToken;
 
                 const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+                const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
+                
+                // Show tabs (since we have both tokens), hide indicator
                 if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
+                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
+                
                 const tabBtns = tokenTypeTabs?.querySelectorAll('.token-type-tab') || [];
 
                 // Ensure token type tabs are wired (normally only wired on page load if tokens come via URL)
@@ -4314,12 +4352,17 @@
             const initialToken = storedTokens.id_token || storedTokens.access_token;
             debug('Loading initial token...');
             
-            // Show token type tabs if both tokens present
+            // Show token type tabs if both tokens present, or indicator if only one
+            const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+            const tokenTypeIndicator = document.getElementById('tokenTypeIndicator');
+            const tokenTypeLabel = document.getElementById('tokenTypeLabel');
+            
             if (hasBothTokens) {
-                const tokenTypeTabs = document.getElementById('tokenTypeTabs');
+                // Show tabs for both tokens
+                if (tokenTypeTabs) tokenTypeTabs.style.display = 'flex';
+                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'none';
+                
                 if (tokenTypeTabs) {
-                    tokenTypeTabs.style.display = 'flex';
-                    
                     // Handle token type tab switching
                     const tokenTypeTabBtns = tokenTypeTabs.querySelectorAll('.token-type-tab');
                     tokenTypeTabBtns.forEach(btn => {
@@ -4337,6 +4380,14 @@
                             }
                         });
                     });
+                }
+            } else {
+                // Show single token indicator
+                if (tokenTypeTabs) tokenTypeTabs.style.display = 'none';
+                if (tokenTypeIndicator) tokenTypeIndicator.style.display = 'block';
+                if (tokenTypeLabel) {
+                    const tokenType = hasIdToken ? 'ID Token' : 'Access Token';
+                    tokenTypeLabel.textContent = tokenType;
                 }
             }
             
