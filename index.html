@@ -1003,9 +1003,18 @@
             opacity: 1;
         }
 
-        .footer { text-align: center; padding: 2rem 2rem; color: #88888894; font-size: 0.85rem; margin-top: 1rem; max-width: 1470px; width: 100%; margin-left: auto; margin-right: auto; box-sizing: border-box; }
-        .footer a { color: #88888859; text-decoration: none; }
-        .footer .text-muted { color: #88888859; }
+        .panel-footer { 
+            text-align: center; 
+            padding: 1.5rem 2rem 1rem 2rem; 
+            color: #88888894; 
+            font-size: 0.85rem; 
+            margin-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .panel-footer p {
+            margin: 0;
+        }
 
         .decoded-section-panel { background: var(--bg-secondary); border-radius: 6px; overflow: hidden; }
         
@@ -1683,7 +1692,7 @@
             margin: 1rem 0 0 0;
         }
 
-        @media (max-width: 1550px) { header, .container, .footer { max-width: 1248px; } }
+        @media (max-width: 1550px) { header, .container { max-width: 1248px; } }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -2070,6 +2079,11 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Footer inside main panel -->
+        <div class="panel-footer">
+            <p>All operations performed client-side, tokens never leave the browser</p>
+        </div>
         </div>
     </div>
 
@@ -2196,10 +2210,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>All operations performed client-side, tokens never leave the browser</p>
-    </footer>
 
     <!-- Jose Library -->
     <script type="module">
