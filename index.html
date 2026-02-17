@@ -453,7 +453,14 @@
             box-shadow: none;
         }
         
-        /* Center placeholder horizontally from first paint */
+        /* Hide textarea until JS centers the placeholder, then fade in */
+        .jwt-single-input {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .jwt-single-input.ready {
+            opacity: 1;
+        }
         .jwt-single-input:placeholder-shown {
             text-align: center;
         }
@@ -2640,6 +2647,8 @@
             } else if (jwtInputField) {
                 jwtInputField.style.paddingTop = '1rem';
             }
+            // Reveal textarea after positioning
+            if (jwtInputField) jwtInputField.classList.add('ready');
         }
 
         // Handle single input field
