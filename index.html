@@ -85,7 +85,7 @@
         [data-theme="dark"] .standard-select,
         [data-theme="dark"] .standard-select-muted {
             background-color: color(srgb 0.09 0.12 0.1);
-            border-color: rgb(50 50 50);
+            border-color: rgb(50 50 50 0);
             color: #a0b0c099;
         }
 
@@ -741,7 +741,7 @@
         }
 
         #algorithmSelectManual {
-            width: 250px;
+            width: 230px;
             height: 30px;
         }
 
@@ -1237,6 +1237,36 @@
             opacity: 1;
         }
 
+        /* Checkbox styled like a select dropdown */
+        .checkbox-select-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            height: 30px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            padding: 0 0.75rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        
+        .checkbox-select-container .checkbox-label {
+            color: #a0b0c099;
+        }
+        
+        :root .checkbox-select-container {
+            background-color: rgba(220, 252, 231, 0.95);
+        }
+        
+        :root .checkbox-select-container .checkbox-label {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .checkbox-select-container {
+            background-color: #0b0f0c;
+        }
+
         .panel-footer {
             text-align: center;
             padding: 1.25rem 2rem 1rem 2rem;
@@ -1480,6 +1510,7 @@
         #algorithmSelectManual,
         #keyFormatSelect {
             border-radius: 4px;
+            border-color: transparent !important;
         }
         
         /* Match dropdown backgrounds to signature verification section */
@@ -2270,7 +2301,7 @@
                                             <div class="encoder-control-left">
                                                 <div class="encoder-control-inner">
                                                     <select class="standard-select-muted" id="algorithmSelectManual" required>
-                                                        <option value="" selected>Algorithm</option>
+                                                        <option value="" selected>Algorithm...</option>
                                                         <option value="HS256">HMAC SHA256 (HS256)</option>
                                                         <option value="HS384">HMAC SHA384 (HS384)</option>
                                                         <option value="HS512">HMAC SHA512 (HS512)</option>
@@ -2285,14 +2316,14 @@
                                                         <option value="PS512">RSA-PSS SHA512 (PS512)</option>
                                                     </select>
                                                 </div>
-                                                <div class="checkbox-group checkbox-group-no-margin">
-                                                    <input type="checkbox" id="base64Checkbox">
-                                                    <label for="base64Checkbox" class="checkbox-label">B64</label>
-                                                </div>
                                             </div>
                                             <div class="encoder-control-right">
+                                                <label class="checkbox-select-container">
+                                                    <input type="checkbox" id="base64Checkbox">
+                                                    <span class="checkbox-label">B64</span>
+                                                </label>
                                                 <select id="keyFormatSelect" class="standard-select-muted" required>
-                                                    <option value="" selected>Key Format</option>
+                                                    <option value="" selected>Key Format...</option>
                                                     <option value="raw">Raw secret</option>
                                                     <option value="jwk">JWK</option>
                                                     <option value="pem">PEM</option>
