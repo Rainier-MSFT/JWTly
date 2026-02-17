@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -205,7 +205,7 @@
         }
 
         [data-theme="dark"] body {
-            background: radial-gradient(ellipse at top, #141420 0%, #0d0d0d 60%);
+            background: linear-gradient(180deg, #111118 0%, #0c0c0f 50%, #080810 100%);
         }
 
         /* ============================================================================
@@ -217,7 +217,7 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
             margin-left: auto;
             margin-right: auto;
-            border-radius: 6px;
+            border-radius: 10px;
             background: rgba(14, 17, 30, 1);
             border: 1px solid rgba(120, 130, 160, 0.25);
             max-width: 1470px;
@@ -225,25 +225,53 @@
             box-sizing: border-box;
             position: relative;
             z-index: 100000;
+            transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
         }
 
-        [data-theme="dark"] header {
-            background: rgba(24, 24, 24, 1);
-        }
-
+        /* Light theme header */
         :root header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            box-shadow: 0 1px 4px rgba(99, 102, 241, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
         }
 
         :root .header-subtitle {
-            color: #94a3b8;
+            color: #64748b;
         }
 
         :root .theme-toggle {
             background: transparent;
+            color: #475569;
+        }
+
+        /* Dark theme header — MUST come after :root to win specificity */
+        [data-theme="dark"] header {
+            background: rgba(20, 20, 28, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: transparent;
             color: #e2e8f0;
+        }
+
+        /* Accent gradient line under header */
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #818cf8 0%, #6366f1 40%, #a78bfa 70%, #818cf8 100%);
+            opacity: 0.6;
+        }
+
+        [data-theme="dark"] header::after {
+            opacity: 0.4;
         }
 
         .header-content {
@@ -297,8 +325,6 @@
             background: rgba(14, 17, 30, 0.88);
             border: none;
         }
-
-        /* :root .theme-toggle overridden in header block above */
 
         .theme-toggle:hover {
             opacity: 0.8;
@@ -403,21 +429,33 @@
         .panel {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 1.5rem;
             position: relative;
             overflow-y: auto;
+            transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
         }
         
         :root .panel {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             background: #ffffff;
         }
         
+        :root .panel:hover {
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+            border-color: rgba(99, 102, 241, 0.15);
+        }
+        
         [data-theme="dark"] .panel {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-            background: rgba(24, 24, 24, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+            background: rgba(18, 18, 24, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        [data-theme="dark"] .panel:hover {
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1), 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(139, 92, 246, 0.15);
         }
 
         .jwt-input-panel {
@@ -447,7 +485,7 @@
             padding: 1rem;
             background: var(--code-bg);
             border: 1px solid #3d3d3da6;
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-primary);
             resize: none;
             overflow-y: auto;
@@ -455,16 +493,19 @@
         }
         
         :root .jwt-single-input {
-            border: 1px solid #3d3d3d4f;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: #f8f9fb;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         :root .jwt-single-input:focus {
             border-color: rgba(99, 102, 241, 0.4);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: #ffffff;
         }
         
         [data-theme="dark"] .jwt-single-input {
+            background: var(--code-bg);
             box-shadow: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -472,6 +513,7 @@
         [data-theme="dark"] .jwt-single-input:focus {
             border-color: rgba(139, 92, 246, 0.5);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            background: var(--code-bg);
         }
         
         /* Hide textarea until JS centers the placeholder, then fade in */
@@ -607,14 +649,20 @@
 
         .primary-button {
             background: var(--accent-blue);
-            color: var(--text-primary);
+            color: #ffffff;
             border: none;
             padding: 0.6rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        :root .primary-button {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25), 0 1px 2px rgba(0, 0, 0, 0.1);
+            color: #ffffff;
         }
         
         [data-theme="dark"] .primary-button {
@@ -624,6 +672,10 @@
         .primary-button:hover {
             filter: brightness(1.1);
             transform: translateY(-1px);
+        }
+
+        :root .primary-button:hover {
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35), 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         [data-theme="dark"] .primary-button:hover {
@@ -740,7 +792,7 @@
         #tokenStatusBanner {
             padding: 0.75rem;
             margin: 0.75rem 0 0 0;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.9rem;
             border-left: 4px solid;
         }
@@ -958,6 +1010,28 @@
             color: #ff6b6b;
             border: 1px solid rgba(220, 53, 69, 0.5);
         }
+        
+        /* Light theme status badges — darker text for readability */
+        :root .status-badge.valid {
+            color: #16a34a;
+            background: rgba(22, 163, 74, 0.08);
+            border-color: rgba(22, 163, 74, 0.4);
+        }
+        :root .status-badge.info, :root .status-badge.neutral {
+            color: #2563eb;
+            background: rgba(37, 99, 235, 0.08);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        :root .status-badge.warning {
+            color: #d97706;
+            background: rgba(217, 119, 6, 0.08);
+            border-color: rgba(217, 119, 6, 0.4);
+        }
+        :root .status-badge.critical, :root .status-badge.invalid, :root .status-badge.error {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.06);
+            border-color: rgba(220, 38, 38, 0.4);
+        }
 
         #verificationResult, #verificationResultManual {
             display: none;
@@ -979,11 +1053,18 @@
             font-size: 0.9rem;
             font-weight: 500;
             text-transform: uppercase;
-            border-bottom: 1px solid transparent;
+            letter-spacing: 0.03em;
+            border-bottom: 2px solid transparent;
             transition: all 0.2s;
         }
+        
+        .main-tabs:hover:not(.active) {
+            color: var(--text-primary);
+            border-bottom-color: rgba(99, 102, 241, 0.3);
+        }
+        
         .main-tabs.active {
-            color: var(--accent-blue);
+            color: var(--text-secondary);
             border-bottom: 2px solid var(--accent-blue);
         }
 
@@ -1161,7 +1242,6 @@
             padding: 1.25rem 2rem 1rem 2rem;
             color: #88888894;
             font-size: 0.8rem;
-            border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1185,17 +1265,26 @@
 
         .decoded-section-panel {
             background: var(--bg-secondary);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
         }
         
         :root .decoded-section-panel {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+        
+        :root .decoded-section-panel:hover {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
         }
         
         [data-theme="dark"] .decoded-section-panel {
-            box-shadow: none;
-            background: rgba(20, 20, 20, 1);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(16, 16, 22, 0.95);
+        }
+        
+        [data-theme="dark"] .decoded-section-panel:hover {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
         }
         
         /* Light theme panel borders */
@@ -1293,7 +1382,7 @@
         }
         
         :root .decoded-tab.active { 
-            color: var(--text-primary) !important; 
+            color: var(--text-secondary) !important; 
             background: rgba(255, 255, 255, 0.95) !important; 
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
         }
@@ -1338,7 +1427,7 @@
         }
         
         [data-theme="dark"] .decoded-tab.active { 
-            color: var(--text-primary) !important; 
+            color: var(--text-secondary) !important; 
             background: rgba(255, 255, 255, 0.08) !important; 
             box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
         }
@@ -1446,10 +1535,7 @@
         .json-boolean { color: #7c3aed; }
         .json-null { color: #94a3b8; }
 
-        /* Light theme segment-specific JSON key colors */
-        :root .decoded-header-content-area .json-key { color: #6d28d9; }
-        :root .decoded-payload-content-area .json-key { color: #1e40af; }
-        :root .decoded-signature-content-area .json-key { color: #047857; }
+        /* Light theme segment-specific JSON key colors — removed per feedback */
 
         .json-key-highlight {
             color: #c2410c !important;
@@ -1933,7 +2019,7 @@
     <header>
         <div class="header-content">
             <div>
-                <h1 id="appTitle">JWTly</h1>
+                <h1 id="appTitle">JOTly...</h1>
                 <p class="header-subtitle">Safely decode and verify tokens</p>
             </div>
             <div class="header-meta">
@@ -2474,7 +2560,7 @@
         const htmlElement = document.documentElement;
 
         // Load saved theme
-        const savedTheme = localStorage.getItem('jwt-theme') || 'light';
+        const savedTheme = localStorage.getItem('jwt-theme') || 'dark';
         htmlElement.setAttribute('data-theme', savedTheme);
 
         function setTheme(newTheme) {
