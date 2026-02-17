@@ -2671,12 +2671,12 @@
                         oid: '22222222-2222-2222-2222-222222222222',
                         sub: 'example-subject-12345',
                         name: 'Jane Doe',
-                        preferred_username: 'jane.doe@contoso.com',
-                        email: 'jane.doe@contoso.com',
+                        preferred_username: 'jane.doe@wacketywack.com',
+                        email: 'jane.doe@wacketywack.com',
                         given_name: 'Jane',
                         family_name: 'Doe',
-                        unique_name: 'jane.doe@contoso.com',
-                        upn: 'jane.doe@contoso.com',
+                        unique_name: 'jane.doe@wacketywack.com',
+                        upn: 'jane.doe@wacketywack.com',
                         roles: ['Admin', 'User.Manager'],
                         groups: ['33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444'],
                         iat: now,
@@ -2700,8 +2700,8 @@
                         wids: ['62e90394-69f5-4237-9190-012177145e10', '194ae4cb-b126-40b2-bd5b-6091b380977d'],
                         azp: exampleClientId,
                         name: 'Jane Doe',
-                        unique_name: 'jane.doe@contoso.com',
-                        upn: 'jane.doe@contoso.com',
+                        unique_name: 'jane.doe@wacketywack.com',
+                        upn: 'jane.doe@wacketywack.com',
                         iat: now,
                         nbf: now,
                         exp: exp
@@ -2876,16 +2876,16 @@
             'at_hash': 'Access Token hash value',
             'c_hash': 'Code hash value',
             's_hash': 'State hash value',
-            'uti': 'Token identifier claim, equivalent to jti in the JWT spec and is unique and case-sensitive'
+            'uti': 'Token identifier claim, equivalent to jti in the JWT spec and is unique and case-sensitive',
             
             // Microsoft Entra ID Specific Claims
             'tid': 'Represents the tenant that the user is signing in to',
-            'oid': 'The immutable ID for the requestor, which is the verified ID of the user or SP. This ID uniquely identifies the requestor across apps.',
+            'oid': 'The immutable ID for the requestor, which is the verified ID of the user or SP. This ID uniquely identifies the requestor across apps',
             'upn': 'User Principal Name (User ID in email format)',
             'unique_name': 'Unique name ID of user',
             'pwd_exp': 'Seconds until password expires',
             'pwd_url': 'URL where user can change password',
-            'wids': 'Tenant-wide Entra roles assigned to the user. The groupMembershipClaims prop of the app manifest configures this claim on a per-app basis. Set the claim to All or DirectoryRole.'
+            'wids': 'Tenant-wide Entra roles assigned to the user. The groupMembershipClaims prop of the app manifest configures this claim on a per-app basis. Set the claim to All or DirectoryRole',
             
             // Roles and Permissions
             'roles': 'Set of perms exposed by the app that the requesting app or user has been given perms to call. The client creds flow uses this set of perms in place of user scopes, for app tokens. For user tokens, this set of values contains the assigned roles of the user on the target app',
@@ -2893,7 +2893,7 @@
             'wids': 'Well-Known Entra directory role template IDs',
             'scp': 'Set of scopes exposed by the app for which the client app has requested (and received) consent. Only included for delegated flows and user tokens',
             'hasgroups': 'True if user has more groups than can fit in token and indicates that the client should use MSG to determine the groups (https://graph.microsoft.com/v1.0/users/{userID}/getMemberObjects) of the user',
-            'groups:src1': 'Includes a link to the full groups list for the user when token requests are too large for the token. For JWTs as a distributed claim, for SAML as a new claim in place of the groups claim'
+            'groups:src1': 'Includes a link to the full groups list for the user when token requests are too large for the token. For JWTs as a distributed claim, for SAML as a new claim in place of the groups claim',
             
             // Application Claims
             'app_displayname': 'Appl display name',
