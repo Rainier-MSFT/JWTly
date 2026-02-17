@@ -1762,7 +1762,7 @@
             <div class="main-content">
                 <!-- Left: Encoded JWT (THE ADJUSTED PANEL) -->
                 <div class="panel jwt-input-panel">
-                    <div class="panel-header" id="encodedPanelHeader" style="padding: 1rem 0 1rem 0.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="panel-header" id="encodedPanelHeader" style="padding: 1rem 0 1rem 0.2rem; display: none; align-items: center; gap: 0.5rem;">
                         <span id="encodedPanelHeaderText">ENCODED JWT</span>
                     </div>
                     
@@ -2420,8 +2420,7 @@
             jwtSingleInput.style.display = 'flex';
             jwtStructure.style.display = 'none';
             if (structureLabelRow) structureLabelRow.style.display = 'none';
-            if (encodedPanelHeaderText) encodedPanelHeaderText.textContent = 'ENCODED JWT';
-            if (encodedPanelHeader) encodedPanelHeader.style.padding = '1rem 0 1rem 0.2rem';
+            if (encodedPanelHeader) encodedPanelHeader.style.display = 'none';
             setTimeout(() => {
                 autoResizeTextarea(jwtInputField);
                 centerPlaceholder();
@@ -2432,8 +2431,11 @@
             jwtSingleInput.style.display = 'none';
             jwtStructure.style.display = 'flex';
             if (structureLabelRow) structureLabelRow.style.display = 'flex';
+            if (encodedPanelHeader) {
+                encodedPanelHeader.style.display = 'flex';
+                encodedPanelHeader.style.padding = '';
+            }
             if (encodedPanelHeaderText) encodedPanelHeaderText.textContent = 'ENCODED VALUE';
-            if (encodedPanelHeader) encodedPanelHeader.style.padding = '';
         }
 
         // Validate JWT structure
