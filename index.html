@@ -2845,7 +2845,7 @@
             'unique_name': 'Unique name ID of user',
             'pwd_exp': 'Seconds until password expires',
             'pwd_url': 'URL where user can change password',
-            'wids': 'Tenant-wide Entra roles assigned to the user. The groupMembershipClaims prop of the app manifest configures this claim on a per-app basis. Set the claim to All or DirectoryRole',
+            'wids': 'Well-known IDs ofEntra roles assigned to the user. The groupMembershipClaims prop of an app manifest sets this claim on a per-app basis. Set the claim to All or DirectoryRole',
             
             // Roles and Permissions
             'roles': 'Set of perms exposed by the app that the requesting app or user has been given perms to call. The client creds flow uses this set of perms in place of user scopes, for app tokens. For user tokens, this set of values contains the assigned roles of the user on the target app',
