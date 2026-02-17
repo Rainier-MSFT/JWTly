@@ -739,11 +739,15 @@
             right: 0;
             font-size: 0.6rem;
             color: #888;
-            opacity: 0.55;
+            opacity: 0;
             text-align: center;
             user-select: none;
             cursor: default;
             pointer-events: auto;
+            transition: opacity 0.15s ease;
+        }
+        .jwt-input-hint.ready {
+            opacity: 0.55;
         }
 
         .jwt-input-hint strong {
@@ -2110,7 +2114,7 @@
         
         <!-- Footer inside main panel -->
         <div class="panel-footer">
-            <p>All opserations performed client-side, tokens never leave the browser</p>
+            <p>All OPs performed client-side, tokens never leave the browser</p>
         </div>
         </div>
     </div>
@@ -2254,9 +2258,9 @@
         
         if (appTitle) {
             if (hostname.includes('jotly')) {
-                appTitle.textContent = 'JOTly';
+                appTitle.textContent = 'JOTly...';
             } else if (hostname.includes('jwtf')) {
-                appTitle.textContent = 'JWTF';
+                appTitle.textContent = 'JWTF...';
             }
             // Default is already "JWTly" from HTML
         }
@@ -2657,7 +2661,10 @@
                 const paddingTop = Math.max((height - lineHeight) / 2, 16);
                 jwtInputField.style.paddingTop = `${paddingTop}px`;
                 // Pin hint directly below the placeholder text
-                if (hint) hint.style.top = `${paddingTop + lineHeight}px`;
+                if (hint) {
+                    hint.style.top = `${paddingTop + lineHeight}px`;
+                    hint.classList.add('ready');
+                }
             } else if (jwtInputField) {
                 jwtInputField.style.paddingTop = '1rem';
             }
