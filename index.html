@@ -735,12 +735,11 @@
 
         .jwt-input-hint {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, 0.2rem);
-            font-size: 0.65rem;
+            left: 0;
+            right: 0;
+            font-size: 0.6rem;
             color: #888;
-            opacity: 0.6;
+            opacity: 0.55;
             text-align: center;
             user-select: none;
             cursor: default;
@@ -1192,7 +1191,7 @@
         
         [data-theme="dark"] #algorithmSelectManual,
         [data-theme="dark"] #keyFormatSelect {
-            background-color: rgba(5, 46, 22, 0.2) !important;
+            background-color: #0b0f0c !important;
         }
         :root #manualVerification #secretInput {
             background: rgba(255, 255, 255, 0.95);
@@ -2651,11 +2650,14 @@
 
         // Center placeholder vertically in JWT input field
         function centerPlaceholder() {
+            const hint = document.getElementById('jwtExampleHint');
             if (jwtInputField && jwtInputField.value.trim() === '') {
                 const height = jwtInputField.clientHeight;
                 const lineHeight = parseFloat(getComputedStyle(jwtInputField).lineHeight);
                 const paddingTop = Math.max((height - lineHeight) / 2, 16);
                 jwtInputField.style.paddingTop = `${paddingTop}px`;
+                // Pin hint directly below the placeholder text
+                if (hint) hint.style.top = `${paddingTop + lineHeight + 4}px`;
             } else if (jwtInputField) {
                 jwtInputField.style.paddingTop = '1rem';
             }
