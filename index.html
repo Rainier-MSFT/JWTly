@@ -453,10 +453,9 @@
             box-shadow: none;
         }
         
-        /* Center placeholder from first paint (no JS flash) */
+        /* Center placeholder horizontally from first paint */
         .jwt-single-input:placeholder-shown {
             text-align: center;
-            padding-top: 35%;
         }
         .jwt-single-input::placeholder {
             text-align: center;
@@ -2743,8 +2742,8 @@
                 loadToken(exampleIdToken, 'id_token');
             }
 
-            // Initial centering
-            setTimeout(centerPlaceholder, 0);
+            // Initial centering - use requestAnimationFrame for earliest post-layout timing
+            requestAnimationFrame(() => requestAnimationFrame(centerPlaceholder));
             
             // Re-center on window resize
             window.addEventListener('resize', centerPlaceholder);
