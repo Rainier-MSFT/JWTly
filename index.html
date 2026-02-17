@@ -1055,19 +1055,16 @@
         [data-theme="dark"] .decoded-section-panel.decoded-payload-panel { border: 1px solid rgb(87 90 102 / 30%); }
         [data-theme="dark"] .decoded-section-panel.decoded-signature-panel { border: 1px solid rgb(60 96 75 / 30%); }
         .decoded-tabs-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1rem 0rem 1.2rem; background: var(--bg-secondary); gap: 1rem; }
-        .decoded-tabs-row .panel-header { 
-            margin-bottom: 0; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;
-            padding: 0.3rem 0.7rem; border-radius: 5px; white-space: nowrap;
-        }
-        /* Light theme panel header badges */
-        :root .panel-header-decoded { color: #6d28d9; background: rgba(109, 40, 217, 0.1); border: 1px solid rgba(109, 40, 217, 0.2); }
-        :root .panel-header-payload { color: #1e40af; background: rgba(30, 64, 175, 0.1); border: 1px solid rgba(30, 64, 175, 0.2); }
-        :root .panel-header-signature { color: #047857; background: rgba(4, 120, 87, 0.1); border: 1px solid rgba(4, 120, 87, 0.2); }
+        .decoded-tabs-row .panel-header { margin-bottom: 0; font-size: 0.95rem; font-weight: 600; }
+        /* Light theme panel headers */
+        :root .panel-header-decoded { color: #6d28d9; }
+        :root .panel-header-payload { color: #1e40af; }
+        :root .panel-header-signature { color: #047857; }
         
-        /* Dark theme panel header badges */
-        [data-theme="dark"] .panel-header-decoded { color: rgb(192 132 252); background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.2); }
-        [data-theme="dark"] .panel-header-payload { color: rgb(96 165 250); background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); }
-        [data-theme="dark"] .panel-header-signature { color: rgb(52 211 153); background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.15); }
+        /* Dark theme panel headers */
+        [data-theme="dark"] .panel-header-decoded { color: rgb(192 132 252); }
+        [data-theme="dark"] .panel-header-payload { color: rgb(96 165 250); }
+        [data-theme="dark"] .panel-header-signature { color: rgb(52 211 153); }
         .decoded-tabs { 
             display: flex; 
             gap: 0; 
@@ -2113,7 +2110,7 @@
         
         <!-- Footer inside main panel -->
         <div class="panel-footer">
-            <p>All operations performed client-side, tokens never leave the browser</p>
+            <p>All opserations performed client-side, tokens never leave the browser</p>
         </div>
         </div>
     </div>
