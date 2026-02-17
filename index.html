@@ -2828,12 +2828,12 @@
         // Standard JWT claim descriptions (RFC 7519, OIDC, Microsoft Entra ID)
         const claimDescriptions = {
             // Standard JWT Claims (RFC 7519)
-            'iss': 'Issuer, identifies principal that issued the JWT',
-            'sub': 'Subject, identifies the principal that is the subject of the JWT',
+            'iss': 'Identifies the issuing STS, and the Entra tenant of the authenticated user. If issued token is v2.0 (I.e. ver claim), the URI ends in /v2.0. Seeing a 9188040d-6c67-4c5b-b112-36a304b66dad GUID indicates that the user is an MS account, consumer ID',
+            'sub': 'The principal associated with the token. E.g. the user of an app. This value is immutable, don\'t reassign or reuse. The subject is a pairwise identifier that\'s unique to a particular app ID. If a single user signs into two different app using two different client IDs, those apps receive two different values for the subject claim',
             'aud': 'Audience, identifies the recipients that the JWT is intended for',
             'exp': 'identifies the expiration time on or after which the JWT must not be accepted',
             'nbf': 'Not Before, identifies the time before which the JWT must not be accepted',
-            'iat': 'Issued at, identifies the time at which the JWT was issued',
+            'iat': 'Specifies when the authentication for this token occurred',
             'jti': 'JWT ID, provides a unique identifier for the JWT',
             
             // JWS/JWE Header Claims
@@ -2847,12 +2847,12 @@
             'jwk': 'JSON public web key used to digitally sign the JWS',
             
             // OpenID Connect Standard Claims
-            'name': 'Full name of the user',
+            'name': 'Human-readable value identifing the subject of the token. Value can vary, is mutable, and is for display purposes only. To receive this claim, use the profile scope',
             'given_name': 'Given or first name of the user',
             'family_name': 'Surname or last name of the user',
             'middle_name': 'Middle name of the user',
             'nickname': 'Casual name of the user',
-            'preferred_username': 'Name by which the user is to be referred as',
+            'preferred_username': 'Primary username. Can be an email address, phone number, or a generic username without a specified format. Use the value for username hints and in human-readable UI as a username. To receive this claim, use the profile scope',
             'email': 'Email address of the user',
             'email_verified': 'True if the email address has been verified; otherwise false',
             'phone_number': 'Phone number of the user',
@@ -2868,34 +2868,37 @@
             'updated_at': 'Time the user\'s information was last updated',
             
             // OpenID Connect ID Token Claims
-            'azp': 'Authorized party to which the ID Token was issued',
+            'azp': 'Replacement for appid, being app ID of client using the token. The app can act as itself or on behalf of a user. The ID typically represents an app object, but can also represent an SP OID',
             'nonce': 'Value used to associate a Client session with an ID Token',
-            'acr': 'Authentication Context Class Reference (authN & authZ hooks)',
-            'amr': 'Authentication Methods References (Derrived by authN flow)',
+            'acr': 'Authentication Context Class Reference, indicates success failure (v1 only tokens)',
+            'amr': 'Authentication Methods References, identifies the authN method of the subject of the token',
             'auth_time': 'Time when the authentication occurred',
             'at_hash': 'Access Token hash value',
             'c_hash': 'Code hash value',
             's_hash': 'State hash value',
+            'uti': 'Token identifier claim, equivalent to jti in the JWT spec and is unique and case-sensitive'
             
-            // Microsoft Entra ID (Azure AD) Specific Claims
-            'tid': 'Entra tenant context',
-            'oid': 'Immutable ID of the Entra user or service principal',
+            // Microsoft Entra ID Specific Claims
+            'tid': 'Represents the tenant that the user is signing in to',
+            'oid': 'The immutable ID for the requestor, which is the verified ID of the user or SP. This ID uniquely identifies the requestor across apps.',
             'upn': 'User Principal Name (User ID in email format)',
             'unique_name': 'Unique name ID of user',
             'pwd_exp': 'Seconds until password expires',
             'pwd_url': 'URL where user can change password',
+            'wids': 'Tenant-wide Entra roles assigned to the user. The groupMembershipClaims prop of the app manifest configures this claim on a per-app basis. Set the claim to All or DirectoryRole.'
             
             // Roles and Permissions
-            'roles': 'App roles assigned to the user or app',
-            'groups': 'Security group membership (OIDs or names)',
+            'roles': 'Set of perms exposed by the app that the requesting app or user has been given perms to call. The client creds flow uses this set of perms in place of user scopes, for app tokens. For user tokens, this set of values contains the assigned roles of the user on the target app',
+            'groups': 'Provides OIDs that represent the group memberships of the subject. The groupMembershipClaims property of the app manifest configures the groups claim on a per-app basis. If the number of groups the user is in goes over 150 for SAML and 200 for JWT, then Entra ID adds an overage claim to the claim sources',
             'wids': 'Well-Known Entra directory role template IDs',
-            'scp': 'Delegated scope of permissions granted to client app',
-            'hasgroups': 'True if user has more groups than can fit in token',
+            'scp': 'Set of scopes exposed by the app for which the client app has requested (and received) consent. Only included for delegated flows and user tokens',
+            'hasgroups': 'True if user has more groups than can fit in token and indicates that the client should use MSG to determine the groups (https://graph.microsoft.com/v1.0/users/{userID}/getMemberObjects) of the user',
+            'groups:src1': 'Includes a link to the full groups list for the user when token requests are too large for the token. For JWTs as a distributed claim, for SAML as a new claim in place of the groups claim'
             
             // Application Claims
             'app_displayname': 'Appl display name',
-            'appid': 'Appl ID (a.k.a Client ID)',
-            'appidacr': 'App Authentication Context Class Reference',
+            'appid': 'App ID of the client using the token (v1 only tokens)',
+            'appidacr': 'Indicates authN method of the client. For a public client, the value is 0. If using client credentials, the value is 1. If using a client cert, the value is 2',
             'idtyp': 'Indicates whether token is for user or app',
             'azpacr': 'Authorized Party Authentication Context Class Reference',
             
@@ -2917,8 +2920,8 @@
             
             // Token Version and Type
             'ver': 'Token schema version (v1 or 2)',
-            'idp': 'IdP that authenticated the subject',
-            'tfp': 'Trust Framework Policy (Entra ID B2C policy name)',
+            'idp': 'Records the IdP that authenticated the subject of the token. Value is identical to the value of the Issuer claim unless the user account is not in the same tenant as the issuer, such as guests. Use the value of iss if the claim isnt present',
+            'tfp': 'Trust Framework Policy (Entra B2C policy name)',
             'acct': 'Account Type (0=user, 1=guest)',
             
             // OAuth 2.0 Token Exchange
@@ -2929,12 +2932,11 @@
             
             // Microsoft Graph Specific
             'idtyp': 'Identity Type (user/app)',
-            'aio': 'Azure internal only use ',
-            'in_corp': 'True if request originated inside corpnet',
-            'onprem_sid': 'On-Prem Security ID (Windows SID)',
+            'aio': 'Internal claim used by Entra ID to record data for token reuse',
             'puid': 'Users unique Passport ID',
             'signin_state': 'Supplementary session login info',
             'tenant_region_scope': 'Geo region of tenant',
+            'unique_name': 'Provides a human readable value identifying the subject of the token',
             'cloud_instance_name': 'MS cloud instance name (e.g., microsoftonline.com)',
             'cloud_instance_host_name': 'Cloud instance host name',
             'cloud_graph_host_name': 'Microsoft Graph host name for this cloud'
