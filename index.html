@@ -28,7 +28,7 @@
             --header-color: #1e293b;
             --code-bg: #f5f6f8;
             --input-bg: #ffffff;
-            --input-border: #cbd5e1;
+
             --textarea-bg: #f5f6f8;
         }
 
@@ -44,7 +44,7 @@
             --header-color: #ffffffd4;
             --code-bg: #0d0d0d;
             --input-bg: #1a1a1a;
-            /*--input-border: #3d3d3d;*/
+
             --textarea-bg: #1a1a1a;
         }
 
@@ -53,8 +53,7 @@
            ============================================================================ */
         /* Light theme */
         :root .standard-input,
-        :root .standard-select,
-        :root .standard-filter-input {
+        :root .standard-select {
             background-color: #ffffff;
             border-color: #cbd5e1;
             color: #1e293b;
@@ -69,8 +68,7 @@
         /* Dark theme */
         [data-theme="dark"] .standard-input,
         [data-theme="dark"] .standard-select,
-        [data-theme="dark"] .standard-select-muted,
-        [data-theme="dark"] .standard-filter-input {
+        [data-theme="dark"] .standard-select-muted {
             background-color: color(srgb 0.09 0.12 0.1);
             border-color: rgb(50 50 50);
             color: #a0b0c099;
@@ -356,25 +354,6 @@
             box-sizing: border-box;
         }
 
-        .intro {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .intro h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: var(--header-color);
-        }
-
-        .intro p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
 
         .main-content {
             display: grid;
@@ -671,9 +650,6 @@
             margin-top: -0.5rem;
         }
 
-        .margin-left-auto {
-            margin-left: auto;
-        }
 
         #algorithmSelectManual {
             width: 260px;
@@ -759,9 +735,6 @@
             color: #888;
         }
 
-        .jwt-input-hint strong {
-            font-weight: 600;
-        }
 
         textarea {
             resize: none;
@@ -936,9 +909,7 @@
         #verificationResult, #verificationResultManual { display: none; justify-content: center; }
 
         .tabs { display: none; gap: 0; margin-bottom: 0.6rem; }
-        .tabs-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; gap: 1rem; }
-        .tab { padding: 0.5rem 1rem; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid transparent; transition: all 0.2s; }
-        .tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+
         .main-tabs { padding: 0.5rem 1rem; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid transparent; transition: all 0.2s; }
         .main-tabs.active { color: var(--accent-blue); }
         .tab-content { display: none; }
@@ -1285,10 +1256,7 @@
         [data-theme="dark"] .json-null { color: #ffffffd4; }
         [data-theme="dark"] .json-key-highlight { color: #f1b99b !important; }
 
-        .copy-btn { padding: 0.2rem 0.4rem; font-size: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; border-radius: 4px; transition: all 0.2s; outline: none; }
-        .copy-btn:hover { background: var(--bg-secondary); }
-        [data-theme="dark"] .copy-btn { box-shadow: none; }
-        [data-theme="dark"] .copy-btn:hover { box-shadow: none; }
+
         
         .nuke-btn { 
             padding: 0.1rem 0.4rem; 
@@ -1376,65 +1344,16 @@
         /* Dark theme tabs row backgrounds */
         [data-theme="dark"] .decoded-tabs-row.decoded-header-row {
             background: rgba(59, 7, 100, 0.2);
-            /*border-bottom: 1px solid rgba(59, 7, 100, 0.3);*/
         }
 
         [data-theme="dark"] .decoded-tabs-row.decoded-payload-row {
             background: rgba(23, 37, 84, 0.2);
-            /*border-bottom: 1px solid rgba(23, 37, 84, 0.3);*/
         }
 
         [data-theme="dark"] .decoded-tabs-row.decoded-signature-row {
             background: rgba(5, 46, 22, 0.2);
-            /*border-bottom: 1px solid rgba(5, 46, 22, 0.3);*/
         }
 
-        /* FIXED SECTION: Added min-height and flex layout to ensure consistency with panels above */
-        .signature-inner-panel {
-            background: transparent !important;
-            border-radius: 4px;
-            padding: 0;
-            position: relative;
-            min-height: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* Help icon button */
-        .help-icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 4px;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            outline: none;
-            position: relative;
-            z-index: 10;
-            flex-shrink: 0;
-            pointer-events: auto;
-        }
-        
-        .help-icon-btn:hover {
-            color: var(--text-primary);
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-        }
-        
-        .help-icon-btn svg {
-            display: block; /* avoid baseline alignment fuzz */
-            width: 18px;
-            height: 18px;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            shape-rendering: geometricPrecision;
-        }
 
         /* Token type tabs (for multiple tokens) */
         .token-type-tabs {
@@ -1544,20 +1463,7 @@
             background: rgba(93, 139, 255, 0.7);
         }
         
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-        }
-        
+
         .modal-close {
             background: transparent;
             border: none;
@@ -1750,15 +1656,6 @@
             right: 0.35rem;
         }
 
-        /* Modal uses the same copy icon tone as main page */
-        
-        .note {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 3px solid var(--accent-blue);
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            margin: 1rem 0 0 0;
-        }
 
         @media (max-width: 1550px) { header, .container { max-width: 1248px; } }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
@@ -2010,14 +1907,6 @@
                                 <!-- Manual Tab (User provides key) -->
                                 <div class="tab-content" id="manualVerification" data-content="manualVerification">
                                     <div id="secretInputGroup">
-                                        <!--
-                                        <div class="panel-label-row">
-                                            <div class="panel-label">PUBLIC KEY / SECRET</div>
-                                            <div class="margin-left-auto">
-                                                <button class="copy-btn" id="clearSecretBtn" title="Reset">Reset</button>
-                                            </div>
-                                        </div>
-                                        -->
                                         <div 
                                             id="secretInput" 
                                             contenteditable="true"
@@ -2160,10 +2049,6 @@
         <div class="modal-backdrop"></div>
         <div class="modal-content">
             <button class="modal-close modal-close-floating" id="closeUrlHelpModal" type="button">&times;</button>
-            <!-- <div class="modal-header">
-                <h3>Decoding Options</h3>
-                <button class="modal-close" id="closeUrlHelpModal" type="button">&times;</button>
-            </div> -->
             <div class="modal-body">
                 <p class="help-intro">The JWT decoder can recieve ID and Access tokens via several different methods</p>
 
@@ -2712,13 +2597,6 @@
         if (jwtInputField) {
             const jwtExampleHint = document.getElementById('jwtExampleHint');
 
-            function base64UrlEncodeJson(obj) {
-                const json = JSON.stringify(obj);
-                const bytes = new TextEncoder().encode(json);
-                let binary = '';
-                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-                return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-            }
 
             async function createExampleJwtHs256(payloadObj, secret) {
                 const secretBytes = new TextEncoder().encode(secret);
@@ -2869,7 +2747,10 @@
                 // If pasting a full JWT token, split it across segments
                 if (text.includes('.')) {
                     originalToken = text;
-                    setTokenSegments(text);
+                    const parts = text.split('.');
+                    if (jwtHeaderSegment) jwtHeaderSegment.textContent = parts[0] || '';
+                    if (jwtPayloadSegment) jwtPayloadSegment.textContent = parts[1] || '';
+                    if (jwtSignatureSegment) jwtSignatureSegment.textContent = parts[2] || '';
                     decodeJWT(text);
                 } else {
                     // Otherwise, just paste into current segment
@@ -2969,7 +2850,6 @@
             // Roles and Permissions
             'roles': 'Set of perms exposed by the app that the requesting app or user has been given perms to call. The client creds flow uses this set of perms in place of user scopes, for app tokens. For user tokens, this set of values contains the assigned roles of the user on the target app',
             'groups': 'Provides OIDs that represent the group memberships of the subject. The groupMembershipClaims property of the app manifest configures the groups claim on a per-app basis. If the number of groups the user is in goes over 150 for SAML and 200 for JWT, then Entra ID adds an overage claim to the claim sources',
-            'wids': 'Well-Known Entra directory role template IDs',
             'scp': 'Set of scopes exposed by the app for which the client app has requested (and received) consent. Only included for delegated flows and user tokens',
             'hasgroups': 'True if user has more groups than can fit in token and indicates that the client should use MSG to determine the groups (https://graph.microsoft.com/v1.0/users/{userID}/getMemberObjects) of the user',
             'groups:src1': 'Includes a link to the full groups list for the user when token requests are too large for the token. For JWTs as a distributed claim, for SAML as a new claim in place of the groups claim',
@@ -2988,7 +2868,6 @@
             
             // Resource and Tenant Claims
             'rh': 'Refresh Token Handle (Opaque ID)',
-            'uti': 'Unique Token Identifier (Internal use)',
             'xms_tcdt': 'Tenant Creation Date Time',
             'xms_tdbr': 'Tenant Default Branding info',
             
@@ -3010,12 +2889,10 @@
             'resource': 'Target for which the token is intended for',
             
             // Microsoft Graph Specific
-            'idtyp': 'Identity Type (user/app)',
             'aio': 'Internal claim used by Entra ID to record data for token reuse',
             'puid': 'Users unique Passport ID',
             'signin_state': 'Supplementary session login info',
             'tenant_region_scope': 'Geo region of tenant',
-            'unique_name': 'Provides a human readable value identifying the subject of the token',
             'cloud_instance_name': 'MS cloud instance name (e.g., microsoftonline.com)',
             'cloud_instance_host_name': 'Cloud instance host name',
             'cloud_graph_host_name': 'Microsoft Graph host name for this cloud'
@@ -4029,31 +3906,6 @@
             });
         }
         
-        const copySecretBtn = document.getElementById('copySecretBtn');
-        if (copySecretBtn) {
-            copySecretBtn.addEventListener('click', () => {
-                copyToClipboard(secretInput.textContent, 'Public key copied!');
-            });
-        }
-        
-        const clearSecretBtn = document.getElementById('clearSecretBtn');
-        if (clearSecretBtn) {
-            clearSecretBtn.addEventListener('click', () => {
-                const algorithmSelectManual = document.getElementById('algorithmSelectManual');
-                const keyFormatSelect = document.getElementById('keyFormatSelect');
-                if (secretInput) {
-                    secretInput.textContent = '';
-                    secretInput.innerHTML = '';
-                    normalizeSecretInput();
-                    secretInput.style.height = '54px';
-                }
-                if (base64Checkbox) base64Checkbox.checked = false;
-                if (algorithmSelectManual) algorithmSelectManual.value = '';
-                if (keyFormatSelect) keyFormatSelect.value = '';
-                showVerificationResult('', 'none', 'verificationResultManual');
-                autoResizeSecretInput();
-            });
-        }
 
         const copyHeaderBtn = document.getElementById('copyHeaderBtn');
         if (copyHeaderBtn) {
@@ -4179,7 +4031,7 @@
                 const wasAlreadyActive = tab.classList.contains('active');
                 
                 // Update tab active state within this tabs container
-                tabsContainer.querySelectorAll('.tab, .decoded-tab').forEach(t => t.classList.remove('active'));
+                tabsContainer.querySelectorAll('.decoded-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
                 // Find content area (either direct children for old style, or .decoded-content-area for new style)
@@ -4338,10 +4190,6 @@
         const closeUrlHelpModal = document.getElementById('closeUrlHelpModal');
         const modalBackdrop = urlHelpModal?.querySelector('.modal-backdrop');
 
-        const openUrlHelpModal = () => {
-            if (!urlHelpModal) return;
-            urlHelpModal.classList.add('show');
-        };
 
         const closeUrlHelpModalFn = () => {
             if (!urlHelpModal) return;
