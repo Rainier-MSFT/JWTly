@@ -2785,7 +2785,7 @@
             banner.innerHTML = messages.map(msg => `<div>${msg}</div>`).join('');
         }
 
-        // Standard JWT claim descriptions (RFC 7519, OIDC, Microsoft Entra ID)
+        // Standard JWT claim descriptions (RFC 7519, OIDC, Entra ID)
         const claimDescriptions = {
             // Standard JWT Claims (RFC 7519)
             'iss': 'Identifies the issuing STS, and the Entra tenant of the authenticated user. If issued token is v2.0 (I.e. ver claim), the URI ends in /v2.0. Seeing a 9188040d-6c67-4c5b-b112-36a304b66dad GUID indicates that the user is an MS account, consumer ID',
@@ -2838,7 +2838,7 @@
             's_hash': 'State hash value',
             'uti': 'Token identifier claim, equivalent to jti in the JWT spec and is unique and case-sensitive',
             
-            // Microsoft Entra ID Specific Claims
+            // Entra ID specific claims
             'tid': 'Represents the tenant that the user is signing in to',
             'oid': 'The immutable ID for the requestor, which is the verified ID of the user or SP. This ID uniquely identifies the requestor across apps',
             'upn': 'User Principal Name (User ID in email format)',
@@ -2854,7 +2854,7 @@
             'hasgroups': 'True if user has more groups than can fit in token and indicates that the client should use MSG to determine the groups (https://graph.microsoft.com/v1.0/users/{userID}/getMemberObjects) of the user',
             'groups:src1': 'Includes a link to the full groups list for the user when token requests are too large for the token. For JWTs as a distributed claim, for SAML as a new claim in place of the groups claim',
             
-            // Application Claims
+            // App Claims
             'app_displayname': 'Appl display name',
             'appid': 'App ID of the client using the token (v1 only tokens)',
             'appidacr': 'Indicates authN method of the client. For a public client, the value is 0. If using client credentials, the value is 1. If using a client cert, the value is 2',
