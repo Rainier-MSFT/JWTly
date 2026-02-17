@@ -185,7 +185,7 @@
         }
 
         /* ============================================================================
-           HEADER (matching ID360 Utilities)
+           HEADER
            ============================================================================ */
         header {
             margin-top: 9px;
@@ -354,14 +354,12 @@
             box-sizing: border-box;
         }
 
-
         .main-content {
             display: grid;
             grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
             grid-auto-rows: auto;
             gap: 1.5rem;
-            /*margin-bottom: 2rem;*/
-            align-items: stretch; /* Keep panels same height */
+            align-items: stretch;
         }
 
         /* JWTly layout */
@@ -488,13 +486,12 @@
             margin-bottom: 0;
         }
 
-
         .panel-label {
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
             font-weight: 500;
-            padding: 0 0 0 0.1rem
+            padding: 0 0 0 0.1rem;
         }
 
         /* Encoder tab styling - match generatedJwtOutput exactly */
@@ -650,7 +647,6 @@
             margin-top: -0.5rem;
         }
 
-
         #algorithmSelectManual {
             width: 260px;
             height: auto;
@@ -734,7 +730,6 @@
         [data-theme="dark"] .jwt-input-hint {
             color: #888;
         }
-
 
         textarea {
             resize: none;
@@ -830,8 +825,7 @@
         }
         
         [data-theme="dark"] .jwt-segment-header .jwt-segment-content {
-            --tw-text-opacity: 1;
-            color: rgb(192 132 252 / var(--tw-text-opacity, 1));
+            color: rgb(192 132 252);
         }
 
         [data-theme="dark"] .jwt-segment-payload {
@@ -842,8 +836,7 @@
         }
         
         [data-theme="dark"] .jwt-segment-payload .jwt-segment-content {
-            --tw-text-opacity: 1;
-            color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+            color: rgb(96 165 250);
         }
 
         [data-theme="dark"] .jwt-segment-signature {
@@ -854,8 +847,7 @@
         }
         
         [data-theme="dark"] .jwt-segment-signature .jwt-segment-content {
-            --tw-text-opacity: 1;
-            color: rgb(52 211 153 / var(--tw-text-opacity, 1));
+            color: rgb(52 211 153);
         }
 
         .jwt-segment-label {
@@ -874,7 +866,6 @@
 
         .code-block {
             background: var(--code-bg);
-            /*border: 1px solid var(--border-color);*/
             border-radius: 4px;
             padding: 1rem;
             font-family: "Roboto Mono", monospace;
@@ -887,8 +878,13 @@
             word-break: break-word;
         }
 
-        #decodedHeader:not(:empty) { background: rgba(59, 7, 100, .3); }
-        #decodedPayload:not(:empty) { background: rgba(23, 37, 84, .3); }
+        #decodedHeader:not(:empty) {
+            background: rgba(59, 7, 100, .3);
+        }
+
+        #decodedPayload:not(:empty) {
+            background: rgba(23, 37, 84, .3);
+        }
 
         .status-badge {
             display: inline-flex;
@@ -901,26 +897,98 @@
             margin-top: 1rem;
         }
 
-        .status-badge.valid { background: rgba(40, 167, 69, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .status-badge.info, .status-badge.neutral { background: rgba(13, 110, 253, 0.1); color: #4dabf7; border: 1px solid rgba(13, 110, 253, 0.4); }
-        .status-badge.warning { background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.5); }
-        .status-badge.critical, .status-badge.invalid, .status-badge.error { background: rgba(139, 0, 0, 0.25); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.5); }
+        .status-badge.valid {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        .status-badge.info, .status-badge.neutral {
+            background: rgba(13, 110, 253, 0.1);
+            color: #4dabf7;
+            border: 1px solid rgba(13, 110, 253, 0.4);
+        }
+        .status-badge.warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+        .status-badge.critical, .status-badge.invalid, .status-badge.error {
+            background: rgba(139, 0, 0, 0.25);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
 
-        #verificationResult, #verificationResultManual { display: none; justify-content: center; }
+        #verificationResult, #verificationResultManual {
+            display: none;
+            justify-content: center;
+        }
 
-        .tabs { display: none; gap: 0; margin-bottom: 0.6rem; }
+        .tabs {
+            display: none;
+            gap: 0;
+            margin-bottom: 0.6rem;
+        }
 
-        .main-tabs { padding: 0.5rem 1rem; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid transparent; transition: all 0.2s; }
-        .main-tabs.active { color: var(--accent-blue); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .decoded-signature-content-area #manualVerification.active { display: block !important; }
-        .decoded-signature-content-area #discoveryVerification.active { display: block !important; }
+        .main-tabs {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .main-tabs.active {
+            color: var(--accent-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .decoded-signature-content-area #manualVerification.active {
+            display: block !important;
+        }
+
+        .decoded-signature-content-area #discoveryVerification.active {
+            display: block !important;
+        }
         
-        .claims-table-wrapper { border: 1px solid var(--border-color); border-radius: 4px; background: var(--code-bg); }
-        .claims-table { width: 100%; border-collapse: collapse; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; table-layout: auto; }
-        .claims-table th { padding: 0.75rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border-color); color: var(--text-primary); }
-        .claims-table td { padding: 0.75rem; border-bottom: 1px solid var(--border-color); color: var(--text-primary); word-break: break-word; }
+        .claims-table-wrapper {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--code-bg);
+        }
+
+        .claims-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            table-layout: auto;
+        }
+
+        .claims-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .claims-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            word-break: break-word;
+        }
         .claims-table th:nth-child(1),
         .claims-table td:nth-child(1) {
             white-space: nowrap;
@@ -1001,12 +1069,26 @@
         }
         
         /* Light theme info icons */
-        :root .decoded-header-row .kv-tags-info-icon { color: #6d28d9; background: transparent; }
-        :root .decoded-payload-row .kv-tags-info-icon { color: #1e40af; background: transparent; }
+        :root .decoded-header-row .kv-tags-info-icon {
+            color: #6d28d9;
+            background: transparent;
+        }
+
+        :root .decoded-payload-row .kv-tags-info-icon {
+            color: #1e40af;
+            background: transparent;
+        }
         
         /* Dark theme info icons */
-        [data-theme="dark"] .decoded-header-row .kv-tags-info-icon { color: rgb(192 132 252); background: transparent; }
-        [data-theme="dark"] .decoded-payload-row .kv-tags-info-icon { color: rgb(96 165 250); background: transparent; }
+        [data-theme="dark"] .decoded-header-row .kv-tags-info-icon {
+            color: rgb(192 132 252);
+            background: transparent;
+        }
+
+        [data-theme="dark"] .decoded-payload-row .kv-tags-info-icon {
+            color: rgb(96 165 250);
+            background: transparent;
+        }
         #base64Checkbox,
         #base64CheckboxEncode {
             -webkit-appearance: none;
@@ -1037,15 +1119,17 @@
             padding: 1.5rem 2rem 1rem 2rem; 
             color: #88888894; 
             font-size: 0.85rem; 
-            /*margin-top: 1.5rem;*/
-            /*border-top: 1px solid var(--border-color);*/
         }
         
         .panel-footer p {
             margin: 0;
         }
 
-        .decoded-section-panel { background: var(--bg-secondary); border-radius: 6px; overflow: hidden; }
+        .decoded-section-panel {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            overflow: hidden;
+        }
         
         :root .decoded-section-panel {
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -1057,16 +1141,44 @@
         }
         
         /* Light theme panel borders */
-        :root .decoded-section-panel.decoded-header-panel { border: 1px solid rgba(167, 139, 250, 0.5); }
-        :root .decoded-section-panel.decoded-payload-panel { border: 1px solid rgba(96, 165, 250, 0.5); }
-        :root .decoded-section-panel.decoded-signature-panel { border: 1px solid rgba(52, 211, 153, 0.5); }
+        :root .decoded-section-panel.decoded-header-panel {
+            border: 1px solid rgba(167, 139, 250, 0.5);
+        }
+
+        :root .decoded-section-panel.decoded-payload-panel {
+            border: 1px solid rgba(96, 165, 250, 0.5);
+        }
+
+        :root .decoded-section-panel.decoded-signature-panel {
+            border: 1px solid rgba(52, 211, 153, 0.5);
+        }
         
         /* Dark theme panel borders */
-        [data-theme="dark"] .decoded-section-panel.decoded-header-panel { border: 1px solid rgb(108 93 119 / 30%); }
-        [data-theme="dark"] .decoded-section-panel.decoded-payload-panel { border: 1px solid rgb(87 90 102 / 30%); }
-        [data-theme="dark"] .decoded-section-panel.decoded-signature-panel { border: 1px solid rgb(60 96 75 / 30%); }
-        .decoded-tabs-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1rem 0rem 1.2rem; background: var(--bg-secondary); gap: 1rem; }
-        .decoded-tabs-row .panel-header { margin-bottom: 0; font-size: 0.95rem; font-weight: 600; }
+        [data-theme="dark"] .decoded-section-panel.decoded-header-panel {
+            border: 1px solid rgb(108 93 119 / 30%);
+        }
+
+        [data-theme="dark"] .decoded-section-panel.decoded-payload-panel {
+            border: 1px solid rgb(87 90 102 / 30%);
+        }
+
+        [data-theme="dark"] .decoded-section-panel.decoded-signature-panel {
+            border: 1px solid rgb(60 96 75 / 30%);
+        }
+        .decoded-tabs-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1rem 0rem 1.2rem;
+            background: var(--bg-secondary);
+            gap: 1rem;
+        }
+
+        .decoded-tabs-row .panel-header {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
         /* Light theme panel headers */
         :root .panel-header-decoded { color: #6d28d9; }
         :root .panel-header-payload { color: #1e40af; }
@@ -1172,10 +1284,28 @@
             background: rgba(255, 255, 255, 0.08) !important; 
             box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
         }
-        #manualVerification.tab-content.active { display: block !important; }
-        #discoveryVerification.tab-content.active { display: block !important; }
-        .decoded-content-area { position: relative; padding: 1rem; min-height: 64px; border-radius: 8px; }
-        :root .decoded-content-area .code-block { background: rgba(255, 255, 255, 0.95) !important; border-radius: 6px; padding: 1rem; word-break: break-all; min-height: 64px; }
+        #manualVerification.tab-content.active {
+            display: block !important;
+        }
+
+        #discoveryVerification.tab-content.active {
+            display: block !important;
+        }
+
+        .decoded-content-area {
+            position: relative;
+            padding: 1rem;
+            min-height: 64px;
+            border-radius: 8px;
+        }
+
+        :root .decoded-content-area .code-block {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 6px;
+            padding: 1rem;
+            word-break: break-all;
+            min-height: 64px;
+        }
         [data-theme="dark"] .decoded-content-area .code-block { 
             background: rgba(0, 0, 0, 0.4) !important; 
             border-radius: 6px; 
@@ -1184,11 +1314,22 @@
             min-height: 64px;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(0, 0, 0, 0.3);
         }
-        .decoded-content-area .code-block:empty { display: block !important; }
+        .decoded-content-area .code-block:empty {
+            display: block !important;
+        }
+
         /* BYOK should be snug: no forced min-height */
-        .decoded-signature-content-area { min-height: 0; }
-        .decoded-signature-content-area.signature-manual-active #manualVerification { display: block !important; }
-        .decoded-signature-content-area.signature-manual-active #discoveryVerification { display: none !important; }
+        .decoded-signature-content-area {
+            min-height: 0;
+        }
+
+        .decoded-signature-content-area.signature-manual-active #manualVerification {
+            display: block !important;
+        }
+
+        .decoded-signature-content-area.signature-manual-active #discoveryVerification {
+            display: none !important;
+        }
         #algorithmSelectManual,
         #keyFormatSelect {
             border-radius: 4px;
@@ -1240,24 +1381,26 @@
             font-family: "Roboto Mono", monospace;
         }
 
-        /* Light theme JSON syntax - consistent color like dark theme */
+        /* Light theme JSON syntax */
         .json-key { color: #1e293b; }
         .json-string { color: #1e293b; }
         .json-number { color: #1e293b; }
         .json-boolean { color: #1e293b; }
         .json-null { color: #1e293b; }
-        .json-key-highlight { color: #c2410c !important; font-weight: 700; }
+
+        .json-key-highlight {
+            color: #c2410c !important;
+            font-weight: 700;
+        }
         
         /* Dark theme JSON syntax */
         [data-theme="dark"] .json-key { color: #ffffffd4; }
-        [data-theme="dark"] .json-string { color: #ffffffd4; font-style: italic;}
+        [data-theme="dark"] .json-string { color: #ffffffd4; font-style: italic; }
         [data-theme="dark"] .json-number { color: #ffffffd4; }
         [data-theme="dark"] .json-boolean { color: #ffffffd4; }
         [data-theme="dark"] .json-null { color: #ffffffd4; }
         [data-theme="dark"] .json-key-highlight { color: #f1b99b !important; }
 
-
-        
         .nuke-btn { 
             padding: 0.1rem 0.4rem; 
             font-size: 0.75rem; 
@@ -1281,11 +1424,51 @@
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(136, 136, 136, 0.4);
         }
-        .copy-icon-btn { position: absolute; top: 1.6rem; right: 1.6rem; width: 24px; height: 24px; padding: 4px; background: #1a1a1a00; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: none; z-index: 10; outline: none; }
-        .copy-icon-btn svg { width: 16px; height: 16px; stroke: #8888887d; stroke-width: 2; fill: none; transition: stroke 0.2s; }
-        .panel-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
-        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+        .copy-icon-btn {
+            position: absolute;
+            top: 1.6rem;
+            right: 1.6rem;
+            width: 24px;
+            height: 24px;
+            padding: 4px;
+            background: #1a1a1a00;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+            z-index: 10;
+            outline: none;
+        }
+
+        .copy-icon-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: #8888887d;
+            stroke-width: 2;
+            fill: none;
+            transition: stroke 0.2s;
+        }
+
+        .panel-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
 
         /* Decoded section background tints */
         /* Light theme decoded content areas */
@@ -1353,7 +1536,6 @@
         [data-theme="dark"] .decoded-tabs-row.decoded-signature-row {
             background: rgba(5, 46, 22, 0.2);
         }
-
 
         /* Token type tabs (for multiple tokens) */
         .token-type-tabs {
@@ -1462,7 +1644,6 @@
         .modal-content::-webkit-scrollbar-thumb:hover {
             background: rgba(93, 139, 255, 0.7);
         }
-        
 
         .modal-close {
             background: transparent;
@@ -1607,7 +1788,6 @@
         }
         
         .modal-body li {
-            /*margin: 0.5rem 0;*/
             color: var(--text-secondary);
             line-height: 1.6;
         }
@@ -1656,9 +1836,17 @@
             right: 0.35rem;
         }
 
+        @media (max-width: 1550px) {
+            header, .container {
+                max-width: 1248px;
+            }
+        }
 
-        @media (max-width: 1550px) { header, .container { max-width: 1248px; } }
-        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2050,13 +2238,13 @@
         <div class="modal-content">
             <button class="modal-close modal-close-floating" id="closeUrlHelpModal" type="button">&times;</button>
             <div class="modal-body">
-                <p class="help-intro">The JWT decoder can recieve ID and Access tokens via several different methods</p>
+                <p class="help-intro">The JWT decoder can receive ID and Access tokens via several different methods</p>
 
                 <h4 class="help-step-title">
                     <span class="help-step-num">-</span>
                     <span class="help-step-text">Paste token direct into decoder (All flows)</span>
                 </h4>
-                <p class="help-step-desc">Useful for non-browser or service-level scenarios, such astoken aquisition in code</p>
+                <p class="help-step-desc">Useful for non-browser or service-level scenarios, such as token acquisition in code</p>
                 <h4 class="help-step-title">
                     <span class="help-step-num">-</span>
                     <span class="help-step-text">Add tokens as URL parameters (User flows)</span>
@@ -2162,7 +2350,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Jose Lib  / Embed if required - https://github.com/panva/jose -->
     <script type="module">
@@ -2596,7 +2783,6 @@
         // Handle single input field
         if (jwtInputField) {
             const jwtExampleHint = document.getElementById('jwtExampleHint');
-
 
             async function createExampleJwtHs256(payloadObj, secret) {
                 const secretBytes = new TextEncoder().encode(secret);
@@ -3905,7 +4091,6 @@
                 });
             });
         }
-        
 
         const copyHeaderBtn = document.getElementById('copyHeaderBtn');
         if (copyHeaderBtn) {
@@ -4131,7 +4316,6 @@
                 }
             });
         });
-        
 
         // ============================================================================
         // INITIALIZATION
@@ -4189,7 +4373,6 @@
         const urlHelpModal = document.getElementById('urlHelpModal');
         const closeUrlHelpModal = document.getElementById('closeUrlHelpModal');
         const modalBackdrop = urlHelpModal?.querySelector('.modal-backdrop');
-
 
         const closeUrlHelpModalFn = () => {
             if (!urlHelpModal) return;
