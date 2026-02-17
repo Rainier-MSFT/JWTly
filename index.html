@@ -8,6 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Fallback: load Inter from CDN if Google Fonts blocked (e.g. file:// protocol) */
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400 700;
+            font-display: swap;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/files/inter-latin-400-normal.woff2') format('woff2');
+            unicode-range: U+0000-00FF;
+        }
+    </style>
     
     <style>
         /* ============================================================================
@@ -188,6 +199,15 @@
             min-height: 100vh;
         }
 
+        /* Subtle radial glow behind content area */
+        :root body {
+            background: linear-gradient(180deg, #eef2f7 0%, #f0f2f5 40%, #f5f6f8 100%);
+        }
+
+        [data-theme="dark"] body {
+            background: radial-gradient(ellipse at top, #141420 0%, #0d0d0d 60%);
+        }
+
         /* ============================================================================
            HEADER
            ============================================================================ */
@@ -212,9 +232,18 @@
         }
 
         :root header {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        :root .header-subtitle {
+            color: #94a3b8;
+        }
+
+        :root .theme-toggle {
+            background: transparent;
+            color: #e2e8f0;
         }
 
         .header-content {
@@ -230,14 +259,13 @@
         h1 {
             margin: 0;
             font-size: 40px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: -0.5px;
             line-height: 1.1;
-            color: var(--header-color);
-        }
-
-        [data-theme="dark"] h1 {
-            color: #ffffff;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 40%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header-subtitle {
@@ -248,9 +276,6 @@
             opacity: 0.9;
         }
 
-        :root .header-subtitle {
-            color: #4c4f52;
-        }
         [data-theme="dark"] .header-subtitle {
             color: #ffffffad;
         }
@@ -273,10 +298,7 @@
             border: none;
         }
 
-        :root .theme-toggle {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
+        /* :root .theme-toggle overridden in header block above */
 
         .theme-toggle:hover {
             opacity: 0.8;
@@ -388,7 +410,9 @@
         }
         
         :root .panel {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            background: #ffffff;
         }
         
         [data-theme="dark"] .panel {
@@ -960,6 +984,7 @@
         }
         .main-tabs.active {
             color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
         }
 
         .tab-content {
