@@ -453,6 +453,14 @@
             box-shadow: none;
         }
         
+        /* Center placeholder from first paint (no JS flash) */
+        .jwt-single-input:placeholder-shown {
+            text-align: center;
+            padding-top: 35%;
+        }
+        .jwt-single-input::placeholder {
+            text-align: center;
+        }
 
         /* The error box: only takes what it needs */
         .jwt-input-error {
@@ -2628,12 +2636,10 @@
             if (jwtInputField && jwtInputField.value.trim() === '') {
                 const height = jwtInputField.clientHeight;
                 const lineHeight = parseFloat(getComputedStyle(jwtInputField).lineHeight);
-                const paddingTop = (height - lineHeight) / 2;
+                const paddingTop = Math.max((height - lineHeight) / 2, 16);
                 jwtInputField.style.paddingTop = `${paddingTop}px`;
-                jwtInputField.style.textAlign = 'center';
             } else if (jwtInputField) {
                 jwtInputField.style.paddingTop = '1rem';
-                jwtInputField.style.textAlign = 'left';
             }
         }
 
