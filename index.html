@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JWTly</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231e293b'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='18' font-weight='700' fill='%23818cf8'%3EJ%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* ============================================================================
@@ -174,7 +178,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
@@ -208,8 +212,9 @@
         }
 
         :root header {
-            background: var(--bg-secondary);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         .header-content {
@@ -427,10 +432,22 @@
         
         :root .jwt-single-input {
             border: 1px solid #3d3d3d4f;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        :root .jwt-single-input:focus {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         
         [data-theme="dark"] .jwt-single-input {
             box-shadow: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        [data-theme="dark"] .jwt-single-input:focus {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
         }
         
         /* Hide textarea until JS centers the placeholder, then fade in */
@@ -1114,13 +1131,29 @@
             opacity: 1;
         }
 
-        .panel-footer { 
+        .panel-footer {
             text-align: center;
-            padding: 1.5rem 2rem 1rem 2rem; 
-            color: #88888894; 
-            font-size: 0.85rem; 
+            padding: 1.25rem 2rem 1rem 2rem;
+            color: #88888894;
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
         }
-        
+
+        .panel-footer svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.7;
+        }
+
         .panel-footer p {
             margin: 0;
         }
@@ -1382,11 +1415,16 @@
         }
 
         /* Light theme JSON syntax */
-        .json-key { color: #1e293b; }
-        .json-string { color: #1e293b; }
-        .json-number { color: #1e293b; }
-        .json-boolean { color: #1e293b; }
-        .json-null { color: #1e293b; }
+        .json-key { color: #334155; font-weight: 500; }
+        .json-string { color: #475569; }
+        .json-number { color: #0369a1; }
+        .json-boolean { color: #7c3aed; }
+        .json-null { color: #94a3b8; }
+
+        /* Light theme segment-specific JSON key colors */
+        :root .decoded-header-content-area .json-key { color: #6d28d9; }
+        :root .decoded-payload-content-area .json-key { color: #1e40af; }
+        :root .decoded-signature-content-area .json-key { color: #047857; }
 
         .json-key-highlight {
             color: #c2410c !important;
@@ -1414,15 +1452,15 @@
         }
         
         .nuke-btn:hover { 
-            color: var(--text-secondary); 
-            background: rgba(0, 0, 0, 0.03);
-            border-color: rgba(136, 136, 136, 0.4);
+            color: #dc2626; 
+            background: rgba(220, 38, 38, 0.06);
+            border-color: rgba(220, 38, 38, 0.3);
         }
         
         [data-theme="dark"] .nuke-btn:hover { 
-            color: var(--text-primary); 
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(136, 136, 136, 0.4);
+            color: #f87171; 
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
         }
         .copy-icon-btn {
             position: absolute;
@@ -1468,6 +1506,22 @@
             0% { opacity: 1; }
             70% { opacity: 1; }
             100% { opacity: 0; }
+        }
+
+        /* Fade-slide animation for decoded sections when content appears */
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .decoded-section-panel.has-content {
+            animation: fadeSlideIn 0.3s ease-out;
         }
 
         /* Decoded section background tints */
@@ -2227,6 +2281,7 @@
         
         <!-- Footer inside main panel -->
         <div class="panel-footer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             <p>All OPs performed client-side, tokens never leave the browser</p>
         </div>
         </div>
@@ -3105,6 +3160,7 @@
                 if (copyHeaderBtn) copyHeaderBtn.style.display = 'none';
                 if (copyPayloadBtn) copyPayloadBtn.style.display = 'none';
                 if (copySignatureBtn) copySignatureBtn.style.display = 'none';
+                document.querySelectorAll('.decoded-section-panel').forEach(p => p.classList.remove('has-content'));
                 showStatusBanner([], 'warning');
                 return;
                 }
@@ -3126,6 +3182,13 @@
                 // Show Copy buttons when data is available
                 if (copyHeaderBtn) copyHeaderBtn.style.display = 'block';
                 if (copyPayloadBtn) copyPayloadBtn.style.display = 'block';
+
+                // Trigger fade-in animation on decoded panels
+                document.querySelectorAll('.decoded-section-panel').forEach(p => {
+                    p.classList.remove('has-content');
+                    void p.offsetWidth; // force reflow to restart animation
+                    p.classList.add('has-content');
+                });
                 
                 // Clear banner on successful decode
                 showStatusBanner([], 'success');
