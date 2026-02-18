@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231e293b'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='18' font-weight='700' fill='%23818cf8'%3EJ%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
         /* Fallback: load Inter from CDN if Google Fonts blocked (e.g. file:// protocol) */
         @font-face {
@@ -258,21 +258,6 @@
             color: #e2e8f0;
         }
 
-        /* Accent gradient line under header */
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #818cf8 0%, #6366f1 40%, #a78bfa 70%, #818cf8 100%);
-            opacity: 0.6;
-        }
-
-        [data-theme="dark"] header::after {
-            opacity: 0.4;
-        }
 
         .header-content {
             margin: 0 auto;
@@ -286,6 +271,7 @@
 
         h1 {
             margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 40px;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -1270,7 +1256,7 @@
         .panel-footer {
             text-align: center;
             padding: 1.25rem 2rem 1rem 2rem;
-            color: #88888894;
+            color: #88888873;
             font-size: 0.8rem;
             display: flex;
             align-items: center;
@@ -1395,6 +1381,12 @@
             outline: none; 
         }
         
+        .decoded-tab[data-target="headerTable"],
+        .decoded-tab[data-target="payloadTable"] {
+            padding-left: calc(1rem - 4px) !important;
+            padding-right: calc(1rem - 4px) !important;
+        }
+        
         :root .decoded-tab:first-child {
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
@@ -1510,6 +1502,10 @@
         #algorithmSelectManual,
         #keyFormatSelect {
             border-radius: 4px;
+        }
+        
+        [data-theme="dark"] #algorithmSelectManual,
+        [data-theme="dark"] #keyFormatSelect {
             border-color: transparent !important;
         }
         
@@ -2194,8 +2190,8 @@
                                 </div>
                                 <div class="decoded-tabs">
                                     <button class="description-toggle-btn" id="headerDescToggle" title="Toggle Description Column"><span class="kv-tags-info-icon">i</span></button>
-                                    <button class="decoded-tab active" data-target="headerJson">JSON</button>
-                                    <button class="decoded-tab" data-target="headerTable">CLAIMS</button>
+                                    <button class="decoded-tab active" data-target="headerJson">json</button>
+                                    <button class="decoded-tab" data-target="headerTable">claims</button>
                                 </div>
                             </div>
                             
@@ -2229,8 +2225,8 @@
                                 <div class="panel-header panel-header-payload">DECODED PAYLOAD</div>
                                 <div class="decoded-tabs">
                                     <button class="description-toggle-btn" id="payloadDescToggle" title="Toggle Description Column"><span class="kv-tags-info-icon">i</span></button>
-                                    <button class="decoded-tab active" data-target="payloadJson">JSON</button>
-                                    <button class="decoded-tab" data-target="payloadTable">CLAIMS</button>
+                                    <button class="decoded-tab active" data-target="payloadJson">json</button>
+                                    <button class="decoded-tab" data-target="payloadTable">claims</button>
                                 </div>
                             </div>
                             
@@ -2270,8 +2266,8 @@
                                         <label for="hashNonceCheckbox">Hash nonce (MSG AT)</label>
                                     </div>
                                     <div class="decoded-tabs">
-                                        <button class="decoded-tab active" data-target="discoveryVerification">AUTO</button>
-                                        <button class="decoded-tab" data-target="manualVerification">BYOK</button>
+                                        <button class="decoded-tab active" data-target="discoveryVerification">auto</button>
+                                        <button class="decoded-tab" data-target="manualVerification">byok</button>
                                     </div>
                                 </div>
                             </div>
